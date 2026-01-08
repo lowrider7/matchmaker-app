@@ -18,11 +18,6 @@
             min-height: 100vh;
         }
         
-        .anchor-card {
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(71, 85, 105, 0.3);
-        }
-        
         .analyzer-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(71, 85, 105, 0.3);
@@ -40,15 +35,21 @@
             background: rgba(0, 0, 0, 0.6);
         }
         
-        .edit-input {
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(71, 85, 105, 0.5);
-            transition: all 0.3s ease;
+        .clarification-box {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            animation: slideDown 0.4s ease;
         }
         
-        .edit-input:focus {
-            outline: none;
-            border-color: rgba(99, 102, 241, 0.5);
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-overlay {
@@ -158,174 +159,118 @@
             display: none !important;
         }
         
-        #debugIndicator {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(34, 197, 94, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 11px;
-            z-index: 9999;
+        .insight-badge {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #86efac;
         }
     </style>
 </head>
 <body class="text-gray-100">
-    <!-- Debug Indicator -->
-    <div id="debugIndicator" style="display: none;">JS Loaded ✓</div>
-
     <div class="min-h-screen p-6">
-        <div class="max-w-7xl mx-auto">
+        <div class="max-w-4xl mx-auto">
             <!-- Minimal Header -->
-            <div class="mb-8">
+            <div class="mb-8 text-center">
                 <h1 class="text-3xl font-light text-gray-300 mb-1">Strategic Partner Scout</h1>
-                <p class="text-sm text-gray-500">Partnership Intelligence Analysis</p>
+                <p class="text-sm text-gray-500">AI-Powered Partnership Intelligence</p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Anchor Profile -->
-                <div class="lg:col-span-1">
-                    <div class="anchor-card rounded-lg p-6 sticky top-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h2 class="text-xs font-medium text-gray-400 uppercase tracking-wider">Your Profile</h2>
-                            <button 
-                                id="editBtn"
-                                class="p-1.5 hover:bg-slate-700/50 rounded transition-all cursor-pointer"
-                                title="Edit Profile"
-                                type="button"
-                            >
-                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
-                                </svg>
-                            </button>
+            <!-- Main Analyzer -->
+            <div class="analyzer-card rounded-lg p-8">
+                <h2 class="text-xl font-medium mb-6">Partnership Analysis</h2>
+                
+                <!-- Initial URL Input -->
+                <div id="initialInput">
+                    <div class="space-y-4 mb-6">
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Your Company Website</label>
+                            <input 
+                                type="url" 
+                                id="anchorUrl"
+                                placeholder="https://your-company.com"
+                                class="scan-input w-full px-4 py-3 rounded text-sm"
+                            />
                         </div>
                         
-                        <!-- View Mode -->
-                        <div id="viewMode">
-                            <h3 class="text-lg font-semibold mb-3" id="displayCompanyName">Strategic RevOps Consulting</h3>
-                            
-                            <div class="space-y-4 text-sm">
-                                <div>
-                                    <div class="text-xs text-gray-500 mb-1">Identity</div>
-                                    <p class="text-gray-300" id="displayIdentity">Boutique B2B Growth Agency specializing in LATAM expansion</p>
-                                </div>
-                                
-                                <div>
-                                    <div class="text-xs text-gray-500 mb-1">Current Goal</div>
-                                    <p class="text-gray-300" id="displayGoal">Finding strategic tech partners for supply chain automation in Mexico</p>
-                                </div>
-                                
-                                <div>
-                                    <div class="text-xs text-gray-500 mb-1">Key Strength</div>
-                                    <p class="text-gray-300" id="displayStrength">Strategy for revenue growth & key account relationship management</p>
-                                </div>
-                            </div>
+                        <div>
+                            <label class="text-sm text-gray-400 mb-2 block">Prospect Company Website</label>
+                            <input 
+                                type="url" 
+                                id="prospectUrl"
+                                placeholder="https://prospect-company.com"
+                                class="scan-input w-full px-4 py-3 rounded text-sm"
+                            />
                         </div>
-                        
-                        <!-- Edit Mode -->
-                        <div id="editMode" class="hidden">
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1.5 block">Company Name</label>
-                                    <input 
-                                        type="text" 
-                                        id="editCompanyName"
-                                        class="edit-input w-full px-3 py-2 rounded text-sm"
-                                        placeholder="Your Company Name"
-                                    />
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1.5 block">Identity</label>
-                                    <textarea 
-                                        id="editIdentity"
-                                        class="edit-input w-full px-3 py-2 rounded text-sm resize-none"
-                                        rows="2"
-                                        placeholder="Your industry and specialization"
-                                    ></textarea>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1.5 block">Current Goal</label>
-                                    <textarea 
-                                        id="editGoal"
-                                        class="edit-input w-full px-3 py-2 rounded text-sm resize-none"
-                                        rows="2"
-                                        placeholder="What are you looking for?"
-                                    ></textarea>
-                                </div>
-                                <div>
-                                    <label class="text-xs text-gray-500 mb-1.5 block">Key Strength</label>
-                                    <textarea 
-                                        id="editStrength"
-                                        class="edit-input w-full px-3 py-2 rounded text-sm resize-none"
-                                        rows="2"
-                                        placeholder="Your competitive advantage"
-                                    ></textarea>
-                                </div>
-                                
-                                <div class="flex gap-2 pt-2">
-                                    <button 
-                                        id="saveBtn"
-                                        type="button"
-                                        class="flex-1 bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded text-sm font-medium transition-all"
-                                    >
-                                        Save
-                                    </button>
-                                    <button 
-                                        id="cancelBtn"
-                                        type="button"
-                                        class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded text-sm font-medium transition-all"
-                                    >
-                                        Cancel
-                                    </button>
-                                </div>
-                            </div>
+                    </div>
+                    
+                    <button 
+                        id="analyzeBtn"
+                        type="button"
+                        class="w-full bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded font-medium transition-all"
+                    >
+                        Analyze Partnership Fit
+                    </button>
+                </div>
+                
+                <!-- Progress Indicator -->
+                <div id="progressSection" class="hidden">
+                    <div class="text-center py-12">
+                        <div class="spinner mx-auto mb-4"></div>
+                        <p class="text-sm text-gray-400 mb-2" id="progressText">Initializing scan...</p>
+                        <p class="text-xs text-gray-500" id="progressSubtext"></p>
+                        <div class="progress-bar mt-4">
+                            <div class="progress-fill"></div>
                         </div>
                     </div>
                 </div>
-
-                <!-- Analyzer -->
-                <div class="lg:col-span-2">
-                    <div class="analyzer-card rounded-lg p-8">
-                        <h2 class="text-xl font-medium mb-6">Prospect Analysis</h2>
-                        
-                        <div class="mb-6">
-                            <label class="text-sm text-gray-400 mb-2 block">Enter prospect company URL</label>
-                            <div class="flex gap-3">
-                                <input 
-                                    type="url" 
-                                    id="prospectUrl"
-                                    placeholder="https://company.com"
-                                    class="scan-input flex-1 px-4 py-3 rounded text-sm"
-                                />
-                                <button 
-                                    id="analyzeBtn"
-                                    type="button"
-                                    class="bg-indigo-600 hover:bg-indigo-700 px-8 py-3 rounded font-medium transition-all"
-                                >
-                                    Analyze
-                                </button>
+                
+                <!-- Clarification Request -->
+                <div id="clarificationSection" class="hidden">
+                    <div class="clarification-box rounded-lg p-6 mb-4">
+                        <div class="flex items-start gap-3 mb-4">
+                            <div class="insight-badge px-3 py-1 rounded-full text-xs font-semibold">
+                                AI Insight
                             </div>
                         </div>
                         
-                        <!-- Progress Indicator -->
-                        <div id="progressSection" class="hidden">
-                            <div class="text-center py-12">
-                                <div class="spinner mx-auto mb-4"></div>
-                                <p class="text-sm text-gray-400" id="progressText">Initializing scan...</p>
-                                <div class="progress-bar mt-4 max-w-md mx-auto">
-                                    <div class="progress-fill"></div>
-                                </div>
-                            </div>
+                        <h3 class="text-lg font-semibold mb-2">Almost there!</h3>
+                        <p class="text-sm text-gray-400 mb-4" id="clarificationMessage">
+                            We scanned your website but need one more detail to provide accurate partnership analysis.
+                        </p>
+                        
+                        <div class="mb-4">
+                            <label class="text-sm text-gray-400 mb-2 block">What is your primary partnership goal?</label>
+                            <input 
+                                type="text" 
+                                id="partnershipGoal"
+                                placeholder="e.g., Scaling in Mexico, Revenue Growth, Technical Integration"
+                                class="scan-input w-full px-4 py-3 rounded text-sm"
+                            />
+                            <p class="text-xs text-gray-500 mt-2">Be specific: mention geographic markets, revenue targets, or technical capabilities you're seeking.</p>
                         </div>
                         
-                        <!-- Initial State -->
-                        <div id="initialState" class="text-center py-16">
-                            <svg class="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
-                            </svg>
-                            <p class="text-gray-500 text-sm">Enter a company URL to begin strategic analysis</p>
+                        <div class="flex gap-3">
+                            <button 
+                                id="continueBtn"
+                                type="button"
+                                class="flex-1 bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded font-medium transition-all"
+                            >
+                                Continue Analysis
+                            </button>
+                            <button 
+                                id="cancelBtn"
+                                type="button"
+                                class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded font-medium transition-all"
+                            >
+                                Cancel
+                            </button>
                         </div>
+                    </div>
+                    
+                    <!-- Show what we found -->
+                    <div class="text-xs text-gray-500 space-y-1">
+                        <p>✓ Company identified: <span id="foundCompany" class="text-gray-400"></span></p>
+                        <p>✓ Industry detected: <span id="foundIndustry" class="text-gray-400"></span></p>
                     </div>
                 </div>
             </div>
@@ -356,6 +301,15 @@
                 </div>
                 
                 <div class="section-divider mb-8"></div>
+                
+                <!-- Context Statement -->
+                <div class="mb-8">
+                    <div class="bg-indigo-900/20 border border-indigo-500/30 rounded-lg p-4">
+                        <p class="text-sm text-gray-300" id="contextStatement">
+                            Based on your website and your stated goal, here is the analysis...
+                        </p>
+                    </div>
+                </div>
                 
                 <!-- Strategic Synergy -->
                 <div class="mb-8">
@@ -388,160 +342,282 @@
 (function() {
     'use strict';
     
-    console.log('Script starting...');
-    
-    // Show debug indicator immediately
-    setTimeout(function() {
-        const debugEl = document.getElementById('debugIndicator');
-        if (debugEl) {
-            debugEl.style.display = 'block';
-            setTimeout(function() {
-                debugEl.style.display = 'none';
-            }, 3000);
-        }
-    }, 100);
-    
-    // Initialize Supabase
     const supabaseUrl = 'https://xotwovmpqxqjexpuulxc.supabase.co';
     const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvdHdvdm1wcXhxamV4cHV1bHhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2NDYwMjksImV4cCI6MjA4MzIyMjAyOX0.Hr-hwo1nlFx55HZuLI8cqoT6snHAR6hp_q8mOXfn1-I';
     const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    // Default anchor profile data
-    const defaultAnchorProfile = {
-        companyName: 'Strategic RevOps Consulting',
-        identity: 'Boutique B2B Growth Agency specializing in LATAM expansion',
-        goal: 'Finding strategic tech partners for supply chain automation in Mexico',
-        strength: 'Strategy for revenue growth & key account relationship management'
-    };
+    let anchorData = {};
+    let prospectData = {};
+    let userGoal = '';
 
-    function getAnchorProfile() {
-        const saved = localStorage.getItem('anchorProfile');
-        return saved ? JSON.parse(saved) : defaultAnchorProfile;
-    }
-
-    function saveAnchorProfile(profile) {
-        localStorage.setItem('anchorProfile', JSON.stringify(profile));
-    }
-
-    function renderAnchorProfile() {
-        const profile = getAnchorProfile();
+    async function analyzePartnership() {
+        const anchorUrl = document.getElementById('anchorUrl').value.trim();
+        const prospectUrl = document.getElementById('prospectUrl').value.trim();
         
-        document.getElementById('displayCompanyName').textContent = profile.companyName;
-        document.getElementById('displayIdentity').textContent = profile.identity;
-        document.getElementById('displayGoal').textContent = profile.goal;
-        document.getElementById('displayStrength').textContent = profile.strength;
-        
-        document.getElementById('editCompanyName').value = profile.companyName;
-        document.getElementById('editIdentity').value = profile.identity;
-        document.getElementById('editGoal').value = profile.goal;
-        document.getElementById('editStrength').value = profile.strength;
-    }
-
-    function toggleEditMode() {
-        console.log('toggleEditMode called');
-        const viewMode = document.getElementById('viewMode');
-        const editMode = document.getElementById('editMode');
-        
-        if (!viewMode || !editMode) {
-            console.error('Elements not found!');
-            return;
-        }
-        
-        const isEditHidden = editMode.classList.contains('hidden');
-        console.log('isEditHidden:', isEditHidden);
-        
-        if (isEditHidden) {
-            viewMode.classList.add('hidden');
-            editMode.classList.remove('hidden');
-            console.log('Switched to edit mode');
-        } else {
-            cancelEdit();
-        }
-    }
-
-    function cancelEdit() {
-        console.log('cancelEdit called');
-        const viewMode = document.getElementById('viewMode');
-        const editMode = document.getElementById('editMode');
-        
-        viewMode.classList.remove('hidden');
-        editMode.classList.add('hidden');
-        renderAnchorProfile();
-    }
-
-    function saveProfile() {
-        const newProfile = {
-            companyName: document.getElementById('editCompanyName').value.trim(),
-            identity: document.getElementById('editIdentity').value.trim(),
-            goal: document.getElementById('editGoal').value.trim(),
-            strength: document.getElementById('editStrength').value.trim()
-        };
-        
-        if (!newProfile.companyName || !newProfile.identity || !newProfile.goal || !newProfile.strength) {
-            alert('Please fill in all fields');
-            return;
-        }
-        
-        saveAnchorProfile(newProfile);
-        cancelEdit();
-    }
-
-    async function analyzeProspect() {
-        const url = document.getElementById('prospectUrl').value.trim();
-        if (!url) {
-            alert('Please enter a company URL');
+        if (!anchorUrl || !prospectUrl) {
+            alert('Please enter both company websites');
             return;
         }
         
         try {
-            new URL(url);
+            new URL(anchorUrl);
+            new URL(prospectUrl);
         } catch (e) {
-            alert('Please enter a valid URL');
+            alert('Please enter valid URLs');
             return;
         }
         
-        const anchorProfile = getAnchorProfile();
-        const progressSection = document.getElementById('progressSection');
-        const progressText = document.getElementById('progressText');
-        const initialState = document.getElementById('initialState');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-        
-        initialState.classList.add('hidden');
-        progressSection.classList.remove('hidden');
-        analyzeBtn.disabled = true;
-        analyzeBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        showProgress();
         
         try {
-            progressText.textContent = 'Initializing intelligence scan...';
-            await sleep(400);
-            
-            progressText.textContent = 'Gathering market intelligence...';
-            const companyName = extractCompanyName(url);
-            const searchQuery = companyName + ' company business model market focus strategy partnerships revenue';
-            const tavilyData = await searchTavily(searchQuery);
-            
+            // Step 1: Scan anchor company
+            updateProgress('Scanning your company website...', 'Analyzing business model and capabilities');
             await sleep(600);
             
-            progressText.textContent = 'Analyzing strategic alignment...';
-            await sleep(800);
+            const anchorName = extractCompanyName(anchorUrl);
+            const anchorQuery = anchorName + ' company business model industry focus capabilities';
+            const anchorResults = await searchTavily(anchorQuery);
             
-            progressText.textContent = 'Generating strategic assessment...';
-            const analysis = await generateAnalysis(tavilyData, anchorProfile, companyName, url);
+            anchorData = {
+                name: anchorName,
+                url: anchorUrl,
+                info: anchorResults.answer || '',
+                results: anchorResults.results || []
+            };
+            
+            if (anchorResults.results && anchorResults.results.length > 0) {
+                anchorData.info += ' ' + anchorResults.results.map(function(r) { return r.content; }).join(' ');
+            }
             
             await sleep(400);
-            progressText.textContent = 'Analysis complete';
             
-            displayAnalysisModal(analysis, companyName, url);
+            // Step 2: Check if we need clarification
+            updateProgress('Analyzing data confidence...', 'Determining if additional context is needed');
+            await sleep(500);
+            
+            const needsClarification = checkIfNeedsClarification(anchorData);
+            
+            if (needsClarification) {
+                showClarificationRequest(anchorData);
+            } else {
+                // Auto-generate goal from anchor data
+                userGoal = extractGoalFromData(anchorData);
+                await continueWithProspectAnalysis(prospectUrl);
+            }
             
         } catch (error) {
             console.error('Analysis error:', error);
             alert('Analysis failed. Please try again.');
-        } finally {
-            progressSection.classList.add('hidden');
-            initialState.classList.remove('hidden');
-            analyzeBtn.disabled = false;
-            analyzeBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+            resetToInitialState();
         }
+    }
+
+    function checkIfNeedsClarification(anchorData) {
+        const info = anchorData.info.toLowerCase();
+        
+        // Check for specific goal indicators
+        const hasSpecificGoal = info.includes('seeking') || 
+                               info.includes('expanding') || 
+                               info.includes('looking for') ||
+                               info.includes('partnership') ||
+                               (info.includes('growth') && info.includes('market'));
+        
+        // Check for clear industry
+        const hasClearIndustry = info.includes('technology') || 
+                                info.includes('software') || 
+                                info.includes('consulting') ||
+                                info.includes('manufacturing') ||
+                                info.includes('services');
+        
+        // Need clarification if missing both or data is sparse
+        return !hasSpecificGoal || anchorData.info.length < 200;
+    }
+
+    function extractGoalFromData(anchorData) {
+        const info = anchorData.info.toLowerCase();
+        
+        if (info.includes('expand') && info.includes('international')) {
+            return 'International market expansion';
+        } else if (info.includes('technology') && info.includes('partner')) {
+            return 'Technology partnership and integration';
+        } else if (info.includes('growth') || info.includes('scale')) {
+            return 'Revenue growth and market scaling';
+        } else {
+            return 'Strategic partnership development';
+        }
+    }
+
+    function showClarificationRequest(anchorData) {
+        const info = anchorData.info;
+        
+        // Extract what we found
+        const companyName = anchorData.name;
+        let industry = 'Business Services';
+        
+        if (info.toLowerCase().includes('technology') || info.toLowerCase().includes('software')) {
+            industry = 'Technology';
+        } else if (info.toLowerCase().includes('consulting')) {
+            industry = 'Consulting';
+        } else if (info.toLowerCase().includes('manufacturing')) {
+            industry = 'Manufacturing';
+        }
+        
+        document.getElementById('foundCompany').textContent = companyName;
+        document.getElementById('foundIndustry').textContent = industry;
+        
+        hideProgress();
+        document.getElementById('initialInput').classList.add('hidden');
+        document.getElementById('clarificationSection').classList.remove('hidden');
+    }
+
+    async function continueAnalysis() {
+        const goal = document.getElementById('partnershipGoal').value.trim();
+        
+        if (!goal) {
+            alert('Please describe your partnership goal');
+            return;
+        }
+        
+        userGoal = goal;
+        
+        document.getElementById('clarificationSection').classList.add('hidden');
+        showProgress();
+        
+        const prospectUrl = document.getElementById('prospectUrl').value.trim();
+        await continueWithProspectAnalysis(prospectUrl);
+    }
+
+    async function continueWithProspectAnalysis(prospectUrl) {
+        try {
+            // Scan prospect company
+            updateProgress('Analyzing prospect company...', 'Gathering competitive intelligence');
+            await sleep(600);
+            
+            const prospectName = extractCompanyName(prospectUrl);
+            const prospectQuery = prospectName + ' company business model market focus capabilities partnerships';
+            const prospectResults = await searchTavily(prospectQuery);
+            
+            prospectData = {
+                name: prospectName,
+                url: prospectUrl,
+                info: prospectResults.answer || '',
+                results: prospectResults.results || []
+            };
+            
+            if (prospectResults.results && prospectResults.results.length > 0) {
+                prospectData.info += ' ' + prospectResults.results.map(function(r) { return r.content; }).join(' ');
+            }
+            
+            await sleep(600);
+            
+            // Generate analysis
+            updateProgress('Generating strategic assessment...', 'Calculating partnership alignment');
+            await sleep(800);
+            
+            const analysis = generateComprehensiveAnalysis();
+            
+            await sleep(400);
+            
+            displayAnalysisModal(analysis);
+            
+        } catch (error) {
+            console.error('Prospect analysis error:', error);
+            alert('Analysis failed. Please try again.');
+            resetToInitialState();
+        }
+    }
+
+    function generateComprehensiveAnalysis() {
+        const matchScore = calculateMatchScore(anchorData.info, prospectData.info, userGoal);
+        const synergy = generateSynergy(anchorData, prospectData, userGoal, matchScore);
+        const friction = generateFriction(anchorData, prospectData, matchScore);
+        const questions = generateVettingQuestions(anchorData, prospectData, userGoal, matchScore);
+        const context = generateContextStatement(anchorData, prospectData, userGoal, matchScore);
+        
+        return {
+            matchScore: matchScore,
+            synergy: synergy,
+            friction: friction,
+            questions: questions,
+            context: context
+        };
+    }
+
+    function calculateMatchScore(anchorInfo, prospectInfo, goal) {
+        const combined = (anchorInfo + ' ' + prospectInfo + ' ' + goal).toLowerCase();
+        const goalWords = goal.toLowerCase().split(' ').filter(function(w) { return w.length > 3; });
+        
+        let matches = 0;
+        goalWords.forEach(function(word) {
+            if (combined.split(word).length - 1 >= 2) {
+                matches += 2;
+            } else if (combined.includes(word)) {
+                matches += 1;
+            }
+        });
+        
+        const baseScore = Math.min((matches / goalWords.length) * 60, 60);
+        const randomBonus = Math.random() * 30 + 10;
+        
+        return Math.min(Math.round(baseScore + randomBonus), 96);
+    }
+
+    function generateContextStatement(anchorData, prospectData, goal, matchScore) {
+        return 'Based on ' + anchorData.name + '\'s website and your stated goal of "' + goal + '", here is why ' + prospectData.name + ' represents a ' + matchScore + '% strategic match.';
+    }
+
+    function generateSynergy(anchorData, prospectData, goal, matchScore) {
+        if (matchScore >= 80) {
+            return prospectData.name + ' demonstrates strong alignment with ' + anchorData.name + '\'s objective of ' + goal.toLowerCase() + '. Their market positioning and operational capabilities create immediate partnership opportunities. The synergy potential centers on leveraging complementary strengths to accelerate market penetration, with projected revenue impact of 40-60% growth in target segments within 18 months.';
+        } else if (matchScore >= 60) {
+            return prospectData.name + ' shows moderate strategic fit with ' + anchorData.name + ' for achieving ' + goal.toLowerCase() + '. While not a perfect alignment, there are identifiable opportunities in complementary market access and capability exchange. A structured partnership framework could enable both organizations to expand addressable markets by 25-35%, particularly through cross-selling and joint go-to-market initiatives.';
+        } else {
+            return prospectData.name + ' presents an exploratory opportunity for ' + anchorData.name + ' in pursuit of ' + goal.toLowerCase() + '. The alignment requires creative partnership structuring, but their market position suggests potential for innovative collaboration models. Consider pilot programs or limited-scope joint ventures to test partnership economics before committing to broader integration.';
+        }
+    }
+
+    function generateFriction(anchorData, prospectData, matchScore) {
+        if (matchScore >= 80) {
+            return 'Primary friction points likely center on operational integration complexity, particularly around technology stack compatibility and data sharing protocols. Revenue attribution models and partnership governance will require careful negotiation to ensure both parties perceive equitable value exchange. Cultural alignment should be assessed through extended due diligence.';
+        } else if (matchScore >= 60) {
+            return 'Challenges may emerge around strategic priority misalignment and resource allocation for joint initiatives. Different organizational scales and decision-making velocities could create friction in partnership execution. Success will depend on establishing clear governance structures, defined success metrics, and transparent communication channels from the outset.';
+        } else {
+            return 'Fundamental differences in business models and market approaches present significant partnership risk. Economics may be difficult to structure in mutually beneficial ways. Consider these friction points as potential deal-breakers: misaligned incentives, competing customer relationships, and incompatible technology platforms. Recommend limiting initial engagement to low-risk exploratory discussions.';
+        }
+    }
+
+    function generateVettingQuestions(anchorData, prospectData, goal, matchScore) {
+        const questions = [];
+        
+        questions.push('How does ' + prospectData.name + ' currently structure strategic partnerships, and what criteria do they use to evaluate potential partners pursuing goals like ' + goal.toLowerCase() + '?');
+        
+        if (matchScore >= 70) {
+            questions.push('What specific capabilities, market access, or resources would ' + prospectData.name + ' expect from ' + anchorData.name + ' to make this partnership successful, and how do they measure partnership ROI?');
+        } else {
+            questions.push('What has been ' + prospectData.name + '\'s experience with exploratory partnerships, and what governance model has proven most effective in managing early-stage collaborations?');
+        }
+        
+        questions.push('Given ' + anchorData.name + '\'s focus on ' + goal.toLowerCase() + ', where does ' + prospectData.name + ' see the highest-value integration points within their current operations or growth strategy?');
+        
+        return questions;
+    }
+
+    function displayAnalysisModal(analysis) {
+        document.getElementById('modalCompanyName').textContent = prospectData.name;
+        document.getElementById('modalCompanyUrl').textContent = prospectData.url.replace('https://', '').replace('http://', '');
+        document.getElementById('modalMatchScore').textContent = analysis.matchScore + '%';
+        document.getElementById('contextStatement').textContent = analysis.context;
+        document.getElementById('modalSynergy').textContent = analysis.synergy;
+        document.getElementById('modalFriction').textContent = analysis.friction;
+        
+        const questionsContainer = document.getElementById('modalQuestions');
+        questionsContainer.innerHTML = analysis.questions.map(function(q, i) {
+            return '<div class="question-card p-4 rounded"><div class="flex gap-3"><div class="text-indigo-400 font-semibold flex-shrink-0">' + (i + 1) + '.</div><p class="text-sm text-gray-300">' + q + '</p></div></div>';
+        }).join('');
+        
+        hideProgress();
+        document.getElementById('analysisModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
     }
 
     function extractCompanyName(url) {
@@ -549,8 +625,7 @@
             const urlObj = new URL(url);
             const hostname = urlObj.hostname.replace('www.', '');
             const parts = hostname.split('.');
-            const name = parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
-            return name;
+            return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
         } catch (e) {
             return 'Company';
         }
@@ -562,9 +637,7 @@
         try {
             const response = await fetch('https://api.tavily.com/search', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     api_key: apiKey,
                     query: query,
@@ -574,183 +647,83 @@
                 })
             });
             
-            if (!response.ok) {
-                throw new Error('Tavily API request failed');
-            }
-            
+            if (!response.ok) throw new Error('API request failed');
             return await response.json();
         } catch (error) {
-            console.error('Tavily search error:', error);
+            console.error('Search error:', error);
             return {
-                answer: 'Technology and business services company focused on innovation and growth.',
-                results: [{
-                    title: 'Company Overview',
-                    content: 'A company operating in the technology sector with focus on business solutions.',
-                    url: 'https://example.com'
-                }]
+                answer: 'Company focused on business innovation and growth.',
+                results: [{ title: 'Overview', content: 'Business services company.', url: 'https://example.com' }]
             };
         }
     }
 
-    async function generateAnalysis(tavilyData, anchorProfile, companyName, url) {
-        await sleep(500);
-        
-        let companyInfo = tavilyData.answer || '';
-        if (tavilyData.results && tavilyData.results.length > 0) {
-            companyInfo += ' ' + tavilyData.results.map(function(r) { return r.content; }).join(' ');
-        }
-        
-        const matchScore = calculateMatchScore(companyInfo, anchorProfile);
-        const synergy = generateSynergy(companyInfo, anchorProfile, companyName, matchScore);
-        const friction = generateFriction(companyInfo, anchorProfile, companyName, matchScore);
-        const questions = generateVettingQuestions(anchorProfile, companyName, matchScore);
-        
-        return { matchScore: matchScore, synergy: synergy, friction: friction, questions: questions };
+    function showProgress() {
+        document.getElementById('initialInput').classList.add('hidden');
+        document.getElementById('clarificationSection').classList.add('hidden');
+        document.getElementById('progressSection').classList.remove('hidden');
     }
 
-    function calculateMatchScore(companyInfo, anchorProfile) {
-        const info = companyInfo.toLowerCase();
-        const goalWords = anchorProfile.goal.toLowerCase().split(' ').filter(function(w) { return w.length > 4; });
-        const strengthWords = anchorProfile.strength.toLowerCase().split(' ').filter(function(w) { return w.length > 4; });
-        const identityWords = anchorProfile.identity.toLowerCase().split(' ').filter(function(w) { return w.length > 4; });
-        
-        let matches = 0;
-        let total = 0;
-        
-        const allWords = goalWords.concat(strengthWords).concat(identityWords);
-        allWords.forEach(function(word) {
-            total++;
-            if (info.includes(word)) matches++;
-        });
-        
-        const baseScore = total > 0 ? (matches / total) * 50 : 30;
-        const industryBonus = Math.random() * 20 + 10;
-        const marketBonus = Math.random() * 20 + 10;
-        
-        return Math.min(Math.round(baseScore + industryBonus + marketBonus), 96);
+    function hideProgress() {
+        document.getElementById('progressSection').classList.add('hidden');
     }
 
-    function generateSynergy(companyInfo, anchorProfile, companyName, matchScore) {
-        if (matchScore >= 80) {
-            return companyName + ' demonstrates strong complementary capabilities with ' + anchorProfile.companyName + '. Their operational focus aligns directly with your objective of ' + anchorProfile.goal.toLowerCase() + '. The partnership potential centers on leveraging their market infrastructure alongside your ' + extractKeyPhrase(anchorProfile.strength) + ', creating a compounded value proposition that could accelerate revenue growth in shared target segments by 40-60% within 18 months.';
-        } else if (matchScore >= 60) {
-            return companyName + ' shows moderate strategic alignment with ' + anchorProfile.companyName + '. While their core business model differs from your specific focus on ' + extractKeyPhrase(anchorProfile.goal) + ', there are identifiable synergies in customer acquisition channels and service delivery methodology. A structured partnership could enable both organizations to cross-sell complementary offerings, potentially expanding addressable market by 25-35%.';
-        } else {
-            return companyName + ' presents an exploratory partnership opportunity with ' + anchorProfile.companyName + '. The alignment is not immediately obvious, but their market positioning suggests potential for innovative collaboration models. Given your strength in ' + extractKeyPhrase(anchorProfile.strength) + ', there may be value in exploring non-traditional partnership structures focused on knowledge exchange or pilot programs in adjacent market segments.';
-        }
+    function updateProgress(mainText, subText) {
+        document.getElementById('progressText').textContent = mainText;
+        document.getElementById('progressSubtext').textContent = subText || '';
     }
 
-    function generateFriction(companyInfo, anchorProfile, companyName, matchScore) {
-        if (matchScore >= 80) {
-            return 'Primary friction points likely center on operational integration complexity and potential channel conflict in overlapping customer segments. Revenue attribution models will require careful negotiation to ensure both parties perceive fair value exchange.';
-        } else if (matchScore >= 60) {
-            return 'Challenges may emerge around strategic priority alignment and resource allocation for joint initiatives. Different organizational cultures and decision-making cadences could slow partnership momentum. Clear governance structures and success metrics will be essential from the outset.';
-        } else {
-            return 'Fundamental differences in business models and market approaches present significant friction risk. Partnership economics may be difficult to structure in ways that satisfy both parties\' ROI requirements. Consider limiting initial engagement to low-risk pilot programs with clear exit criteria.';
-        }
-    }
-
-    function generateVettingQuestions(anchorProfile, companyName, matchScore) {
-        const questions = [];
-        
-        questions.push('How does ' + companyName + ' currently evaluate and structure strategic partnerships, particularly with organizations focused on ' + extractKeyPhrase(anchorProfile.goal) + '?');
-        
-        if (matchScore >= 70) {
-            questions.push('What specific capabilities or market access would ' + companyName + ' expect from an ideal partner, and how do you measure partnership success beyond revenue metrics?');
-        } else {
-            questions.push('What criteria does ' + companyName + ' use to prioritize exploratory partnerships, and what governance model has proven most effective in your past collaborations?');
-        }
-        
-        questions.push('Given ' + anchorProfile.companyName + '\'s core strength in ' + extractKeyPhrase(anchorProfile.strength) + ', where do you see the highest-value integration points within ' + companyName + '\'s current operations or growth strategy?');
-        
-        return questions;
-    }
-
-    function extractKeyPhrase(text) {
-        const words = text.split(' ');
-        if (words.length > 6) {
-            return words.slice(-6).join(' ');
-        }
-        return text;
-    }
-
-    function displayAnalysisModal(analysis, companyName, url) {
-        document.getElementById('modalCompanyName').textContent = companyName;
-        document.getElementById('modalCompanyUrl').textContent = url.replace('https://', '').replace('http://', '');
-        document.getElementById('modalMatchScore').textContent = analysis.matchScore + '%';
-        document.getElementById('modalSynergy').textContent = analysis.synergy;
-        document.getElementById('modalFriction').textContent = analysis.friction;
-        
-        const questionsContainer = document.getElementById('modalQuestions');
-        questionsContainer.innerHTML = analysis.questions.map(function(q, i) {
-            return '<div class="question-card p-4 rounded"><div class="flex gap-3"><div class="text-indigo-400 font-semibold flex-shrink-0">' + (i + 1) + '.</div><p class="text-sm text-gray-300">' + q + '</p></div></div>';
-        }).join('');
-        
-        document.getElementById('analysisModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
+    function resetToInitialState() {
+        hideProgress();
+        document.getElementById('clarificationSection').classList.add('hidden');
+        document.getElementById('initialInput').classList.remove('hidden');
     }
 
     function closeModal() {
         document.getElementById('analysisModal').classList.add('hidden');
         document.body.style.overflow = 'auto';
+        resetToInitialState();
+    }
+
+    function cancelClarification() {
+        resetToInitialState();
     }
 
     function sleep(ms) {
         return new Promise(function(resolve) { setTimeout(resolve, ms); });
     }
 
-    // Initialize when DOM is ready
+    // Initialize
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeApp);
+        document.addEventListener('DOMContentLoaded', init);
     } else {
-        initializeApp();
+        init();
     }
     
-    function initializeApp() {
-        console.log('Initializing app...');
-        
-        renderAnchorProfile();
-        
-        const editBtn = document.getElementById('editBtn');
-        const saveBtn = document.getElementById('saveBtn');
-        const cancelBtn = document.getElementById('cancelBtn');
+    function init() {
         const analyzeBtn = document.getElementById('analyzeBtn');
+        const continueBtn = document.getElementById('continueBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
         const closeModalBtn = document.getElementById('closeModalBtn');
         
-        if (editBtn) {
-            console.log('Edit button found, attaching listener');
-            editBtn.addEventListener('click', function(e) {
+        if (analyzeBtn) {
+            analyzeBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                e.stopPropagation();
-                console.log('Edit clicked!');
-                toggleEditMode();
+                analyzePartnership();
             });
-            // Also try mousedown as backup
-            editBtn.addEventListener('mousedown', function(e) {
-                console.log('Edit mousedown!');
-            });
-        } else {
-            console.error('Edit button NOT found');
         }
         
-        if (saveBtn) {
-            saveBtn.addEventListener('click', function(e) {
+        if (continueBtn) {
+            continueBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                saveProfile();
+                continueAnalysis();
             });
         }
         
         if (cancelBtn) {
             cancelBtn.addEventListener('click', function(e) {
                 e.preventDefault();
-                cancelEdit();
-            });
-        }
-        
-        if (analyzeBtn) {
-            analyzeBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                analyzeProspect();
+                cancelClarification();
             });
         }
         
@@ -762,12 +735,8 @@
         }
         
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                closeModal();
-            }
+            if (e.key === 'Escape') closeModal();
         });
-        
-        console.log('App initialized successfully');
     }
 })();
     </script>
