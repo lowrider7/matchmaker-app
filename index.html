@@ -563,32 +563,85 @@
     }
 
     function generateContextStatement(anchorData, prospectData, goal, matchScore) {
-        return 'Based on ' + anchorData.name + '\'s website and your stated goal of "' + goal + '", here is why ' + prospectData.name + ' represents a ' + matchScore + '% strategic match.';
+        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
+        return 'Based on ' + anchorData.name + '\'s capabilities and your stated goal of "' + goal + '", here\'s the strategic assessment: ' + anchorData.name + ' can deliver ' + bridge.prospectGets + ' to ' + prospectData.name + ' through ' + bridge.anchorProvides + '. This represents a ' + matchScore + '% strategic match, where your success in ' + goal.toLowerCase() + ' comes from solving their operational challenges.';
     }
 
     function generateSynergy(anchorData, prospectData, goal, matchScore) {
-        // Identify the partnership lever type
         const lever = identifyPartnershipLever(anchorData, prospectData, goal);
+        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
         
         if (matchScore >= 80) {
             if (lever === 'marketing') {
-                return 'This is a high-impact, low-effort play. ' + prospectData.name + ' has the audience you need for ' + goal.toLowerCase() + '. The partnership mechanics are straightforward: prominent placement on their site (ideally "Getting Here" or similar high-traffic page), social media pushes during your peak season, and co-branded content. Reality check: if they can drive 100-500 monthly referrals with just a link and occasional Instagram story, that\'s material revenue without building anything. Start with a simple referral agreement, track it for 90 days, then decide if you want to go deeper.';
+                return 'The bridge: ' + anchorData.name + ' brings ' + bridge.anchorProvides + ' that directly addresses ' + prospectData.name + '\'s need for ' + bridge.prospectGets + '. Here\'s what ' + prospectData.name + ' actually gets: expanded reach to audiences they can\'t efficiently access on their own, co-branded credibility, and measurable traffic with minimal effort. Your goal of ' + goal.toLowerCase() + ' happens naturally as a byproduct of solving their customer acquisition problem. Execution is straightforward—prominent digital placement, coordinated social campaigns, and performance tracking. If ' + anchorData.name + ' can demonstrate 100-500 quality referrals monthly, this becomes a no-brainer for ' + prospectData.name + ' to maintain.';
             } else if (lever === 'operational') {
-                return 'The operational fit is strong for ' + goal.toLowerCase() + '. This works if you align logistics: their schedule needs to match your peak times, and the customer handoff has to be seamless. Key execution points: coordinate timing (nobody wants to wait 2 hours for a connection), simplify booking (one-click if possible), and nail the messaging so customers understand the value immediately. This isn\'t rocket science—it\'s about removing friction from the customer journey. If you can get the ops team at ' + prospectData.name + ' on board, this drives real volume.';
+                return 'The bridge: ' + prospectData.name + ' has an operational challenge—' + bridge.prospectGets + '—and ' + anchorData.name + ' solves it with ' + bridge.anchorProvides + '. This isn\'t about your goal of ' + goal.toLowerCase() + '; it\'s about ' + prospectData.name + ' offloading a logistics headache to a specialist. When you handle the transportation piece seamlessly, they get more customers through the door without expanding parking or managing shuttles themselves. The partnership works if: timing aligns with their peak needs, the customer handoff is frictionless, and you remove more problems than you create. Your ridership growth is the natural result of becoming their preferred logistics solution.';
             } else {
-                return 'Strong strategic alignment with ' + anchorData.name + ' for ' + goal.toLowerCase() + '. The partnership is referral-based with incentive alignment: ' + prospectData.name + ' sends customers your way, you make it worth their while (commission, reciprocal traffic, or co-marketing). The beauty here is simplicity—this doesn\'t require legal gymnastics or technical integration. Set clear incentives, make tracking dead simple, and launch in weeks not months. Test with their most engaged customers first to prove the economics work.';
+                return 'The bridge: ' + anchorData.name + ' provides ' + bridge.anchorProvides + ', which enables ' + prospectData.name + ' to achieve ' + bridge.prospectGets + ' without heavy lifting on their end. Frame your goal of ' + goal.toLowerCase() + ' as: "I help you reach more customers efficiently, and I capture value by becoming part of your customer journey." For ' + prospectData.name + ', the value is clear—they extend their offering without operational burden. Structure this as a referral or revenue-share arrangement where success is transparently tracked. Make it dead simple: they promote you because it makes their customers happier and generates incremental revenue with near-zero effort.';
             }
         } else if (matchScore >= 60) {
             if (lever === 'marketing') {
-                return 'Decent opportunity, but not a slam dunk. ' + prospectData.name + ' has relevant audience overlap for ' + goal.toLowerCase() + ', but you\'ll need to make the pitch easy. Suggestion: start with a content partnership—guest blog, social takeover, or co-branded guide. Low commitment, quick to execute, and you\'ll learn fast if their audience converts. If it works, escalate to paid placement or ongoing referral deal. If it doesn\'t, you\'ve spent 2 weeks not 2 months.';
+                return 'There\'s overlap, but ' + prospectData.name + ' needs convincing. The bridge is: ' + anchorData.name + ' offers ' + bridge.anchorProvides + ' that could deliver ' + bridge.prospectGets + '—but they\'re probably not actively looking for this solution. Your pitch: "You want to reach [specific audience segment], and I already have their attention. Let\'s test if my audience converts to your customers." Start lightweight—guest content, social takeover, or email blast—and measure results. If you prove that ' + anchorData.name + ' actually drives their desired outcomes, you can escalate. If not, you\'ve spent 2 weeks testing, not 2 months negotiating a dead-end deal.';
             } else if (lever === 'operational') {
-                return 'There\'s a path to operationalizing this with ' + prospectData.name + ' for ' + goal.toLowerCase() + ', but it requires work. You\'re looking at schedule coordination, possibly some tech integration (even if it\'s just embedding their booking widget), and training their staff on the offering. This only makes sense if the volume justifies the effort. Run the numbers: if coordinating operations takes 40 hours of work, how many customers do you need to make it worthwhile? Be honest about whether ' + prospectData.name + ' can actually deliver that volume.';
+                return 'Operationally, ' + anchorData.name + ' can help ' + prospectData.name + ' with ' + bridge.prospectGets + ', but it requires coordination. The challenge: they\'re not sitting around thinking "I wish someone would handle this for me"—you need to demonstrate that outsourcing this to you is better than doing it in-house or ignoring it. Your goal of ' + goal.toLowerCase() + ' only makes sense if it measurably improves their operations. Run the numbers with them: if coordinating with you saves them 10 hours/week or delivers 20% more customers, it\'s worth it. If it\'s marginal, they\'ll pass.';
             } else {
-                return 'This could work for ' + goal.toLowerCase() + ', but you need to structure incentives carefully. ' + prospectData.name + ' isn\'t going to promote you out of the goodness of their heart—what\'s in it for them? Options: revenue share, reciprocal referrals, or marketing budget split. Start small with a pilot (maybe just their email list or one location), prove the economics, then scale. Don\'t over-engineer the agreement—keep it to 2 pages max and focus on making the first deal successful.';
+                return 'The bridge exists but needs reinforcement. ' + anchorData.name + ' brings ' + bridge.anchorProvides + ' that theoretically helps ' + prospectData.name + ' achieve ' + bridge.prospectGets + ', but the value isn\'t obvious yet. Your job: make it obvious fast. Pilot program: pick their highest-value customer segment and demonstrate clear ROI in 30-60 days. Frame it as: "You want more [their desired outcome], I deliver it reliably, you pay based on results." If you can\'t articulate why this makes their life measurably better, the partnership stalls. Your goal of ' + goal.toLowerCase() + ' is the consequence of becoming their trusted solution, not the reason they partner with you.';
             }
         } else {
-            return 'Honestly? This is a reach for ' + goal.toLowerCase() + '. ' + prospectData.name + ' doesn\'t naturally send customers your way, and forcing the partnership means you\'re spending political capital on something that might not work. If you pursue this, keep it ultra-lightweight—maybe a one-time co-marketing test or informal referral arrangement. Set a 30-day deadline to see traction. If there\'s no momentum by then, move on. Your time is better spent on partners where the fit is obvious.';
+            return 'Honest assessment: the bridge is weak. ' + anchorData.name + '\'s ' + bridge.anchorProvides + ' doesn\'t clearly solve a burning problem for ' + prospectData.name + '. They\'re not desperate for ' + bridge.prospectGets + ', and you\'re asking them to invest time in something that feels peripheral to their core business. Your goal of ' + goal.toLowerCase() + ' requires them to care about your success, which they don\'t—yet. If you pursue this, keep it ultra-minimal: a single test campaign or informal referral arrangement with a 30-day evaluation. If there\'s no mutual excitement after 30 days, walk away. Forcing partnerships that lack natural fit burns goodwill and wastes time.';
         }
+    }
+    
+    function identifyPartnershipBridge(anchorData, prospectData, goal) {
+        // The bridge is what the anchor provides that solves the prospect's problem
+        const anchorInfo = anchorData.info.toLowerCase();
+        const prospectInfo = prospectData.info.toLowerCase();
+        const goalLower = goal.toLowerCase();
+        
+        let bridge = {
+            anchorProvides: '',
+            prospectGets: '',
+            prospectProvides: '',
+            anchorGets: ''
+        };
+        
+        // Transportation/Logistics bridge
+        if (anchorInfo.includes('transportation') || anchorInfo.includes('bus') || anchorInfo.includes('shuttle')) {
+            bridge.anchorProvides = 'reliable transportation infrastructure';
+            bridge.prospectGets = 'increased customer accessibility, reduced parking burden, and expanded market reach';
+            bridge.prospectProvides = 'destination access and customer referrals';
+            bridge.anchorGets = 'ridership volume and route utilization';
+        }
+        // Marketing/Audience bridge
+        else if (anchorInfo.includes('marketing') || anchorInfo.includes('media') || anchorInfo.includes('audience')) {
+            bridge.anchorProvides = 'audience access and marketing reach';
+            bridge.prospectGets = 'brand visibility and customer acquisition';
+            bridge.prospectProvides = 'content and credibility';
+            bridge.anchorGets = 'content inventory and engagement metrics';
+        }
+        // Technology/Platform bridge
+        else if (anchorInfo.includes('software') || anchorInfo.includes('platform') || anchorInfo.includes('technology')) {
+            bridge.anchorProvides = 'technical capabilities and infrastructure';
+            bridge.prospectGets = 'operational efficiency and scale';
+            bridge.prospectProvides = 'use case validation and feedback';
+            bridge.anchorGets = 'platform adoption and recurring revenue';
+        }
+        // Services/Expertise bridge
+        else if (anchorInfo.includes('consulting') || anchorInfo.includes('services') || anchorInfo.includes('agency')) {
+            bridge.anchorProvides = 'specialized expertise and execution capacity';
+            bridge.prospectGets = 'capability extension without overhead';
+            bridge.prospectProvides = 'project scope and market access';
+            bridge.anchorGets = 'billable engagements and portfolio expansion';
+        }
+        // Default/Generic bridge
+        else {
+            bridge.anchorProvides = 'complementary capabilities';
+            bridge.prospectGets = 'expanded service offering';
+            bridge.prospectProvides = 'customer access';
+            bridge.anchorGets = 'market presence and revenue';
+        }
+        
+        return bridge;
     }
     
     function identifyPartnershipLever(anchorData, prospectData, goal) {
@@ -656,26 +709,27 @@
 
     function generateVettingQuestions(anchorData, prospectData, goal, matchScore) {
         const lever = identifyPartnershipLever(anchorData, prospectData, goal);
+        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
         const questions = [];
         
-        // Question 1: Always about their partnership approach
+        // Question 1: Always about what THEY care about
         if (matchScore >= 70) {
-            questions.push('Walk me through a partnership that actually worked for you. Who approached who, what was the deal structure, and what made it successful? (I want to understand if they actually execute on partnerships or just talk about them.)');
+            questions.push('What\'s your biggest operational challenge right now when it comes to ' + bridge.prospectGets + '? (I\'m trying to understand if what ' + anchorData.name + ' solves is actually a priority for you, or if we\'re solving a problem you don\'t have.)');
         } else {
-            questions.push('Have you done partnerships like this before? If yes, what worked and what didn\'t? If no, who internally would need to approve this, and what\'s their typical decision timeline?');
+            questions.push('Walk me through your current approach to ' + bridge.prospectGets + '. What\'s working well, and where are the gaps? (I need to know if partnering with ' + anchorData.name + ' actually fills a meaningful gap or if it\'s a nice-to-have.)');
         }
         
-        // Question 2: Lever-specific tactical question
-        if (lever === 'marketing') {
-            questions.push('Where does your traffic come from, and which pages get the most eyeballs? I\'m trying to figure out where a partnership with ' + anchorData.name + ' would actually get visibility vs. getting buried. (Bonus: can you show me your analytics?)');
-        } else if (lever === 'operational') {
-            questions.push('Let\'s get specific about operations: what are your busiest times, who on your team would need to be involved in executing this, and what\'s the realistic timeline to get something live? I need to know if this is a 2-week project or a 6-month nightmare.');
+        // Question 2: The elephant in the room - delegating control
+        if (lever === 'operational') {
+            questions.push('What\'s your biggest concern about delegating part of the customer journey—specifically ' + bridge.anchorProvides + '—to an outside partner like ' + anchorData.name + '? (Let\'s address the control, quality, and reliability concerns upfront rather than having them derail us later.)');
+        } else if (lever === 'marketing') {
+            questions.push('What\'s your biggest hesitation about promoting ' + anchorData.name + ' to your customers? Brand alignment, audience relevance, or something else? (I want to make sure we\'re not asking you to vouch for something your customers won\'t value.)');
         } else {
-            questions.push('How do you typically incentivize referrals—flat fee, revenue share, or something else? And what\'s your threshold for "worth our time"? I want to make sure we structure something that actually motivates your team to promote us.');
+            questions.push('What would make you confident that referring customers to ' + anchorData.name + ' actually improves their experience rather than adding friction? (I need to understand your quality bar and whether we can meet it consistently.)');
         }
         
-        // Question 3: Always about objections/concerns
-        questions.push('What\'s your biggest concern or hesitation about partnering with ' + anchorData.name + ' for ' + goal.toLowerCase() + '? I\'d rather address the elephant in the room now than have it derail us later.');
+        // Question 3: Proof points from their perspective
+        questions.push('If this partnership works, what does success look like from your perspective—not in terms of ' + anchorData.name + '\'s goals, but in terms of the measurable impact on your business? (I want to make sure we\'re tracking metrics that actually matter to you, not vanity metrics.)');
         
         return questions;
     }
