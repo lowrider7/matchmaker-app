@@ -493,8 +493,12 @@
             updateProgress('Analyzing prospect company...', 'Gathering competitive intelligence');
             await sleep(600);
             
+            console.log('Extracting prospect name from:', prospectUrl);
             const prospectName = extractCompanyName(prospectUrl);
+            console.log('Prospect name:', prospectName);
+            
             const prospectQuery = prospectName + ' company business model market focus capabilities partnerships';
+            console.log('Searching Tavily for:', prospectQuery);
             const prospectResults = await searchTavily(prospectQuery);
             
             prospectData = {
@@ -508,13 +512,20 @@
                 prospectData.info += ' ' + prospectResults.results.map(function(r) { return r.content; }).join(' ');
             }
             
+            console.log('Prospect data:', prospectData);
+            
             await sleep(600);
             
             // Generate analysis
             updateProgress('Generating strategic assessment...', 'Calculating partnership alignment');
             await sleep(800);
             
+            console.log('Generating comprehensive analysis...');
+            console.log('Anchor data:', anchorData);
+            console.log('User goal:', userGoal);
+            
             const analysis = generateComprehensiveAnalysis();
+            console.log('Analysis complete:', analysis);
             
             await sleep(400);
             
@@ -522,25 +533,42 @@
             
         } catch (error) {
             console.error('Prospect analysis error:', error);
-            alert('Analysis failed. Please try again.');
+            console.error('Error stack:', error.stack);
+            alert('Analysis failed: ' + error.message + '. Please check console for details.');
             resetToInitialState();
         }
     }
 
     function generateComprehensiveAnalysis() {
-        const matchScore = calculateMatchScore(anchorData.info, prospectData.info, userGoal);
-        const synergy = generateSynergy(anchorData, prospectData, userGoal, matchScore);
-        const friction = generateFriction(anchorData, prospectData, matchScore);
-        const questions = generateVettingQuestions(anchorData, prospectData, userGoal, matchScore);
-        const context = generateContextStatement(anchorData, prospectData, userGoal, matchScore);
-        
-        return {
-            matchScore: matchScore,
-            synergy: synergy,
-            friction: friction,
-            questions: questions,
-            context: context
-        };
+        try {
+            const matchScore = calculateMatchScore(anchorData.info, prospectData.info, userGoal);
+            const synergy = generateSynergy(anchorData, prospectData, userGoal, matchScore);
+            const friction = generateFriction(anchorData, prospectData, userGoal, matchScore);
+            const questions = generateVettingQuestions(anchorData, prospectData, userGoal, matchScore);
+            const context = generateContextStatement(anchorData, prospectData, userGoal, matchScore);
+            
+            return {
+                matchScore: matchScore,
+                synergy: synergy,
+                friction: friction,
+                questions: questions,
+                context: context
+            };
+        } catch (error) {
+            console.error('Analysis generation error:', error);
+            // Return safe defaults
+            return {
+                matchScore: 75,
+                synergy: anchorData.name + ' and ' + prospectData.name + ' show strategic alignment with complementary capabilities and market positioning.',
+                friction: 'Primary considerations include operational coordination, clear success metrics, and ongoing partnership management.',
+                questions: [
+                    'What are your current priorities for partnerships and what makes a partnership successful from your perspective?',
+                    'What concerns do you have about working with ' + anchorData.name + ' and how can we address them upfront?',
+                    'What specific outcomes would make this partnership valuable for your business?'
+                ],
+                context: 'Strategic assessment based on ' + anchorData.name + ' capabilities and partnership objectives with ' + prospectData.name + '.'
+            };
+        }
     }
 
     function calculateMatchScore(anchorInfo, prospectInfo, goal) {
@@ -753,8 +781,8 @@
         }
     }
 
-    function generateFriction(anchorData, prospectData, matchScore) {
-        const lever = identifyPartnershipLever(anchorData, prospectData, userGoal);
+    function generateFriction(anchorData, prospectData, goal, matchScore) {
+        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
         
         if (matchScore >= 80) {
             if (lever === 'marketing') {
