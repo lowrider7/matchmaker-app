@@ -405,10 +405,19 @@
 
         // Toggle edit mode
         function toggleEditMode() {
+            console.log('Toggle edit mode called');
             const viewMode = document.getElementById('viewMode');
             const editMode = document.getElementById('editMode');
             
-            if (editMode.classList.contains('hidden')) {
+            if (!viewMode || !editMode) {
+                console.error('View or edit mode elements not found');
+                return;
+            }
+            
+            const isEditHidden = editMode.classList.contains('hidden');
+            console.log('Edit mode hidden:', isEditHidden);
+            
+            if (isEditHidden) {
                 viewMode.classList.add('hidden');
                 editMode.classList.remove('hidden');
             } else {
@@ -418,9 +427,14 @@
 
         // Cancel edit
         function cancelEdit() {
-            document.getElementById('viewMode').classList.remove('hidden');
-            document.getElementById('editMode').classList.add('hidden');
-            renderAnchorProfile();
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            
+            if (viewMode && editMode) {
+                viewMode.classList.remove('hidden');
+                editMode.classList.add('hidden');
+                renderAnchorProfile();
+            }
         }
 
         // Save profile
@@ -680,12 +694,28 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             renderAnchorProfile();
+            
+            // Add event listener as backup for edit button
+            const editBtn = document.getElementById('editBtn');
+            if (editBtn) {
+                editBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    toggleEditMode();
+                });
+            }
         });
 
         // Close modal on escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeModal();
         });
+        
+        // Make functions globally accessible
+        window.toggleEditMode = toggleEditMode;
+        window.cancelEdit = cancelEdit;
+        window.saveProfile = saveProfile;
+        window.analyzeProspect = analyzeProspect;
+        window.closeModal = closeModal;
     </script>
 </body>
 </html>
