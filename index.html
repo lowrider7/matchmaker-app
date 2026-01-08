@@ -297,7 +297,7 @@
                 <!-- Match Score -->
                 <div class="text-center mb-8">
                     <div class="match-score mb-2" id="modalMatchScore">0%</div>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Strategic Match Score</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Revenue Potential Score</p>
                 </div>
                 
                 <div class="section-divider mb-8"></div>
@@ -306,20 +306,20 @@
                 <div class="mb-8">
                     <div class="bg-indigo-900/20 border border-indigo-500/30 rounded-lg p-4">
                         <p class="text-sm text-gray-300" id="contextStatement">
-                            Based on your website and your stated goal, here is the analysis...
+                            Strategic assessment...
                         </p>
                     </div>
                 </div>
                 
                 <!-- Strategic Synergy -->
                 <div class="mb-8">
-                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Strategic Synergy</h4>
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">What Rally Gets</h4>
                     <p class="text-gray-300 leading-relaxed" id="modalSynergy">Analysis results...</p>
                 </div>
                 
                 <!-- Potential Friction -->
                 <div class="mb-8">
-                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Potential Friction Points</h4>
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Execution Risk</h4>
                     <div class="friction-card p-4 rounded">
                         <p class="text-gray-300 text-sm leading-relaxed" id="modalFriction">Friction analysis...</p>
                     </div>
@@ -329,7 +329,7 @@
                 
                 <!-- Vetting Questions -->
                 <div>
-                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Vetting Questions</h4>
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Due Diligence</h4>
                     <div class="space-y-3" id="modalQuestions">
                         <!-- Questions will be inserted here -->
                     </div>
@@ -419,13 +419,13 @@
     function extractGoalFromData(anchorData) {
         const info = anchorData.info.toLowerCase();
         if (info.includes('expand') && info.includes('international')) {
-            return 'International market expansion';
+            return 'expanding into international markets';
         } else if (info.includes('technology') && info.includes('partner')) {
-            return 'Technology partnership and integration';
+            return 'building technology partnerships';
         } else if (info.includes('growth') || info.includes('scale')) {
-            return 'Revenue growth and market scaling';
+            return 'scaling revenue and market presence';
         } else {
-            return 'Strategic partnership development';
+            return 'developing strategic partnerships';
         }
     }
 
@@ -488,7 +488,7 @@
             
             await sleep(600);
             
-            updateProgress('Generating strategic assessment...', 'Calculating partnership alignment');
+            updateProgress('Generating strategic assessment...', 'Calculating revenue potential');
             await sleep(800);
             
             const analysis = generateComprehensiveAnalysis();
@@ -505,14 +505,14 @@
 
     function generateComprehensiveAnalysis() {
         try {
-            const matchScore = calculateMatchScore(anchorData.info, prospectData.info, userGoal);
-            const synergy = generateSynergy(anchorData, prospectData, userGoal, matchScore);
-            const friction = generateFriction(anchorData, prospectData, userGoal, matchScore);
-            const questions = generateVettingQuestions(anchorData, prospectData, userGoal, matchScore);
-            const context = generateContextStatement(anchorData, prospectData, userGoal, matchScore);
+            const revenueImpact = calculateRevenueImpact(anchorData.info, prospectData.info, userGoal);
+            const synergy = generateRallyWin(anchorData, prospectData, userGoal, revenueImpact);
+            const friction = generateExecutionRisk(anchorData, prospectData, userGoal, revenueImpact);
+            const questions = generateDueDiligence(anchorData, prospectData, userGoal, revenueImpact);
+            const context = generateExecutiveSummary(anchorData, prospectData, userGoal, revenueImpact);
             
             return {
-                matchScore: matchScore,
+                matchScore: revenueImpact.score,
                 synergy: synergy,
                 friction: friction,
                 questions: questions,
@@ -522,181 +522,134 @@
             console.error('Analysis generation error:', error);
             return {
                 matchScore: 75,
-                synergy: anchorData.name + ' and ' + prospectData.name + ' show strategic alignment with complementary capabilities and market positioning.',
-                friction: 'Primary considerations include operational coordination, clear success metrics, and ongoing partnership management.',
+                synergy: anchorData.name + ' gains access to ' + prospectData.name + '\'s customer base and distribution channels.',
+                friction: 'Primary execution risks include partnership activation timeline and ongoing coordination requirements.',
                 questions: [
-                    'What are your current priorities for partnerships and what makes a partnership successful from your perspective?',
-                    'What concerns do you have about working with ' + anchorData.name + ' and how can we address them upfront?',
-                    'What specific outcomes would make this partnership valuable for your business?'
+                    'What volume can they realistically commit to in the first 90 days?',
+                    'Who internally has authority to execute this partnership?',
+                    'What are the deal-breakers on their end that would kill this?'
                 ],
-                context: 'Strategic assessment based on ' + anchorData.name + ' capabilities and partnership objectives with ' + prospectData.name + '.'
+                context: 'Partnership assessment for ' + anchorData.name + ' and ' + prospectData.name + ' based on revenue potential analysis.'
             };
         }
     }
 
-    function calculateMatchScore(anchorInfo, prospectInfo, goal) {
+    function calculateRevenueImpact(anchorInfo, prospectInfo, goal) {
         const combined = (anchorInfo + ' ' + prospectInfo + ' ' + goal).toLowerCase();
-        let bridgeStrength = 0;
         
-        const strongIndicators = [
-            ['transportation', 'parking'], ['transportation', 'access'], ['logistics', 'delivery'],
-            ['marketing', 'audience'], ['technology', 'integration'], ['consulting', 'expertise']
-        ];
-        
-        strongIndicators.forEach(function(pair) {
-            if (combined.includes(pair[0]) && combined.includes(pair[1])) {
-                bridgeStrength += 15;
-            }
+        // High-value indicators: steady demand sources worth 20 points each
+        let demandScore = 0;
+        const demandIndicators = ['hotel', 'resort', 'venue', 'destination', 'tourism', 'hospitality', 'events'];
+        demandIndicators.forEach(function(indicator) {
+            if (combined.includes(indicator)) demandScore += 20;
         });
+        demandScore = Math.min(demandScore, 40);
         
-        const mediumIndicators = ['partnership', 'referral', 'collaboration', 'strategic', 'customer', 'revenue', 'growth', 'scale'];
-        
-        mediumIndicators.forEach(function(indicator) {
-            if (combined.includes(indicator)) {
-                bridgeStrength += 5;
-            }
+        // Volume indicators: scale matters, worth 15 points each
+        let volumeScore = 0;
+        const volumeIndicators = ['thousand', 'million', 'large', 'major', 'leading', 'nationwide'];
+        volumeIndicators.forEach(function(indicator) {
+            if (combined.includes(indicator)) volumeScore += 15;
         });
+        volumeScore = Math.min(volumeScore, 30);
         
-        const goalWords = goal.toLowerCase().split(' ').filter(function(w) { return w.length > 3; });
-        let goalAlignment = 0;
-        
-        goalWords.forEach(function(word) {
-            // FIXED: Escape special regex characters to prevent invalid regex errors
-            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const occurrences = (combined.match(new RegExp(escapedWord, 'g')) || []).length;
-            if (occurrences >= 3) {
-                goalAlignment += 8;
-            } else if (occurrences >= 2) {
-                goalAlignment += 5;
-            } else if (occurrences >= 1) {
-                goalAlignment += 2;
-            }
+        // Operational fit: easy execution worth 10 points each
+        let operationalScore = 0;
+        const operationalIndicators = ['parking', 'shuttle', 'transportation', 'access', 'location'];
+        operationalIndicators.forEach(function(indicator) {
+            if (combined.includes(indicator)) operationalScore += 10;
         });
+        operationalScore = Math.min(operationalScore, 20);
         
-        goalAlignment = Math.min(goalAlignment, 30);
-        
-        const industryPairs = [
-            ['transportation', 'tourism'], ['transportation', 'hospitality'], ['transportation', 'recreation'],
-            ['software', 'enterprise'], ['marketing', 'ecommerce'], ['consulting', 'technology']
-        ];
-        
-        let industryScore = 0;
-        industryPairs.forEach(function(pair) {
-            if (combined.includes(pair[0]) && combined.includes(pair[1])) {
-                industryScore = 25;
-            }
-        });
-        
-        const baseScore = bridgeStrength + goalAlignment + industryScore;
+        // Calculate total with small variance
+        const baseScore = demandScore + volumeScore + operationalScore;
         const variance = Math.floor(Math.random() * 11) - 5;
-        const finalScore = Math.min(Math.max(baseScore + variance, 45), 96);
+        const finalScore = Math.min(Math.max(baseScore + variance, 50), 96);
         
-        return finalScore;
-    }
-
-    function generateContextStatement(anchorData, prospectData, goal, matchScore) {
-        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
-        let coreProblem = '';
-        
-        if (bridge.prospectGets.includes('parking')) {
-            coreProblem = 'optimize capacity constraints and expand accessible market reach';
-        } else if (bridge.prospectGets.includes('customer acquisition')) {
-            coreProblem = 'accelerate customer acquisition through established distribution channels';
-        } else if (bridge.prospectGets.includes('operational efficiency')) {
-            coreProblem = 'improve operational efficiency while reducing overhead';
-        } else {
-            coreProblem = bridge.prospectGets;
+        // Determine volume tier based on score
+        let volumeTier = 'low';
+        let monthlyVolume = '50-100';
+        if (finalScore >= 85) {
+            volumeTier = 'high';
+            monthlyVolume = '400-800';
+        } else if (finalScore >= 70) {
+            volumeTier = 'medium';
+            monthlyVolume = '150-300';
         }
         
-        return 'Strategic assessment: ' + anchorData.name + ' enables ' + prospectData.name + ' to ' + coreProblem + ' through ' + bridge.anchorProvides + '. This partnership achieves a ' + matchScore + '% strategic match, where ' + anchorData.name + '\'s objectives align with solving ' + prospectData.name + '\'s operational challenges.';
+        return {
+            score: finalScore,
+            volumeTier: volumeTier,
+            monthlyVolume: monthlyVolume,
+            hasSteadyDemand: demandScore > 0,
+            hasScale: volumeScore > 0,
+            easyExecution: operationalScore >= 10
+        };
     }
 
-    function generateSynergy(anchorData, prospectData, goal, matchScore) {
-        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
+    function generateExecutiveSummary(anchorData, prospectData, goal, revenueImpact) {
+        const mechanismType = determineMechanismType(anchorData, prospectData);
+        return prospectData.name + ' represents a ' + revenueImpact.score + '% revenue opportunity for ' + anchorData.name + '. Projected monthly volume: ' + revenueImpact.monthlyVolume + ' seats. Execution mechanism: ' + mechanismType + '. This assessment factors in demand consistency, volume potential, and operational lift required.';
+    }
+
+    function generateRallyWin(anchorData, prospectData, goal, revenueImpact) {
+        const mechanismType = determineMechanismType(anchorData, prospectData);
         
-        if (matchScore >= 80) {
-            if (lever === 'marketing') {
-                return prospectData.name + ' faces a customer acquisition challenge that ' + anchorData.name + ' solves efficiently. The value proposition: ' + anchorData.name + ' delivers qualified traffic through established distribution channels. For ' + prospectData.name + ', this expands reach without incremental marketing spend. The mechanism is straightforward: prominent digital real estate generates 100-500 monthly conversions with minimal ongoing effort.';
-            } else if (lever === 'operational') {
-                return prospectData.name + ' operates with constrained capacity—limited parking, seasonal access challenges, or logistical bottlenecks. ' + anchorData.name + ' removes these constraints through specialized infrastructure, enabling ' + prospectData.name + ' to serve more customers without capital investment. Success depends on flawless execution—timing alignment, seamless handoffs, and consistent service quality.';
+        if (revenueImpact.score >= 85) {
+            if (revenueImpact.hasSteadyDemand) {
+                return prospectData.name + ' delivers high-frequency, predictable demand that maximizes ' + anchorData.name + '\'s seat yield. This is a tier-one partnership: ' + revenueImpact.monthlyVolume + ' monthly seats driven by their captive customer base. Execution is ' + mechanismType + '—they handle customer communication, ' + anchorData.name + ' handles fulfillment. Revenue model is straightforward: either they buy blocks of seats at wholesale or ' + anchorData.name + ' pays them per confirmed booking. The value here isn\'t marketing exposure—it\'s guaranteed inventory absorption during peak and off-peak periods. Their customers have no car, need to get somewhere ' + anchorData.name + ' serves, and ' + prospectData.name + ' becomes the default solution.';
             } else {
-                return 'The strategic thesis: ' + prospectData.name + ' enhances their customer proposition by incorporating ' + anchorData.name + '\'s capabilities without building them in-house. Structure this as a performance-based arrangement with transparent tracking—commission, revenue share, or referral fees tied directly to measurable outcomes.';
+                return prospectData.name + ' provides ' + anchorData.name + ' with high-volume distribution access. Estimated ' + revenueImpact.monthlyVolume + ' monthly seats through their existing channels. Implementation: ' + mechanismType + '. The economics work because their customer acquisition cost is zero for ' + anchorData.name + '—they\'ve already paid to acquire and serve these customers. ' + anchorData.name + ' slots into their existing operations as an added-value service. Commission or revenue-share structure keeps incentives aligned. This scales ' + anchorData.name + '\'s regional footprint without incremental marketing spend.';
             }
-        } else if (matchScore >= 60) {
-            return 'Moderate audience overlap exists between ' + anchorData.name + ' and ' + prospectData.name + ', but conversion mechanics require validation. Recommendation: execute a limited pilot with clear success metrics established upfront. If ' + anchorData.name + ' demonstrates 15%+ conversion, escalate to ongoing partnership.';
+        } else if (revenueImpact.score >= 70) {
+            return prospectData.name + ' offers ' + anchorData.name + ' moderate volume opportunity: ' + revenueImpact.monthlyVolume + ' monthly seats based on their customer flow. This isn\'t transformational but it\'s solid supplemental demand. Execution: ' + mechanismType + '. The partnership makes sense if ' + prospectData.name + ' actively promotes it—not just passive link placement. ' + anchorData.name + ' needs them pushing this through their booking flow, email communications, and on-site touchpoints. Revenue impact depends entirely on how much mindshare ' + prospectData.name + ' allocates to this partnership versus their other priorities.';
         } else {
-            return 'Objective assessment: this partnership lacks a compelling strategic rationale. ' + prospectData.name + ' does not have an acute problem that ' + anchorData.name + ' uniquely solves. If pursuing this despite weak fundamentals, structure as ultra-lightweight test with 30-day evaluation.';
-        }
-    }
-    
-    function identifyPartnershipBridge(anchorData, prospectData, goal) {
-        const anchorInfo = anchorData.info.toLowerCase();
-        let bridge = { anchorProvides: '', prospectGets: '', prospectProvides: '', anchorGets: '' };
-        
-        if (anchorInfo.includes('transportation') || anchorInfo.includes('bus') || anchorInfo.includes('shuttle')) {
-            bridge.anchorProvides = 'reliable transportation infrastructure';
-            bridge.prospectGets = 'increased customer accessibility, reduced parking burden, and expanded market reach';
-        } else if (anchorInfo.includes('marketing') || anchorInfo.includes('media') || anchorInfo.includes('audience')) {
-            bridge.anchorProvides = 'audience access and marketing reach';
-            bridge.prospectGets = 'brand visibility and customer acquisition';
-        } else {
-            bridge.anchorProvides = 'complementary capabilities';
-            bridge.prospectGets = 'expanded service offering';
-        }
-        
-        return bridge;
-    }
-    
-    function identifyPartnershipLever(anchorData, prospectData, goal) {
-        const combined = (anchorData.info + ' ' + prospectData.info + ' ' + goal).toLowerCase();
-        
-        const marketingScore = 
-            (combined.includes('social') ? 2 : 0) + (combined.includes('marketing') ? 2 : 0) +
-            (combined.includes('awareness') ? 2 : 0) + (combined.includes('brand') ? 1 : 0);
-        
-        const operationalScore = 
-            (combined.includes('logistics') ? 2 : 0) + (combined.includes('transportation') ? 2 : 0) +
-            (combined.includes('schedule') ? 2 : 0) + (combined.includes('booking') ? 1 : 0);
-        
-        const strategicScore = 
-            (combined.includes('referral') ? 2 : 0) + (combined.includes('revenue') ? 1 : 0) +
-            (combined.includes('commission') ? 2 : 0);
-        
-        if (operationalScore > marketingScore && operationalScore > strategicScore) {
-            return 'operational';
-        } else if (marketingScore > strategicScore) {
-            return 'marketing';
-        } else {
-            return 'strategic';
+            return prospectData.name + ' represents exploratory volume for ' + anchorData.name + ': ' + revenueImpact.monthlyVolume + ' estimated monthly seats. This is a test-and-learn opportunity rather than a core partnership. Execution: ' + mechanismType + '. The lift-to-value ratio is marginal—' + anchorData.name + ' will invest time setting this up for uncertain demand. Recommend 60-day pilot with clear success metrics: if they don\'t drive 100+ confirmed bookings in 60 days, the partnership doesn\'t justify ongoing attention. Focus ' + anchorData.name + '\'s BD resources on higher-probability prospects.';
         }
     }
 
-    function generateFriction(anchorData, prospectData, goal, matchScore) {
-        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
+    function determineMechanismType(anchorData, prospectData) {
+        const combined = (anchorData.info + ' ' + prospectData.info).toLowerCase();
         
-        if (matchScore >= 80) {
-            if (lever === 'operational') {
-                return 'Operational friction comes down to: (1) Timing—are peak hours aligned? (2) Handoff complexity—every extra step kills conversion. (3) Staff buy-in—their frontline team needs to understand this. Don\'t underestimate the "last mile" problem: the deal can look great on paper but fail because execution was clunky.';
+        if (combined.includes('website') || combined.includes('online') || combined.includes('digital')) {
+            return 'digital link placement on their high-traffic pages';
+        } else if (combined.includes('booking') || combined.includes('reservation')) {
+            return 'integrated booking flow';
+        } else if (combined.includes('concierge') || combined.includes('front desk')) {
+            return 'direct referrals from their staff';
+        } else if (combined.includes('email') || combined.includes('newsletter')) {
+            return 'email promotions to their customer list';
+        } else {
+            return 'strategic customer delivery';
+        }
+    }
+
+    function generateExecutionRisk(anchorData, prospectData, goal, revenueImpact) {
+        if (revenueImpact.score >= 85) {
+            if (revenueImpact.easyExecution) {
+                return 'Low execution risk. This is straightforward: link placement or booking integration, no complex operations. Primary risk is getting their internal team to prioritize launch. Secondary risk: their customers don\'t convert because ' + anchorData.name + '\'s schedule doesn\'t align with their peak demand times. Mitigation: lock in launch timeline before spending BD cycles on this, and validate schedule fit during diligence.';
             } else {
-                return 'Main friction: getting on their radar and staying there. Reality check: (1) Is their traffic concentrated where your link fits? (2) Do they post consistently? (3) Who owns partnerships and are they responsive? Biggest risk—you get the deal done, they put up a buried link, and nobody clicks it.';
+                return 'Moderate execution risk despite high revenue potential. The volume is there but execution requires coordination: schedule alignment, potentially white-label booking, and ongoing communication. Risk: this launches, drives initial volume, then degrades because nobody at ' + prospectData.name + ' owns it long-term. Mitigation: establish executive sponsor on their side and quarterly business reviews tied to volume commitments.';
             }
+        } else if (revenueImpact.score >= 70) {
+            return 'Moderate risk, moderate reward. The partnership economics are unclear—will they actively promote ' + anchorData.name + ' or just passively enable it? Without active promotion, this generates minimal volume. Risk: ' + anchorData.name + ' invests setup effort for partnership that never gains traction. Mitigation: require promotional commitment in writing—X emails per quarter, Y social posts, Z website placements. If they won\'t commit to promotion, don\'t do the deal.';
         } else {
-            return 'Getting mindshare will be tough. Their audience overlaps but not perfectly. Friction: (1) Custom content needed. (2) Brand alignment questions. (3) You\'re not their top priority—expect slow responses.';
+            return 'High execution risk relative to potential return. The volume projections are optimistic and assume ' + prospectData.name + ' becomes an active sales channel for ' + anchorData.name + ', which rarely happens organically. Risk: six months from now, this partnership exists on paper but drives 10 bookings per month. Realistic assessment: unless ' + prospectData.name + ' has burning customer demand for ' + anchorData.name + '\'s service, this won\'t scale. Walk away unless they can demonstrate existing customer requests for what ' + anchorData.name + ' provides.';
         }
     }
 
-    function generateVettingQuestions(anchorData, prospectData, goal, matchScore) {
-        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
+    function generateDueDiligence(anchorData, prospectData, goal, revenueImpact) {
         const questions = [];
         
-        if (matchScore >= 70) {
-            questions.push('What\'s your biggest operational challenge right now when it comes to ' + bridge.prospectGets + '?');
+        questions.push('What\'s your current monthly customer volume at the location(s) relevant to ' + anchorData.name + '\'s routes, and what percentage realistically need transportation to those destinations?');
+        
+        if (revenueImpact.score >= 80) {
+            questions.push('Walk me through exactly how you\'d present ' + anchorData.name + ' to your customers—website placement, booking integration, staff training. Show me mockups or describe the customer journey in detail.');
         } else {
-            questions.push('Walk me through your current approach to ' + bridge.prospectGets + '. What\'s working and where are the gaps?');
+            questions.push('Why would your customers choose ' + anchorData.name + ' over driving themselves, and how do you currently solve their transportation needs if you solve them at all?');
         }
         
-        questions.push('What\'s your biggest concern about delegating part of the customer journey to an outside partner like ' + anchorData.name + '?');
-        questions.push('If this partnership works, what does success look like from your perspective—not in terms of ' + anchorData.name + '\'s goals, but in measurable impact on your business?');
+        questions.push('What commission or revenue-share structure makes this worth your team\'s time, and who internally owns partnership revenue—is this someone\'s bonus line item or just a "nice to have"?');
         
         return questions;
     }
@@ -722,21 +675,50 @@
     function extractCompanyName(url) {
         try {
             const urlObj = new URL(url);
-            const hostname = urlObj.hostname.replace('www.', '');
+            let hostname = urlObj.hostname.replace('www.', '');
             const parts = hostname.split('.');
             const domain = parts[0];
             
+            // Expanded brand patterns - proper capitalization and spacing
             const brandPatterns = {
-                'mthigh': 'Mountain High', 'mthi': 'Mountain High', 'rallybuses': 'Rally Bus', 'rallybus': 'Rally Bus'
+                'mthigh': 'Mountain High Resort',
+                'mthi': 'Mountain High',
+                'mountainhigh': 'Mountain High Resort',
+                'rallybuses': 'Rally',
+                'rallybus': 'Rally',
+                'rally': 'Rally',
+                'starlinecollection': 'Starline Collection',
+                'starline': 'Starline Collection',
+                'marriott': 'Marriott',
+                'hilton': 'Hilton',
+                'hyatt': 'Hyatt',
+                'ihg': 'IHG Hotels & Resorts',
+                'airbnb': 'Airbnb',
+                'expedia': 'Expedia',
+                'booking': 'Booking.com',
+                'hotels': 'Hotels.com'
             };
             
-            const lowerDomain = domain.toLowerCase();
+            const lowerDomain = domain.toLowerCase().replace(/[-_]/g, '');
             if (brandPatterns[lowerDomain]) {
                 return brandPatterns[lowerDomain];
             }
             
-            let name = domain.charAt(0).toUpperCase() + domain.slice(1);
-            name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
+            // Smart capitalization: handle compounds
+            let name = domain;
+            
+            // Check if it's all lowercase or all uppercase
+            if (name === name.toLowerCase() || name === name.toUpperCase()) {
+                // Add space before capital letters that follow lowercase
+                name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
+                // Capitalize first letter of each word
+                name = name.split(/[\s-_]+/).map(function(word) {
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+                }).join(' ');
+            } else {
+                // Already has mixed case, just add spaces
+                name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
+            }
             
             return name;
         } catch (e) {
