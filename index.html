@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -12,7 +11,6 @@
     <div id="app"></div>
 
     <script>
-        // REPLACE THESE WITH YOUR SUPABASE CREDENTIALS
         const SUPABASE_URL = 'https://xotwovmpqxqjexpuulxc.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhvdHdvdm1wcXhxamV4cHV1bHhjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njc2NDYwMjksImV4cCI6MjA4MzIyMjAyOX0.Hr-hwo1nlFx55HZuLI8cqoT6snHAR6hp_q8mOXfn1-I';
 
@@ -24,4 +22,51 @@
 
         async function fetchProfiles() {
             const appDiv = document.getElementById('app');
-            appDiv.innerHTML = `
+            appDiv.innerHTML = '<div class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center"><div class="text-center"><div class="animate-spin rounded-full h-16 w-16 border-b-2 border-purple-600 mx-auto mb-4"></div><p class="text-gray-600">Loading profiles...</p></div></div>';
+
+            try {
+                const { data, error } = await sb.from('profiles').select('*');
+                if (error) throw error;
+                profiles = data || [];
+                renderProfiles();
+            } catch (err) {
+                console.error('Error:', err);
+                appDiv.innerHTML = '<div class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 flex items-center justify-center p-8"><div class="bg-white rounded-2xl shadow-lg p-8 max-w-md"><h2 class="text-2xl font-bold text-red-600 mb-4">Connection Error</h2><p class="text-gray-600 mb-4">' + err.message + '</p><button onclick="fetchProfiles()" class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700">Retry</button></div></div>';
+            }
+        }
+
+        function handleLike(profileId) {
+            if (likedProfiles.includes(profileId)) {
+                likedProfiles = likedProfiles.filter(id => id !== profileId);
+            } else {
+                likedProfiles.push(profileId);
+            }
+            renderProfiles();
+        }
+
+        function shuffleProfiles() {
+            profiles = profiles.sort(() => Math.random() - 0.5);
+            renderProfiles();
+        }
+
+        function renderProfiles() {
+            const appDiv = document.getElementById('app');
+            
+            if (profiles.length === 0) {
+                appDiv.innerHTML = '<div class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-8"><div class="max-w-6xl mx-auto"><h1 class="text-5xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-8">Matchmaker</h1><div class="bg-white rounded-2xl shadow-lg p-12 text-center"><div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4"><svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg></div><h2 class="text-2xl font-bold text-gray-900 mb-2">No profiles yet</h2><p class="text-gray-600">Add some profiles to your Supabase database to get started!</p></div></div></div>';
+                return;
+            }
+
+            const profilesHTML = profiles.map(profile => {
+                const initial = (profile.name || profile.full_name || profile.email || '?').charAt(0).toUpperCase();
+                const isLiked = likedProfiles.includes(profile.id);
+                return '<div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all overflow-hidden"><div class="relative"><div class="h-32 bg-gradient-to-br from-purple-400 via-pink-400 to-indigo-400"></div><div class="absolute -bottom-12 left-6"><div class="w-24 h-24 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center text-white text-3xl font-bold border-4 border-white shadow-lg">' + initial + '</div></div><button onclick="handleLike(' + profile.id + ')" class="absolute top-4 right-4 p-3 rounded-full transition-all ' + (isLiked ? 'bg-pink-500 text-white shadow-lg scale-110' : 'bg-white text-gray-400 hover:bg-pink-50 hover:text-pink-500') + '"><svg class="w-5 h-5" fill="' + (isLiked ? 'currentColor' : 'none') + '" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg></button></div><div class="pt-16 px-6 pb-6"><div class="mb-4"><h3 class="text-2xl font-bold text-gray-900 mb-1">' + (profile.name || profile.full_name || 'Anonymous') + '</h3>' + (profile.age ? '<p class="text-purple-600 font-medium">' + profile.age + ' years old</p>' : '') + '</div>' + (profile.bio ? '<p class="text-gray-600 mb-4">' + profile.bio + '</p>' : '') + '<div class="space-y-3 mb-4">' + (profile.email ? '<div class="flex items-center gap-2 text-gray-600 text-sm"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg><span class="truncate">' + profile.email + '</span></div>' : '') + (profile.location ? '<div class="flex items-center gap-2 text-gray-600 text-sm"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" /></svg><span>' + profile.location + '</span></div>' : '') + '</div>' + (profile.interests ? '<div class="flex flex-wrap gap-2">' + profile.interests.split(',').slice(0, 4).map(interest => '<span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-medium">' + interest.trim() + '</span>').join('') + '</div>' : '') + '</div></div>';
+            }).join('');
+
+            appDiv.innerHTML = '<div class="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50 p-8"><div class="max-w-6xl mx-auto"><div class="mb-8 flex items-center justify-between"><div><h1 class="text-5xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-2">Matchmaker</h1><p class="text-gray-600">' + profiles.length + ' profiles • ' + likedProfiles.length + ' liked</p></div><button onclick="shuffleProfiles()" class="flex items-center gap-2 bg-white text-purple-600 px-6 py-3 rounded-full font-medium hover:shadow-lg transition-shadow border-2 border-purple-200"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>Shuffle</button></div><div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">' + profilesHTML + '</div></div></div>';
+        }
+
+        fetchProfiles();
+    </script>
+</body>
+</html>
