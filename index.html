@@ -370,7 +370,6 @@
         showProgress();
         
         try {
-            // Step 1: Scan anchor company
             updateProgress('Scanning your company website...', 'Analyzing business model and capabilities');
             await sleep(600);
             
@@ -391,7 +390,6 @@
             
             await sleep(400);
             
-            // Step 2: Check if we need clarification
             updateProgress('Analyzing data confidence...', 'Determining if additional context is needed');
             await sleep(500);
             
@@ -400,7 +398,6 @@
             if (needsClarification) {
                 showClarificationRequest(anchorData);
             } else {
-                // Auto-generate goal from anchor data
                 userGoal = extractGoalFromData(anchorData);
                 await continueWithProspectAnalysis(prospectUrl);
             }
@@ -414,28 +411,13 @@
 
     function checkIfNeedsClarification(anchorData) {
         const info = anchorData.info.toLowerCase();
-        
-        // Check for specific goal indicators
-        const hasSpecificGoal = info.includes('seeking') || 
-                               info.includes('expanding') || 
-                               info.includes('looking for') ||
-                               info.includes('partnership') ||
-                               (info.includes('growth') && info.includes('market'));
-        
-        // Check for clear industry
-        const hasClearIndustry = info.includes('technology') || 
-                                info.includes('software') || 
-                                info.includes('consulting') ||
-                                info.includes('manufacturing') ||
-                                info.includes('services');
-        
-        // Need clarification if missing both or data is sparse
+        const hasSpecificGoal = info.includes('seeking') || info.includes('expanding') || info.includes('looking for') || info.includes('partnership') || (info.includes('growth') && info.includes('market'));
+        const hasClearIndustry = info.includes('technology') || info.includes('software') || info.includes('consulting') || info.includes('manufacturing') || info.includes('services');
         return !hasSpecificGoal || anchorData.info.length < 200;
     }
 
     function extractGoalFromData(anchorData) {
         const info = anchorData.info.toLowerCase();
-        
         if (info.includes('expand') && info.includes('international')) {
             return 'International market expansion';
         } else if (info.includes('technology') && info.includes('partner')) {
@@ -449,8 +431,6 @@
 
     function showClarificationRequest(anchorData) {
         const info = anchorData.info;
-        
-        // Extract what we found
         const companyName = anchorData.name;
         let industry = 'Business Services';
         
@@ -479,7 +459,6 @@
         }
         
         userGoal = goal;
-        
         document.getElementById('clarificationSection').classList.add('hidden');
         showProgress();
         
@@ -489,16 +468,11 @@
 
     async function continueWithProspectAnalysis(prospectUrl) {
         try {
-            // Scan prospect company
             updateProgress('Analyzing prospect company...', 'Gathering competitive intelligence');
             await sleep(600);
             
-            console.log('Extracting prospect name from:', prospectUrl);
             const prospectName = extractCompanyName(prospectUrl);
-            console.log('Prospect name:', prospectName);
-            
             const prospectQuery = prospectName + ' company business model market focus capabilities partnerships';
-            console.log('Searching Tavily for:', prospectQuery);
             const prospectResults = await searchTavily(prospectQuery);
             
             prospectData = {
@@ -512,29 +486,19 @@
                 prospectData.info += ' ' + prospectResults.results.map(function(r) { return r.content; }).join(' ');
             }
             
-            console.log('Prospect data:', prospectData);
-            
             await sleep(600);
             
-            // Generate analysis
             updateProgress('Generating strategic assessment...', 'Calculating partnership alignment');
             await sleep(800);
             
-            console.log('Generating comprehensive analysis...');
-            console.log('Anchor data:', anchorData);
-            console.log('User goal:', userGoal);
-            
             const analysis = generateComprehensiveAnalysis();
-            console.log('Analysis complete:', analysis);
-            
             await sleep(400);
             
             displayAnalysisModal(analysis);
             
         } catch (error) {
             console.error('Prospect analysis error:', error);
-            console.error('Error stack:', error.stack);
-            alert('Analysis failed: ' + error.message + '. Please check console for details.');
+            alert('Analysis failed: ' + error.message);
             resetToInitialState();
         }
     }
@@ -556,7 +520,6 @@
             };
         } catch (error) {
             console.error('Analysis generation error:', error);
-            // Return safe defaults
             return {
                 matchScore: 75,
                 synergy: anchorData.name + ' and ' + prospectData.name + ' show strategic alignment with complementary capabilities and market positioning.',
@@ -573,18 +536,11 @@
 
     function calculateMatchScore(anchorInfo, prospectInfo, goal) {
         const combined = (anchorInfo + ' ' + prospectInfo + ' ' + goal).toLowerCase();
-        
-        // Score based on bridge indicators
         let bridgeStrength = 0;
         
-        // Strong bridge indicators (worth 15 points each)
         const strongIndicators = [
-            ['transportation', 'parking'],
-            ['transportation', 'access'],
-            ['logistics', 'delivery'],
-            ['marketing', 'audience'],
-            ['technology', 'integration'],
-            ['consulting', 'expertise']
+            ['transportation', 'parking'], ['transportation', 'access'], ['logistics', 'delivery'],
+            ['marketing', 'audience'], ['technology', 'integration'], ['consulting', 'expertise']
         ];
         
         strongIndicators.forEach(function(pair) {
@@ -593,11 +549,7 @@
             }
         });
         
-        // Medium bridge indicators (worth 10 points each)
-        const mediumIndicators = [
-            'partnership', 'referral', 'collaboration', 'strategic',
-            'customer', 'revenue', 'growth', 'scale'
-        ];
+        const mediumIndicators = ['partnership', 'referral', 'collaboration', 'strategic', 'customer', 'revenue', 'growth', 'scale'];
         
         mediumIndicators.forEach(function(indicator) {
             if (combined.includes(indicator)) {
@@ -605,12 +557,13 @@
             }
         });
         
-        // Goal alignment (worth up to 30 points)
         const goalWords = goal.toLowerCase().split(' ').filter(function(w) { return w.length > 3; });
         let goalAlignment = 0;
         
         goalWords.forEach(function(word) {
-            const occurrences = (combined.match(new RegExp(word, 'g')) || []).length;
+            // FIXED: Escape special regex characters to prevent invalid regex errors
+            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const occurrences = (combined.match(new RegExp(escapedWord, 'g')) || []).length;
             if (occurrences >= 3) {
                 goalAlignment += 8;
             } else if (occurrences >= 2) {
@@ -622,14 +575,9 @@
         
         goalAlignment = Math.min(goalAlignment, 30);
         
-        // Industry complementarity (worth up to 25 points)
         const industryPairs = [
-            ['transportation', 'tourism'],
-            ['transportation', 'hospitality'],
-            ['transportation', 'recreation'],
-            ['software', 'enterprise'],
-            ['marketing', 'ecommerce'],
-            ['consulting', 'technology']
+            ['transportation', 'tourism'], ['transportation', 'hospitality'], ['transportation', 'recreation'],
+            ['software', 'enterprise'], ['marketing', 'ecommerce'], ['consulting', 'technology']
         ];
         
         let industryScore = 0;
@@ -639,9 +587,8 @@
             }
         });
         
-        // Calculate total with small random variance (±5 points)
         const baseScore = bridgeStrength + goalAlignment + industryScore;
-        const variance = Math.floor(Math.random() * 11) - 5; // -5 to +5
+        const variance = Math.floor(Math.random() * 11) - 5;
         const finalScore = Math.min(Math.max(baseScore + variance, 45), 96);
         
         return finalScore;
@@ -649,9 +596,8 @@
 
     function generateContextStatement(anchorData, prospectData, goal, matchScore) {
         const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
-        
-        // Extract the core problem from the bridge
         let coreProblem = '';
+        
         if (bridge.prospectGets.includes('parking')) {
             coreProblem = 'optimize capacity constraints and expand accessible market reach';
         } else if (bridge.prospectGets.includes('customer acquisition')) {
@@ -662,81 +608,40 @@
             coreProblem = bridge.prospectGets;
         }
         
-        return 'Strategic assessment: ' + anchorData.name + ' enables ' + prospectData.name + ' to ' + coreProblem + ' through ' + bridge.anchorProvides + '. This partnership achieves a ' + matchScore + '% strategic match, where ' + anchorData.name + '\'s objectives align with solving ' + prospectData.name + '\'s operational challenges. Analysis based on stated objectives and market intelligence.';
+        return 'Strategic assessment: ' + anchorData.name + ' enables ' + prospectData.name + ' to ' + coreProblem + ' through ' + bridge.anchorProvides + '. This partnership achieves a ' + matchScore + '% strategic match, where ' + anchorData.name + '\'s objectives align with solving ' + prospectData.name + '\'s operational challenges.';
     }
 
     function generateSynergy(anchorData, prospectData, goal, matchScore) {
         const lever = identifyPartnershipLever(anchorData, prospectData, goal);
-        const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
         
         if (matchScore >= 80) {
             if (lever === 'marketing') {
-                return prospectData.name + ' faces a customer acquisition challenge that ' + anchorData.name + ' solves efficiently. The value proposition: ' + anchorData.name + ' delivers qualified traffic to ' + prospectData.name + ' through established distribution channels—website placement, social amplification, and coordinated campaigns. For ' + prospectData.name + ', this expands reach without incremental marketing spend. For ' + anchorData.name + ', embedded placement in ' + prospectData.name + '\'s customer journey drives volume. The mechanism is straightforward: prominent digital real estate generates 100-500 monthly conversions with minimal ongoing effort. This partnership scales because both parties benefit from the same customer action.';
+                return prospectData.name + ' faces a customer acquisition challenge that ' + anchorData.name + ' solves efficiently. The value proposition: ' + anchorData.name + ' delivers qualified traffic through established distribution channels. For ' + prospectData.name + ', this expands reach without incremental marketing spend. The mechanism is straightforward: prominent digital real estate generates 100-500 monthly conversions with minimal ongoing effort.';
             } else if (lever === 'operational') {
-                return prospectData.name + ' operates with constrained capacity—limited parking, seasonal access challenges, or logistical bottlenecks. ' + anchorData.name + ' removes these constraints through specialized infrastructure, enabling ' + prospectData.name + ' to serve more customers without capital investment in parking or transportation assets. The operational value: ' + anchorData.name + ' assumes responsibility for a non-core function, allowing ' + prospectData.name + ' to focus resources on their primary offering. Success depends on flawless execution—timing alignment, seamless handoffs, and consistent service quality. When operational integration works, ' + anchorData.name + ' becomes essential infrastructure rather than an optional service.';
+                return prospectData.name + ' operates with constrained capacity—limited parking, seasonal access challenges, or logistical bottlenecks. ' + anchorData.name + ' removes these constraints through specialized infrastructure, enabling ' + prospectData.name + ' to serve more customers without capital investment. Success depends on flawless execution—timing alignment, seamless handoffs, and consistent service quality.';
             } else {
-                return 'The strategic thesis: ' + prospectData.name + ' enhances their customer proposition by incorporating ' + anchorData.name + '\'s capabilities without building them in-house. This is fundamentally a make-versus-buy decision where partnering is more efficient than internal development. ' + prospectData.name + ' gains expanded service offerings; ' + anchorData.name + ' gains embedded distribution. Structure this as a performance-based arrangement with transparent tracking—commission, revenue share, or referral fees tied directly to measurable outcomes. The partnership persists when both parties see clear ROI. Test with a 90-day pilot targeting a specific customer segment to validate economics before scaling.';
+                return 'The strategic thesis: ' + prospectData.name + ' enhances their customer proposition by incorporating ' + anchorData.name + '\'s capabilities without building them in-house. Structure this as a performance-based arrangement with transparent tracking—commission, revenue share, or referral fees tied directly to measurable outcomes.';
             }
         } else if (matchScore >= 60) {
-            if (lever === 'marketing') {
-                return 'Moderate audience overlap exists between ' + anchorData.name + ' and ' + prospectData.name + ', but conversion mechanics require validation. The opportunity: ' + anchorData.name + ' potentially delivers incremental customers to ' + prospectData.name + ', though audience quality and conversion rates remain unproven. Recommendation: execute a limited marketing pilot—co-branded content, targeted social campaign, or email deployment—with clear success metrics established upfront. If ' + anchorData.name + ' demonstrates 15%+ conversion on referred traffic, escalate to ongoing partnership. If conversion falls below 10%, the audience alignment thesis fails. Keep initial commitment minimal to enable fast learning without significant resource allocation.';
-            } else if (lever === 'operational') {
-                return prospectData.name + ' could benefit from ' + anchorData.name + '\'s operational capabilities, but integration complexity presents risk. The challenge: coordinating systems, schedules, and processes between independent organizations requires effort that may exceed partnership value. Conduct a detailed operational assessment: map customer journeys, identify integration points, and quantify effort required. The partnership only makes sense if operational efficiency gains measurably exceed coordination costs. If implementation requires more than 40 hours of initial setup, validate that projected volume justifies this investment. Many operationally complex partnerships fail not from poor strategy but from underestimating implementation burden.';
-            } else {
-                return 'The business case for partnership exists but requires careful structuring. ' + prospectData.name + ' gains access to ' + anchorData.name + '\'s capabilities; ' + anchorData.name + ' gains distribution through ' + prospectData.name + '\'s customer base. However, incentive alignment isn\'t obvious—neither party naturally prioritizes the other\'s success. Design a pilot with three characteristics: (1) narrow scope focused on a single customer segment, (2) clear performance metrics both parties agree define success, and (3) 60-day timeline forcing rapid iteration. If the pilot demonstrates positive unit economics, structure ongoing terms. If results are ambiguous after 60 days, acknowledge the fit isn\'t strong enough and redeploy resources to higher-probability partnerships.';
-            }
+            return 'Moderate audience overlap exists between ' + anchorData.name + ' and ' + prospectData.name + ', but conversion mechanics require validation. Recommendation: execute a limited pilot with clear success metrics established upfront. If ' + anchorData.name + ' demonstrates 15%+ conversion, escalate to ongoing partnership.';
         } else {
-            return 'Objective assessment: this partnership lacks a compelling strategic rationale. ' + prospectData.name + ' does not have an acute problem that ' + anchorData.name + ' uniquely solves, and forcing partnership alignment diverts attention from better opportunities. The opportunity cost is real—time spent negotiating a marginal partnership could be invested in prospects with natural fit. If pursuing this despite weak fundamentals, structure as ultra-lightweight test: single co-marketing initiative or informal referral arrangement with 30-day evaluation. Measure actual customer behavior, not theoretical interest. If 30 days produces negligible traction, acknowledge the hypothesis was incorrect and move on. Successful business development requires discipline to kill underperforming initiatives quickly.';
+            return 'Objective assessment: this partnership lacks a compelling strategic rationale. ' + prospectData.name + ' does not have an acute problem that ' + anchorData.name + ' uniquely solves. If pursuing this despite weak fundamentals, structure as ultra-lightweight test with 30-day evaluation.';
         }
     }
     
     function identifyPartnershipBridge(anchorData, prospectData, goal) {
-        // The bridge is what the anchor provides that solves the prospect's problem
         const anchorInfo = anchorData.info.toLowerCase();
-        const prospectInfo = prospectData.info.toLowerCase();
-        const goalLower = goal.toLowerCase();
+        let bridge = { anchorProvides: '', prospectGets: '', prospectProvides: '', anchorGets: '' };
         
-        let bridge = {
-            anchorProvides: '',
-            prospectGets: '',
-            prospectProvides: '',
-            anchorGets: ''
-        };
-        
-        // Transportation/Logistics bridge
         if (anchorInfo.includes('transportation') || anchorInfo.includes('bus') || anchorInfo.includes('shuttle')) {
             bridge.anchorProvides = 'reliable transportation infrastructure';
             bridge.prospectGets = 'increased customer accessibility, reduced parking burden, and expanded market reach';
-            bridge.prospectProvides = 'destination access and customer referrals';
-            bridge.anchorGets = 'ridership volume and route utilization';
-        }
-        // Marketing/Audience bridge
-        else if (anchorInfo.includes('marketing') || anchorInfo.includes('media') || anchorInfo.includes('audience')) {
+        } else if (anchorInfo.includes('marketing') || anchorInfo.includes('media') || anchorInfo.includes('audience')) {
             bridge.anchorProvides = 'audience access and marketing reach';
             bridge.prospectGets = 'brand visibility and customer acquisition';
-            bridge.prospectProvides = 'content and credibility';
-            bridge.anchorGets = 'content inventory and engagement metrics';
-        }
-        // Technology/Platform bridge
-        else if (anchorInfo.includes('software') || anchorInfo.includes('platform') || anchorInfo.includes('technology')) {
-            bridge.anchorProvides = 'technical capabilities and infrastructure';
-            bridge.prospectGets = 'operational efficiency and scale';
-            bridge.prospectProvides = 'use case validation and feedback';
-            bridge.anchorGets = 'platform adoption and recurring revenue';
-        }
-        // Services/Expertise bridge
-        else if (anchorInfo.includes('consulting') || anchorInfo.includes('services') || anchorInfo.includes('agency')) {
-            bridge.anchorProvides = 'specialized expertise and execution capacity';
-            bridge.prospectGets = 'capability extension without overhead';
-            bridge.prospectProvides = 'project scope and market access';
-            bridge.anchorGets = 'billable engagements and portfolio expansion';
-        }
-        // Default/Generic bridge
-        else {
+        } else {
             bridge.anchorProvides = 'complementary capabilities';
             bridge.prospectGets = 'expanded service offering';
-            bridge.prospectProvides = 'customer access';
-            bridge.anchorGets = 'market presence and revenue';
         }
         
         return bridge;
@@ -745,33 +650,18 @@
     function identifyPartnershipLever(anchorData, prospectData, goal) {
         const combined = (anchorData.info + ' ' + prospectData.info + ' ' + goal).toLowerCase();
         
-        // Marketing/Awareness indicators
         const marketingScore = 
-            (combined.includes('social') ? 2 : 0) +
-            (combined.includes('marketing') ? 2 : 0) +
-            (combined.includes('awareness') ? 2 : 0) +
-            (combined.includes('brand') ? 1 : 0) +
-            (combined.includes('traffic') ? 1 : 0) +
-            (combined.includes('seo') ? 1 : 0);
+            (combined.includes('social') ? 2 : 0) + (combined.includes('marketing') ? 2 : 0) +
+            (combined.includes('awareness') ? 2 : 0) + (combined.includes('brand') ? 1 : 0);
         
-        // Operational indicators
         const operationalScore = 
-            (combined.includes('logistics') ? 2 : 0) +
-            (combined.includes('transportation') ? 2 : 0) +
-            (combined.includes('schedule') ? 2 : 0) +
-            (combined.includes('booking') ? 1 : 0) +
-            (combined.includes('integration') ? 1 : 0) +
-            (combined.includes('operational') ? 1 : 0);
+            (combined.includes('logistics') ? 2 : 0) + (combined.includes('transportation') ? 2 : 0) +
+            (combined.includes('schedule') ? 2 : 0) + (combined.includes('booking') ? 1 : 0);
         
-        // Strategic/Referral indicators
         const strategicScore = 
-            (combined.includes('referral') ? 2 : 0) +
-            (combined.includes('revenue') ? 1 : 0) +
-            (combined.includes('commission') ? 2 : 0) +
-            (combined.includes('incentive') ? 1 : 0) +
-            (combined.includes('growth') ? 1 : 0);
+            (combined.includes('referral') ? 2 : 0) + (combined.includes('revenue') ? 1 : 0) +
+            (combined.includes('commission') ? 2 : 0);
         
-        // Return highest scoring lever
         if (operationalScore > marketingScore && operationalScore > strategicScore) {
             return 'operational';
         } else if (marketingScore > strategicScore) {
@@ -785,49 +675,28 @@
         const lever = identifyPartnershipLever(anchorData, prospectData, goal);
         
         if (matchScore >= 80) {
-            if (lever === 'marketing') {
-                return 'Main friction: getting on their radar and staying there. Their marketing team is juggling 10 priorities—is promoting you one of them? Reality check questions: (1) Is their traffic concentrated on pages where your link would naturally fit? (2) Do they actually post consistently on social, or is their Instagram dead? (3) Who at ' + prospectData.name + ' owns partnerships, and are they responsive? Biggest risk isn\'t technical—it\'s that you get the deal done, they put up a link buried on page 3, and nobody clicks it.';
-            } else if (lever === 'operational') {
-                return 'Operational friction comes down to: (1) Timing—are your peak hours when they can actually deliver? If you need buses at 7am on weekends and they don\'t run until 9am, the partnership is dead on arrival. (2) Handoff complexity—every extra step in the customer journey kills conversion. (3) Staff buy-in—their frontline team needs to understand and promote this, or it won\'t happen. Don\'t underestimate the "last mile" problem: the deal can look great on paper but fail because someone\'s staff wasn\'t trained or the process was too clunky.';
+            if (lever === 'operational') {
+                return 'Operational friction comes down to: (1) Timing—are peak hours aligned? (2) Handoff complexity—every extra step kills conversion. (3) Staff buy-in—their frontline team needs to understand this. Don\'t underestimate the "last mile" problem: the deal can look great on paper but fail because execution was clunky.';
             } else {
-                return 'Incentive alignment is everything. If they make $5 per referral but it takes them 30 minutes to explain your offering, they won\'t do it. Friction points: (1) Is the commission structure simple and worth their time? (2) Can they track referrals easily, or is it a black box? (3) Do they actually have leverage over their customers\' decisions, or are they just hoping people click a link? Also: relationship dependency. If your main contact at ' + prospectData.name + ' leaves, does the partnership die? That\'s a red flag.';
-            }
-        } else if (matchScore >= 60) {
-            if (lever === 'marketing') {
-                return 'Getting mindshare will be tough. Their audience kinda overlaps with yours, but not perfectly—which means your messaging needs to work harder. Friction: (1) You might need to create custom content just for their audience, which takes time. (2) Their brand might not want to be too closely associated with yours (brand alignment issues). (3) You\'re probably not their top partnership priority, so expect slow responses and delayed launches. Set realistic expectations: this might take 3 months to get live when you wanted 3 weeks.';
-            } else if (lever === 'operational') {
-                return 'You\'re trying to coordinate operations between two companies that probably have different systems, schedules, and priorities. Friction points: (1) Technical compatibility—even "simple" integrations require dev work and testing. (2) Process alignment—their booking flow might not accommodate your offering easily. (3) Support burden—when something breaks, who fixes it? Be clear upfront about ongoing maintenance, or this becomes a "launched once, broke twice, abandoned forever" situation.';
-            } else {
-                return 'The incentives don\'t naturally align, so you\'re manufacturing a partnership that requires active management. Risks: (1) They agree to promote you but never actually do it because other priorities take over. (2) The referral quality is low—they send you tire-kickers who don\'t convert. (3) Tracking disputes—they claim they sent 100 customers, you only see 30 conversions, and now you\'re arguing about attribution. Consider: is the potential upside worth the ongoing headache of managing this relationship?';
+                return 'Main friction: getting on their radar and staying there. Reality check: (1) Is their traffic concentrated where your link fits? (2) Do they post consistently? (3) Who owns partnerships and are they responsive? Biggest risk—you get the deal done, they put up a buried link, and nobody clicks it.';
             }
         } else {
-            return 'Let\'s be real: the friction here is that this partnership probably shouldn\'t happen. You\'re forcing a fit that isn\'t natural. Practical concerns: (1) You\'ll spend weeks negotiating something that might drive 10 customers. (2) Their team doesn\'t understand your value prop, so they can\'t sell it effectively. (3) Every communication will require over-explaining context because the overlap isn\'t obvious. Cut your losses: if you can\'t articulate why this partnership makes them more money or serves their customers better in one sentence, it\'s not worth pursuing.';
+            return 'Getting mindshare will be tough. Their audience overlaps but not perfectly. Friction: (1) Custom content needed. (2) Brand alignment questions. (3) You\'re not their top priority—expect slow responses.';
         }
     }
 
     function generateVettingQuestions(anchorData, prospectData, goal, matchScore) {
-        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
         const bridge = identifyPartnershipBridge(anchorData, prospectData, goal);
         const questions = [];
         
-        // Question 1: Always about what THEY care about
         if (matchScore >= 70) {
-            questions.push('What\'s your biggest operational challenge right now when it comes to ' + bridge.prospectGets + '? (I\'m trying to understand if what ' + anchorData.name + ' solves is actually a priority for you, or if we\'re solving a problem you don\'t have.)');
+            questions.push('What\'s your biggest operational challenge right now when it comes to ' + bridge.prospectGets + '?');
         } else {
-            questions.push('Walk me through your current approach to ' + bridge.prospectGets + '. What\'s working well, and where are the gaps? (I need to know if partnering with ' + anchorData.name + ' actually fills a meaningful gap or if it\'s a nice-to-have.)');
+            questions.push('Walk me through your current approach to ' + bridge.prospectGets + '. What\'s working and where are the gaps?');
         }
         
-        // Question 2: The elephant in the room - delegating control
-        if (lever === 'operational') {
-            questions.push('What\'s your biggest concern about delegating part of the customer journey—specifically ' + bridge.anchorProvides + '—to an outside partner like ' + anchorData.name + '? (Let\'s address the control, quality, and reliability concerns upfront rather than having them derail us later.)');
-        } else if (lever === 'marketing') {
-            questions.push('What\'s your biggest hesitation about promoting ' + anchorData.name + ' to your customers? Brand alignment, audience relevance, or something else? (I want to make sure we\'re not asking you to vouch for something your customers won\'t value.)');
-        } else {
-            questions.push('What would make you confident that referring customers to ' + anchorData.name + ' actually improves their experience rather than adding friction? (I need to understand your quality bar and whether we can meet it consistently.)');
-        }
-        
-        // Question 3: Proof points from their perspective
-        questions.push('If this partnership works, what does success look like from your perspective—not in terms of ' + anchorData.name + '\'s goals, but in terms of the measurable impact on your business? (I want to make sure we\'re tracking metrics that actually matter to you, not vanity metrics.)');
+        questions.push('What\'s your biggest concern about delegating part of the customer journey to an outside partner like ' + anchorData.name + '?');
+        questions.push('If this partnership works, what does success look like from your perspective—not in terms of ' + anchorData.name + '\'s goals, but in measurable impact on your business?');
         
         return questions;
     }
@@ -857,51 +726,16 @@
             const parts = hostname.split('.');
             const domain = parts[0];
             
-            // Common brand name patterns - preserve full names
             const brandPatterns = {
-                'mthigh': 'Mountain High',
-                'mthi': 'Mountain High',
-                'rallybuses': 'Rally Bus',
-                'rallybus': 'Rally Bus',
-                'google': 'Google',
-                'facebook': 'Facebook',
-                'microsoft': 'Microsoft',
-                'amazon': 'Amazon',
-                'salesforce': 'Salesforce',
-                'hubspot': 'HubSpot',
-                'shopify': 'Shopify',
-                'stripe': 'Stripe',
-                'slack': 'Slack',
-                'zoom': 'Zoom',
-                'dropbox': 'Dropbox',
-                'mailchimp': 'Mailchimp',
-                'squarespace': 'Squarespace',
-                'wix': 'Wix',
-                'wordpress': 'WordPress',
-                'linkedin': 'LinkedIn',
-                'twitter': 'Twitter',
-                'instagram': 'Instagram',
-                'tiktok': 'TikTok',
-                'youtube': 'YouTube',
-                'netflix': 'Netflix',
-                'spotify': 'Spotify',
-                'airbnb': 'Airbnb',
-                'uber': 'Uber',
-                'lyft': 'Lyft',
-                'doordash': 'DoorDash',
-                'instacart': 'Instacart'
+                'mthigh': 'Mountain High', 'mthi': 'Mountain High', 'rallybuses': 'Rally Bus', 'rallybus': 'Rally Bus'
             };
             
-            // Check if domain matches known pattern
             const lowerDomain = domain.toLowerCase();
             if (brandPatterns[lowerDomain]) {
                 return brandPatterns[lowerDomain];
             }
             
-            // Otherwise capitalize first letter and common patterns
             let name = domain.charAt(0).toUpperCase() + domain.slice(1);
-            
-            // Handle common patterns like "TechCo" or "DataHub"
             name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
             
             return name;
@@ -972,7 +806,6 @@
         return new Promise(function(resolve) { setTimeout(resolve, ms); });
     }
 
-    // Initialize
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
