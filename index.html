@@ -567,37 +567,115 @@
     }
 
     function generateSynergy(anchorData, prospectData, goal, matchScore) {
+        // Identify the partnership lever type
+        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
+        
         if (matchScore >= 80) {
-            return prospectData.name + ' demonstrates strong alignment with ' + anchorData.name + '\'s objective of ' + goal.toLowerCase() + '. Their market positioning and operational capabilities create immediate partnership opportunities. The synergy potential centers on leveraging complementary strengths to accelerate market penetration, with projected revenue impact of 40-60% growth in target segments within 18 months.';
+            if (lever === 'marketing') {
+                return 'This is a high-impact, low-effort play. ' + prospectData.name + ' has the audience you need for ' + goal.toLowerCase() + '. The partnership mechanics are straightforward: prominent placement on their site (ideally "Getting Here" or similar high-traffic page), social media pushes during your peak season, and co-branded content. Reality check: if they can drive 100-500 monthly referrals with just a link and occasional Instagram story, that\'s material revenue without building anything. Start with a simple referral agreement, track it for 90 days, then decide if you want to go deeper.';
+            } else if (lever === 'operational') {
+                return 'The operational fit is strong for ' + goal.toLowerCase() + '. This works if you align logistics: their schedule needs to match your peak times, and the customer handoff has to be seamless. Key execution points: coordinate timing (nobody wants to wait 2 hours for a connection), simplify booking (one-click if possible), and nail the messaging so customers understand the value immediately. This isn\'t rocket science—it\'s about removing friction from the customer journey. If you can get the ops team at ' + prospectData.name + ' on board, this drives real volume.';
+            } else {
+                return 'Strong strategic alignment with ' + anchorData.name + ' for ' + goal.toLowerCase() + '. The partnership is referral-based with incentive alignment: ' + prospectData.name + ' sends customers your way, you make it worth their while (commission, reciprocal traffic, or co-marketing). The beauty here is simplicity—this doesn\'t require legal gymnastics or technical integration. Set clear incentives, make tracking dead simple, and launch in weeks not months. Test with their most engaged customers first to prove the economics work.';
+            }
         } else if (matchScore >= 60) {
-            return prospectData.name + ' shows moderate strategic fit with ' + anchorData.name + ' for achieving ' + goal.toLowerCase() + '. While not a perfect alignment, there are identifiable opportunities in complementary market access and capability exchange. A structured partnership framework could enable both organizations to expand addressable markets by 25-35%, particularly through cross-selling and joint go-to-market initiatives.';
+            if (lever === 'marketing') {
+                return 'Decent opportunity, but not a slam dunk. ' + prospectData.name + ' has relevant audience overlap for ' + goal.toLowerCase() + ', but you\'ll need to make the pitch easy. Suggestion: start with a content partnership—guest blog, social takeover, or co-branded guide. Low commitment, quick to execute, and you\'ll learn fast if their audience converts. If it works, escalate to paid placement or ongoing referral deal. If it doesn\'t, you\'ve spent 2 weeks not 2 months.';
+            } else if (lever === 'operational') {
+                return 'There\'s a path to operationalizing this with ' + prospectData.name + ' for ' + goal.toLowerCase() + ', but it requires work. You\'re looking at schedule coordination, possibly some tech integration (even if it\'s just embedding their booking widget), and training their staff on the offering. This only makes sense if the volume justifies the effort. Run the numbers: if coordinating operations takes 40 hours of work, how many customers do you need to make it worthwhile? Be honest about whether ' + prospectData.name + ' can actually deliver that volume.';
+            } else {
+                return 'This could work for ' + goal.toLowerCase() + ', but you need to structure incentives carefully. ' + prospectData.name + ' isn\'t going to promote you out of the goodness of their heart—what\'s in it for them? Options: revenue share, reciprocal referrals, or marketing budget split. Start small with a pilot (maybe just their email list or one location), prove the economics, then scale. Don\'t over-engineer the agreement—keep it to 2 pages max and focus on making the first deal successful.';
+            }
         } else {
-            return prospectData.name + ' presents an exploratory opportunity for ' + anchorData.name + ' in pursuit of ' + goal.toLowerCase() + '. The alignment requires creative partnership structuring, but their market position suggests potential for innovative collaboration models. Consider pilot programs or limited-scope joint ventures to test partnership economics before committing to broader integration.';
+            return 'Honestly? This is a reach for ' + goal.toLowerCase() + '. ' + prospectData.name + ' doesn\'t naturally send customers your way, and forcing the partnership means you\'re spending political capital on something that might not work. If you pursue this, keep it ultra-lightweight—maybe a one-time co-marketing test or informal referral arrangement. Set a 30-day deadline to see traction. If there\'s no momentum by then, move on. Your time is better spent on partners where the fit is obvious.';
+        }
+    }
+    
+    function identifyPartnershipLever(anchorData, prospectData, goal) {
+        const combined = (anchorData.info + ' ' + prospectData.info + ' ' + goal).toLowerCase();
+        
+        // Marketing/Awareness indicators
+        const marketingScore = 
+            (combined.includes('social') ? 2 : 0) +
+            (combined.includes('marketing') ? 2 : 0) +
+            (combined.includes('awareness') ? 2 : 0) +
+            (combined.includes('brand') ? 1 : 0) +
+            (combined.includes('traffic') ? 1 : 0) +
+            (combined.includes('seo') ? 1 : 0);
+        
+        // Operational indicators
+        const operationalScore = 
+            (combined.includes('logistics') ? 2 : 0) +
+            (combined.includes('transportation') ? 2 : 0) +
+            (combined.includes('schedule') ? 2 : 0) +
+            (combined.includes('booking') ? 1 : 0) +
+            (combined.includes('integration') ? 1 : 0) +
+            (combined.includes('operational') ? 1 : 0);
+        
+        // Strategic/Referral indicators
+        const strategicScore = 
+            (combined.includes('referral') ? 2 : 0) +
+            (combined.includes('revenue') ? 1 : 0) +
+            (combined.includes('commission') ? 2 : 0) +
+            (combined.includes('incentive') ? 1 : 0) +
+            (combined.includes('growth') ? 1 : 0);
+        
+        // Return highest scoring lever
+        if (operationalScore > marketingScore && operationalScore > strategicScore) {
+            return 'operational';
+        } else if (marketingScore > strategicScore) {
+            return 'marketing';
+        } else {
+            return 'strategic';
         }
     }
 
     function generateFriction(anchorData, prospectData, matchScore) {
+        const lever = identifyPartnershipLever(anchorData, prospectData, userGoal);
+        
         if (matchScore >= 80) {
-            return 'Primary friction points likely center on operational integration complexity, particularly around technology stack compatibility and data sharing protocols. Revenue attribution models and partnership governance will require careful negotiation to ensure both parties perceive equitable value exchange. Cultural alignment should be assessed through extended due diligence.';
+            if (lever === 'marketing') {
+                return 'Main friction: getting on their radar and staying there. Their marketing team is juggling 10 priorities—is promoting you one of them? Reality check questions: (1) Is their traffic concentrated on pages where your link would naturally fit? (2) Do they actually post consistently on social, or is their Instagram dead? (3) Who at ' + prospectData.name + ' owns partnerships, and are they responsive? Biggest risk isn\'t technical—it\'s that you get the deal done, they put up a link buried on page 3, and nobody clicks it.';
+            } else if (lever === 'operational') {
+                return 'Operational friction comes down to: (1) Timing—are your peak hours when they can actually deliver? If you need buses at 7am on weekends and they don\'t run until 9am, the partnership is dead on arrival. (2) Handoff complexity—every extra step in the customer journey kills conversion. (3) Staff buy-in—their frontline team needs to understand and promote this, or it won\'t happen. Don\'t underestimate the "last mile" problem: the deal can look great on paper but fail because someone\'s staff wasn\'t trained or the process was too clunky.';
+            } else {
+                return 'Incentive alignment is everything. If they make $5 per referral but it takes them 30 minutes to explain your offering, they won\'t do it. Friction points: (1) Is the commission structure simple and worth their time? (2) Can they track referrals easily, or is it a black box? (3) Do they actually have leverage over their customers\' decisions, or are they just hoping people click a link? Also: relationship dependency. If your main contact at ' + prospectData.name + ' leaves, does the partnership die? That\'s a red flag.';
+            }
         } else if (matchScore >= 60) {
-            return 'Challenges may emerge around strategic priority misalignment and resource allocation for joint initiatives. Different organizational scales and decision-making velocities could create friction in partnership execution. Success will depend on establishing clear governance structures, defined success metrics, and transparent communication channels from the outset.';
+            if (lever === 'marketing') {
+                return 'Getting mindshare will be tough. Their audience kinda overlaps with yours, but not perfectly—which means your messaging needs to work harder. Friction: (1) You might need to create custom content just for their audience, which takes time. (2) Their brand might not want to be too closely associated with yours (brand alignment issues). (3) You\'re probably not their top partnership priority, so expect slow responses and delayed launches. Set realistic expectations: this might take 3 months to get live when you wanted 3 weeks.';
+            } else if (lever === 'operational') {
+                return 'You\'re trying to coordinate operations between two companies that probably have different systems, schedules, and priorities. Friction points: (1) Technical compatibility—even "simple" integrations require dev work and testing. (2) Process alignment—their booking flow might not accommodate your offering easily. (3) Support burden—when something breaks, who fixes it? Be clear upfront about ongoing maintenance, or this becomes a "launched once, broke twice, abandoned forever" situation.';
+            } else {
+                return 'The incentives don\'t naturally align, so you\'re manufacturing a partnership that requires active management. Risks: (1) They agree to promote you but never actually do it because other priorities take over. (2) The referral quality is low—they send you tire-kickers who don\'t convert. (3) Tracking disputes—they claim they sent 100 customers, you only see 30 conversions, and now you\'re arguing about attribution. Consider: is the potential upside worth the ongoing headache of managing this relationship?';
+            }
         } else {
-            return 'Fundamental differences in business models and market approaches present significant partnership risk. Economics may be difficult to structure in mutually beneficial ways. Consider these friction points as potential deal-breakers: misaligned incentives, competing customer relationships, and incompatible technology platforms. Recommend limiting initial engagement to low-risk exploratory discussions.';
+            return 'Let\'s be real: the friction here is that this partnership probably shouldn\'t happen. You\'re forcing a fit that isn\'t natural. Practical concerns: (1) You\'ll spend weeks negotiating something that might drive 10 customers. (2) Their team doesn\'t understand your value prop, so they can\'t sell it effectively. (3) Every communication will require over-explaining context because the overlap isn\'t obvious. Cut your losses: if you can\'t articulate why this partnership makes them more money or serves their customers better in one sentence, it\'s not worth pursuing.';
         }
     }
 
     function generateVettingQuestions(anchorData, prospectData, goal, matchScore) {
+        const lever = identifyPartnershipLever(anchorData, prospectData, goal);
         const questions = [];
         
-        questions.push('How does ' + prospectData.name + ' currently structure strategic partnerships, and what criteria do they use to evaluate potential partners pursuing goals like ' + goal.toLowerCase() + '?');
-        
+        // Question 1: Always about their partnership approach
         if (matchScore >= 70) {
-            questions.push('What specific capabilities, market access, or resources would ' + prospectData.name + ' expect from ' + anchorData.name + ' to make this partnership successful, and how do they measure partnership ROI?');
+            questions.push('Walk me through a partnership that actually worked for you. Who approached who, what was the deal structure, and what made it successful? (I want to understand if they actually execute on partnerships or just talk about them.)');
         } else {
-            questions.push('What has been ' + prospectData.name + '\'s experience with exploratory partnerships, and what governance model has proven most effective in managing early-stage collaborations?');
+            questions.push('Have you done partnerships like this before? If yes, what worked and what didn\'t? If no, who internally would need to approve this, and what\'s their typical decision timeline?');
         }
         
-        questions.push('Given ' + anchorData.name + '\'s focus on ' + goal.toLowerCase() + ', where does ' + prospectData.name + ' see the highest-value integration points within their current operations or growth strategy?');
+        // Question 2: Lever-specific tactical question
+        if (lever === 'marketing') {
+            questions.push('Where does your traffic come from, and which pages get the most eyeballs? I\'m trying to figure out where a partnership with ' + anchorData.name + ' would actually get visibility vs. getting buried. (Bonus: can you show me your analytics?)');
+        } else if (lever === 'operational') {
+            questions.push('Let\'s get specific about operations: what are your busiest times, who on your team would need to be involved in executing this, and what\'s the realistic timeline to get something live? I need to know if this is a 2-week project or a 6-month nightmare.');
+        } else {
+            questions.push('How do you typically incentivize referrals—flat fee, revenue share, or something else? And what\'s your threshold for "worth our time"? I want to make sure we structure something that actually motivates your team to promote us.');
+        }
+        
+        // Question 3: Always about objections/concerns
+        questions.push('What\'s your biggest concern or hesitation about partnering with ' + anchorData.name + ' for ' + goal.toLowerCase() + '? I\'d rather address the elephant in the room now than have it derail us later.');
         
         return questions;
     }
