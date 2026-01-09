@@ -200,7 +200,7 @@
                             <input 
                                 type="text" 
                                 id="strategicGoal"
-                                placeholder="e.g., Maximize seat yield on weekend routes, Scale LATAM operations"
+                                placeholder="e.g., Reduce CAC by 40%, Expand to enterprise, Improve retention"
                                 class="input-field w-full px-4 py-3 rounded text-sm"
                             />
                         </div>
@@ -247,7 +247,7 @@
                 <!-- Match Score -->
                 <div class="text-center mb-8">
                     <div class="match-score mb-2" id="matchScore">0%</div>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Partnership Fit</p>
+                    <p class="text-xs text-gray-500 uppercase tracking-wider">Strategic Fit</p>
                 </div>
                 
                 <div class="section-divider mb-8"></div>
@@ -260,16 +260,16 @@
                 
                 <div class="section-divider mb-8"></div>
                 
-                <!-- Strategic Value -->
+                <!-- Partnership Thesis -->
                 <div class="mb-8">
-                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Strategic Value</h4>
-                    <p class="text-gray-300 leading-relaxed" id="strategicValue"></p>
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-3">Partnership Thesis</h4>
+                    <div class="text-gray-300 leading-relaxed space-y-4" id="partnershipThesis"></div>
                 </div>
                 
-                <!-- Vetting Questions -->
+                <!-- Critical Questions -->
                 <div>
-                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Vetting Questions</h4>
-                    <div class="space-y-3" id="vettingQuestions"></div>
+                    <h4 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4">Critical Questions</h4>
+                    <div class="space-y-3" id="criticalQuestions"></div>
                 </div>
             </div>
         </div>
@@ -286,12 +286,55 @@
     let prospectData = {};
     let strategicGoal = '';
 
-    // Load saved anchor URL on init
+    // Industry vertical detection
+    function detectIndustryVertical(companyInfo) {
+        const info = companyInfo.toLowerCase();
+        
+        if (info.includes('saas') || info.includes('software as a service') || 
+            (info.includes('software') && info.includes('subscription'))) {
+            return 'SaaS';
+        } else if (info.includes('education') || info.includes('learning') || info.includes('course') || info.includes('student')) {
+            return 'EdTech';
+        } else if (info.includes('fintech') || info.includes('payment') || info.includes('banking') || info.includes('financial')) {
+            return 'Fintech';
+        } else if (info.includes('ecommerce') || info.includes('e-commerce') || info.includes('online store') || info.includes('marketplace')) {
+            return 'Ecommerce';
+        } else if (info.includes('hotel') || info.includes('lodging') || info.includes('hospitality') || info.includes('resort')) {
+            return 'Hospitality';
+        } else if (info.includes('logistics') || info.includes('supply chain') || info.includes('freight') || info.includes('shipping')) {
+            return 'Logistics';
+        } else if (info.includes('media') || info.includes('content') || info.includes('streaming') || info.includes('entertainment')) {
+            return 'Media';
+        } else if (info.includes('healthcare') || info.includes('medical') || info.includes('health tech')) {
+            return 'HealthTech';
+        } else if (info.includes('marketing') || info.includes('advertising') || info.includes('martech')) {
+            return 'MarTech';
+        } else {
+            return 'Technology';
+        }
+    }
+
+    // Get industry-specific KPIs
+    function getIndustryKPIs(vertical) {
+        const kpis = {
+            'SaaS': ['CAC', 'LTV', 'churn rate', 'MRR', 'expansion revenue'],
+            'EdTech': ['user retention', 'course completion', 'DAU/MAU', 'engagement time'],
+            'Fintech': ['transaction volume', 'take rate', 'fraud rate', 'user acquisition'],
+            'Ecommerce': ['GMV', 'average order value', 'conversion rate', 'repeat purchase rate'],
+            'Hospitality': ['occupancy rate', 'ADR', 'RevPAR', 'booking conversion'],
+            'Logistics': ['TEU volume', 'tonnage', 'route density', 'utilization rate'],
+            'Media': ['subscriber growth', 'content consumption', 'ad revenue', 'engagement'],
+            'HealthTech': ['patient acquisition', 'clinical outcomes', 'reimbursement rates'],
+            'MarTech': ['attribution accuracy', 'campaign ROI', 'customer data quality'],
+            'Technology': ['user growth', 'revenue', 'market share']
+        };
+        
+        return kpis[vertical] || kpis['Technology'];
+    }
+
     function loadSavedAnchor() {
         const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) {
-            document.getElementById('anchorUrl').value = saved;
-        }
+        if (saved) document.getElementById('anchorUrl').value = saved;
     }
 
     function saveAnchorUrl(url) {
@@ -322,7 +365,7 @@
             await sleep(500);
             
             const anchorName = extractCompanyName(anchorUrl);
-            const anchorQuery = anchorName + ' company business model revenue customers market';
+            const anchorQuery = anchorName + ' company business model revenue customers products services';
             const anchorResults = await searchTavily(anchorQuery);
             
             anchorData = {
@@ -335,6 +378,9 @@
             if (anchorResults.results && anchorResults.results.length > 0) {
                 anchorData.info += ' ' + anchorResults.results.map(r => r.content).join(' ');
             }
+            
+            anchorData.vertical = detectIndustryVertical(anchorData.info);
+            anchorData.kpis = getIndustryKPIs(anchorData.vertical);
             
             await sleep(400);
             
@@ -366,12 +412,16 @@
 
     function extractGoal(data) {
         const info = data.info.toLowerCase();
-        if (info.includes('transport') || info.includes('logistics')) {
-            return 'maximizing capacity utilization and yield';
-        } else if (info.includes('market') || info.includes('expand')) {
-            return 'scaling market presence';
+        const vertical = data.vertical;
+        
+        if (vertical === 'SaaS') {
+            return info.includes('enterprise') ? 'expand into enterprise market' : 'reduce customer acquisition costs';
+        } else if (vertical === 'EdTech') {
+            return 'improve user retention and engagement';
+        } else if (vertical === 'Ecommerce') {
+            return 'increase average order value and repeat purchases';
         } else {
-            return 'strategic growth';
+            return 'accelerate growth and market penetration';
         }
     }
 
@@ -403,7 +453,7 @@
             await sleep(600);
             
             const prospectName = extractCompanyName(prospectUrl);
-            const prospectQuery = prospectName + ' company customers location traffic volume audience';
+            const prospectQuery = prospectName + ' company business model customers market products services';
             const prospectResults = await searchTavily(prospectQuery);
             
             prospectData = {
@@ -417,9 +467,12 @@
                 prospectData.info += ' ' + prospectResults.results.map(r => r.content).join(' ');
             }
             
+            prospectData.vertical = detectIndustryVertical(prospectData.info);
+            prospectData.kpis = getIndustryKPIs(prospectData.vertical);
+            
             await sleep(600);
             
-            updateProgress('Analyzing fit...', 'Calculating partnership value');
+            updateProgress('Analyzing fit...', 'Calculating strategic alignment');
             await sleep(800);
             
             const analysis = generateAnalysis();
@@ -435,67 +488,116 @@
     }
 
     function generateAnalysis() {
-        const combined = (anchorData.info + ' ' + prospectData.info + ' ' + strategicGoal).toLowerCase();
+        const anchorInfo = anchorData.info.toLowerCase();
+        const prospectInfo = prospectData.info.toLowerCase();
+        const combined = anchorInfo + ' ' + prospectInfo + ' ' + strategicGoal.toLowerCase();
         
-        // Calculate match score
-        let score = 50;
+        // Calculate strategic fit score
+        let score = 60;
         
-        // Demand indicators
-        const demandWords = ['hotel', 'resort', 'venue', 'destination', 'event', 'tourism', 'visitor'];
-        demandWords.forEach(w => { if (combined.includes(w)) score += 8; });
+        // Audience overlap
+        const audienceWords = ['customer', 'user', 'market', 'audience', 'demographic'];
+        audienceWords.forEach(w => {
+            if (anchorInfo.includes(w) && prospectInfo.includes(w)) score += 5;
+        });
         
-        // Volume indicators
-        const volumeWords = ['thousand', 'million', 'large', 'major', 'popular', 'busy'];
-        volumeWords.forEach(w => { if (combined.includes(w)) score += 6; });
+        // Vertical alignment
+        if (anchorData.vertical === prospectData.vertical) {
+            score += 10;
+        } else {
+            // Check for complementary verticals
+            const complementary = [
+                ['EdTech', 'SaaS'], ['Ecommerce', 'Logistics'], 
+                ['Fintech', 'Ecommerce'], ['MarTech', 'SaaS']
+            ];
+            for (let pair of complementary) {
+                if ((anchorData.vertical === pair[0] && prospectData.vertical === pair[1]) ||
+                    (anchorData.vertical === pair[1] && prospectData.vertical === pair[0])) {
+                    score += 8;
+                    break;
+                }
+            }
+        }
         
-        // Execution simplicity
-        const easyWords = ['website', 'online', 'booking', 'link', 'partner'];
-        easyWords.forEach(w => { if (combined.includes(w)) score += 4; });
+        // Goal alignment
+        const goalWords = strategicGoal.toLowerCase().split(' ').filter(w => w.length > 3);
+        goalWords.forEach(word => {
+            const escapedWord = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            if (prospectInfo.match(new RegExp(escapedWord, 'gi'))) {
+                score += 3;
+            }
+        });
         
-        score = Math.min(score + (Math.random() * 10 - 5), 96);
-        score = Math.max(score, 55);
+        score = Math.min(score + (Math.random() * 8 - 4), 94);
+        score = Math.max(score, 58);
         score = Math.round(score);
         
-        // Generate insights using dual lens
-        const matchmakerInsight = generateMatchmakerInsight(combined, score);
-        const arbitrageInsight = generateArbitrageInsight(combined, score);
-        
-        const executiveSummary = generateExecutiveSummary(score, matchmakerInsight, arbitrageInsight);
-        const strategicValue = generateStrategicValue(score, matchmakerInsight, arbitrageInsight);
-        const questions = generateQuestions(score);
+        // Generate insights
+        const matchmaker = generateMatchmakerInsight(score);
+        const arbitrage = generateArbitrageInsight(score);
+        const summary = generateExecutiveSummary(score, matchmaker, arbitrage);
+        const questions = generateCriticalQuestions(score);
         
         return {
             score: score,
-            executiveSummary: executiveSummary,
-            strategicValue: strategicValue,
+            summary: summary,
+            matchmaker: matchmaker,
+            arbitrage: arbitrage,
             questions: questions
         };
     }
 
-    function generateMatchmakerInsight(combined, score) {
-        let mechanism = 'digital link placement';
-        if (combined.includes('booking')) mechanism = 'integrated booking';
-        if (combined.includes('concierge') || combined.includes('staff')) mechanism = 'direct referrals';
-        if (combined.includes('email')) mechanism = 'email campaigns';
+    function generateMatchmakerInsight(score) {
+        const anchor = anchorData.name;
+        const prospect = prospectData.name;
+        const anchorKPI = anchorData.kpis[0];
+        const prospectKPI = prospectData.kpis[0];
         
-        let volume = '100-200';
-        if (score >= 85) volume = '400-800';
-        else if (score >= 70) volume = '200-400';
-        
-        return { mechanism, volume };
+        if (score >= 85) {
+            return prospect + ' provides ' + anchor + ' with direct access to an engaged user base that aligns with ' + anchor + '\'s target demographic. The immediate play: cross-promotion through ' + prospect + '\'s existing channels (email, in-app, social). Economics are straightforward—revenue share or fixed CPM for placements. This reduces ' + anchor + '\'s ' + anchorKPI + ' while ' + prospect + ' monetizes their audience. Implementation is 4-6 weeks: creative assets, tracking pixels, and a simple rev-share agreement.';
+        } else if (score >= 70) {
+            return 'The direct overlap between ' + anchor + ' and ' + prospect + ' isn\'t perfect, but there\'s a play here. ' + prospect + ' has distribution; ' + anchor + ' has a product that could interest a segment of ' + prospect + '\'s users. Test with a limited campaign—email blast or co-branded content—and measure conversion. If ' + anchor + ' converts at 2%+ and the economics work, scale it. If not, this stays as a one-time experiment.';
+        } else {
+            return 'Audience overlap is minimal. ' + prospect + '\'s users don\'t naturally need what ' + anchor + ' offers. Any partnership here requires manufactured demand—heavy education, custom content, or incentives. Not impossible, but the lift-to-value ratio is unfavorable. Recommend focusing ' + anchor + '\'s BD resources on prospects with more obvious fit.';
+        }
     }
 
-    function generateArbitrageInsight(combined, score) {
-        let opportunity = null;
+    function generateArbitrageInsight(score) {
+        const anchor = anchorData.name;
+        const prospect = prospectData.name;
+        const anchorVertical = anchorData.vertical;
+        const prospectVertical = prospectData.vertical;
         
-        if (combined.includes('mountain') || combined.includes('ski') || combined.includes('resort')) {
-            opportunity = 'Create dedicated weekend ski shuttle routes with premium pricing during peak season';
-        } else if (combined.includes('event') || combined.includes('venue') || combined.includes('concert')) {
-            opportunity = 'Launch event-specific transportation packages sold through their ticketing system';
-        } else if (combined.includes('hotel') || combined.includes('lodging')) {
-            opportunity = 'Offer white-label transportation as an upsell in their booking flow';
-        } else if (combined.includes('tour') || combined.includes('attraction')) {
-            opportunity = 'Co-create combination tickets bundling transportation with admission';
+        let opportunity = '';
+        
+        // EdTech + Hospitality = Language immersion programs
+        if ((anchorVertical === 'EdTech' && prospectVertical === 'Hospitality') ||
+            (anchorVertical === 'Hospitality' && prospectVertical === 'EdTech')) {
+            opportunity = 'Co-create language immersion experiences—guests stay at ' + 
+                         (prospectVertical === 'Hospitality' ? prospect : anchor) + 
+                         ' locations while enrolled in intensive courses from ' +
+                         (anchorVertical === 'EdTech' ? anchor : prospect) + 
+                         '. Package and sell as premium offering splitting revenue 60/40.';
+        }
+        // SaaS + Ecommerce = Embedded tools
+        else if ((anchorVertical === 'SaaS' && prospectVertical === 'Ecommerce') ||
+                 (anchorVertical === 'Ecommerce' && prospectVertical === 'SaaS')) {
+            opportunity = (anchorVertical === 'SaaS' ? anchor : prospect) + 
+                         ' embeds their tools directly into ' +
+                         (prospectVertical === 'Ecommerce' ? prospect : anchor) + 
+                         '\'s platform as a native feature. Offer freemium tier to drive adoption, upsell premium. Revenue split on upgrades.';
+        }
+        // Fintech + Ecommerce = Embedded payments
+        else if ((anchorVertical === 'Fintech' && prospectVertical === 'Ecommerce') ||
+                 (anchorVertical === 'Ecommerce' && prospectVertical === 'Fintech')) {
+            opportunity = 'White-label ' + (anchorVertical === 'Fintech' ? anchor : prospect) + 
+                         '\'s payment infrastructure for ' + (prospectVertical === 'Ecommerce' ? prospect : anchor) + 
+                         '\'s merchants. Monetize through basis points on transaction volume.';
+        }
+        // Generic arbitrage for other combinations
+        else {
+            opportunity = 'The arbitrage opportunity requires ' + anchor + ' and ' + prospect + 
+                         ' to co-create a new offering that neither currently provides. Identify a shared customer pain point that sits between both companies\' core competencies. Structure as joint venture or co-branded product with shared P&L.';
         }
         
         return opportunity;
@@ -504,50 +606,29 @@
     function generateExecutiveSummary(score, matchmaker, arbitrage) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
+        const anchorKPI = anchorData.kpis[0];
         
         if (score >= 85) {
-            return prospect + ' is a tier-one opportunity for ' + anchor + '. Projected monthly volume: ' + matchmaker.volume + ' seats through ' + matchmaker.mechanism + '. This partnership solves their customer pain point (access/logistics) while delivering predictable demand for ' + anchor + '. Economics are straightforward—commission or wholesale seat blocks. The relationship scales because both parties benefit from the same transaction.';
+            return prospect + ' represents a high-value partnership opportunity for ' + anchor + '. The strategic thesis rests on immediate audience alignment and distribution synergy. Near-term revenue impact: ' + prospect + ' drives incremental user acquisition for ' + anchor + ' at lower ' + anchorKPI + ' than current channels. Long-term opportunity: co-develop new products that neither company builds alone. Partnership structure: phased approach starting with low-lift cross-promotion, scaling to deeper integration if initial metrics validate the thesis.';
         } else if (score >= 70) {
-            return prospect + ' represents solid supplemental demand for ' + anchor + ': ' + matchmaker.volume + ' monthly seats via ' + matchmaker.mechanism + '. This works if they actively promote it—not passive placement. ' + anchor + ' needs commitment to email pushes, booking flow integration, or staff training. Without active promotion, volume remains marginal.';
+            return prospect + ' offers ' + anchor + ' a viable but not transformational partnership. The opportunity centers on accessing ' + prospect + '\'s distribution while the strategic fit requires validation through a controlled pilot. Economics need to be proven—this only makes sense if ' + anchor + ' sees measurable improvement in ' + anchorKPI + ' within 90 days. Avoid over-investing in integration before the partnership demonstrates ROI. Structure initial engagement as time-boxed experiment with clear success metrics.';
         } else {
-            return prospect + ' is a test-and-learn opportunity for ' + anchor + '. Estimated ' + matchmaker.volume + ' monthly seats. This requires ' + prospect + ' to solve a problem for their customers that ' + anchor + ' addresses. If they can\'t articulate existing customer demand for what ' + anchor + ' provides, walk away—partnership won\'t gain organic traction.';
+            return 'Strategic fit between ' + anchor + ' and ' + prospect + ' is weak. The companies serve different audiences, operate in different verticals, and lack obvious operational synergies. Any partnership here requires significant effort to create value rather than capture existing opportunities. Recommendation: deprioritize this prospect. Successful partnerships emerge from natural market overlap, not manufactured alignment. ' + anchor + '\'s BD resources are better deployed pursuing prospects where the value proposition is self-evident.';
         }
     }
 
-    function generateStrategicValue(score, matchmaker, arbitrage) {
+    function generateCriticalQuestions(score) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
+        const prospectKPI = prospectData.kpis[0];
         
-        let value = '';
-        
-        // Low-lift wins
-        if (score >= 70) {
-            value += '**Immediate Wins:** ' + prospect + ' implements ' + matchmaker.mechanism + ' within 2-4 weeks. ' + anchor + ' provides booking widget or referral link. They handle customer communication; ' + anchor + ' handles fulfillment. Revenue split negotiated based on whose brand carries the transaction. ';
-        } else {
-            value += '**Baseline Play:** Basic cross-promotion through ' + matchmaker.mechanism + '. Low effort but uncertain volume. Recommend 60-day pilot before deeper investment. ';
-        }
-        
-        // Arbitrage opportunity
-        if (arbitrage.opportunity) {
-            value += '**The Gorge Effect (Unseen Volume):** ' + arbitrage.opportunity + '. This isn\'t on their roadmap yet, but ' + prospect + ' controls access to high-value demand that ' + anchor + ' can monetize. Structure as revenue-share or co-branded product. Test with limited pilot before full rollout.';
-        } else {
-            value += '**Volume Ceiling:** Partnership limited to incremental demand rather than transformational growth. Focus ' + anchor + '\'s BD resources on prospects with clearer arbitrage opportunities.';
-        }
-        
-        return value;
-    }
-
-    function generateQuestions(score) {
-        const anchor = anchorData.name;
-        const prospect = prospectData.name;
-        
-        const q1 = 'What\'s your current monthly customer volume at the relevant location(s), and what percentage need transportation to destinations ' + anchor + ' serves?';
+        const q1 = 'What percentage of ' + prospect + '\'s user base overlaps with ' + anchor + '\'s target demographic, and what data supports that estimate?';
         
         const q2 = score >= 80 
-            ? 'Walk me through exactly how you\'d present ' + anchor + ' to customers—website placement, booking integration, staff referrals. Show mockups or describe the journey in detail.'
-            : 'Why would your customers choose ' + anchor + ' over driving, and how do you currently solve their transportation needs—or do they solve it themselves?';
+            ? 'How does ' + prospect + ' currently monetize their audience, and where does a partnership with ' + anchor + ' rank against other monetization opportunities they\'re evaluating?'
+            : 'What evidence suggests ' + prospect + '\'s users have demand for what ' + anchor + ' provides, and how acute is that demand relative to their other priorities?';
         
-        const q3 = 'What commission structure makes this worth your team\'s time, and who internally owns partnership revenue—is this tied to someone\'s bonus or just a "nice to have"?';
+        const q3 = 'Who internally at ' + prospect + ' owns partnership revenue, and is this tied to their compensation—meaning they\'re actually incentivized to make this work?';
         
         return [q1, q2, q3];
     }
@@ -556,16 +637,20 @@
         document.getElementById('modalProspectName').textContent = prospectData.name;
         document.getElementById('modalProspectUrl').textContent = prospectData.url.replace('https://', '').replace('http://', '');
         document.getElementById('matchScore').textContent = analysis.score + '%';
-        document.getElementById('executiveSummary').textContent = analysis.executiveSummary;
+        document.getElementById('executiveSummary').textContent = analysis.summary;
         
-        // Format strategic value with bold
-        const formattedValue = analysis.strategicValue.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        document.getElementById('strategicValue').innerHTML = formattedValue;
+        const thesisHtml = 
+            '<div><p class="text-sm font-semibold text-indigo-400 mb-2">The Matchmaker:</p>' +
+            '<p>' + analysis.matchmaker + '</p></div>' +
+            '<div><p class="text-sm font-semibold text-indigo-400 mb-2">The Arbitrage Hunter:</p>' +
+            '<p>' + analysis.arbitrage + '</p></div>';
+        
+        document.getElementById('partnershipThesis').innerHTML = thesisHtml;
         
         const questionsHtml = analysis.questions.map((q, i) => 
             '<div class="question-card p-4 rounded"><div class="flex gap-3"><div class="text-indigo-400 font-semibold flex-shrink-0">' + (i + 1) + '.</div><p class="text-sm text-gray-300">' + q + '</p></div></div>'
         ).join('');
-        document.getElementById('vettingQuestions').innerHTML = questionsHtml;
+        document.getElementById('criticalQuestions').innerHTML = questionsHtml;
         
         hideProgress();
         document.getElementById('resultsModal').classList.remove('hidden');
@@ -579,22 +664,25 @@
             const domain = hostname.split('.')[0].toLowerCase().replace(/[-_]/g, '');
             
             const brands = {
-                'mthigh': 'Mountain High Resort',
-                'mountainhigh': 'Mountain High Resort',
-                'rally': 'Rally',
-                'rallybus': 'Rally',
-                'rallybuses': 'Rally',
-                'starline': 'Starline Collection',
-                'starlinecollection': 'Starline Collection',
-                'marriott': 'Marriott',
-                'hilton': 'Hilton',
-                'hyatt': 'Hyatt',
-                'airbnb': 'Airbnb'
+                'duolingo': 'Duolingo',
+                'airbnb': 'Airbnb',
+                'flexport': 'Flexport',
+                'stripe': 'Stripe',
+                'shopify': 'Shopify',
+                'netflix': 'Netflix',
+                'uber': 'Uber',
+                'lyft': 'Lyft',
+                'doordash': 'DoorDash',
+                'instacart': 'Instacart',
+                'coursera': 'Coursera',
+                'udemy': 'Udemy',
+                'salesforce': 'Salesforce',
+                'hubspot': 'HubSpot',
+                'mailchimp': 'Mailchimp'
             };
             
             if (brands[domain]) return brands[domain];
             
-            // Smart capitalization
             let name = hostname.split('.')[0];
             name = name.replace(/([a-z])([A-Z])/g, '$1 $2');
             name = name.split(/[-_\s]+/).map(w => 
@@ -625,10 +713,7 @@
             return await response.json();
         } catch (error) {
             console.error('Search error:', error);
-            return {
-                answer: 'Business services company.',
-                results: []
-            };
+            return { answer: 'Company information.', results: [] };
         }
     }
 
@@ -665,7 +750,6 @@
         return new Promise(resolve => setTimeout(resolve, ms));
     }
 
-    // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         loadSavedAnchor();
         
