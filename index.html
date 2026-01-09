@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strategic Partner Scout - 2026</title>
+    <title>Strategic Partner Scout | Senior Partner Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -12,470 +12,395 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
-            color: #e0e0e0;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1629 100%);
             min-height: 100vh;
+            color: #e0e7ff;
             padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
-        header {
+        .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 30px 20px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 50px;
+            padding-top: 40px;
         }
 
-        h1 {
-            font-size: 2.5em;
+        .header h1 {
+            font-size: 2.5rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+            background-clip: text;
             margin-bottom: 10px;
+            letter-spacing: -1px;
         }
 
-        .subtitle {
-            color: #888;
-            font-size: 0.95em;
+        .header p {
+            color: #94a3b8;
+            font-size: 1rem;
+            font-weight: 300;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.4);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #cbd5e1;
+            font-weight: 500;
+            font-size: 0.95rem;
+            text-transform: uppercase;
             letter-spacing: 0.5px;
         }
 
-        .api-section {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .api-section label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 600;
-            color: #a0a0a0;
-            font-size: 0.9em;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .api-input {
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
             width: 100%;
-            padding: 14px 18px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #e0e0e0;
-            font-size: 0.95em;
+            padding: 15px 20px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 12px;
+            color: #e0e7ff;
+            font-size: 1rem;
             transition: all 0.3s ease;
-        }
-
-        .api-input:focus {
-            outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .input-section {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: #a0a0a0;
-            font-size: 0.9em;
-        }
-
-        .input-group input, .input-group textarea {
-            width: 100%;
-            padding: 14px 18px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            color: #e0e0e0;
-            font-size: 0.95em;
-            transition: all 0.3s ease;
-        }
-
-        .input-group textarea {
-            min-height: 100px;
-            resize: vertical;
             font-family: inherit;
         }
 
-        .input-group input:focus, .input-group textarea:focus {
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
             outline: none;
-            border-color: #667eea;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            border-color: #60a5fa;
+            background: rgba(15, 23, 42, 0.8);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
         }
 
-        .analyze-btn {
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .form-group select {
+            cursor: pointer;
+        }
+
+        .btn-analyze {
             width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 18px;
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
             color: white;
-            font-size: 1.1em;
-            font-weight: 700;
+            font-size: 1.1rem;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
         }
 
-        .analyze-btn:hover {
+        .btn-analyze:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
         }
 
-        .analyze-btn:disabled {
+        .btn-analyze:active {
+            transform: translateY(0);
+        }
+
+        .btn-analyze:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none;
         }
 
-        .results {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 30px;
-            border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            margin-top: 30px;
-        }
-
-        .tier-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 20px;
-        }
-
-        .tier-institutional {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            color: white;
-        }
-
-        .tier-sovereign {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            color: white;
-        }
-
-        .tier-orbital {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            color: white;
-        }
-
-        .tier-prestige {
-            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            color: white;
-        }
-
-        .section-block {
-            background: rgba(0, 0, 0, 0.3);
-            padding: 25px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border-left: 4px solid #667eea;
-        }
-
-        .section-title {
-            font-size: 1.3em;
-            font-weight: 700;
-            margin-bottom: 15px;
-            color: #fff;
-        }
-
-        .section-content {
-            color: #c0c0c0;
-            line-height: 1.7;
-            white-space: pre-wrap;
-        }
-
-        .question {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 15px 20px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            border-left: 3px solid #764ba2;
-        }
-
-        .question-number {
-            font-weight: 700;
-            color: #667eea;
-            margin-bottom: 8px;
-        }
-
         .loading {
+            display: none;
             text-align: center;
             padding: 40px;
-            color: #888;
+        }
+
+        .loading.active {
+            display: block;
         }
 
         .spinner {
-            border: 3px solid rgba(255, 255, 255, 0.1);
-            border-top: 3px solid #667eea;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(96, 165, 250, 0.2);
+            border-top-color: #60a5fa;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
             animation: spin 1s linear infinite;
             margin: 0 auto 20px;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .result-section {
+            margin-bottom: 30px;
+        }
+
+        .result-section h3 {
+            color: #60a5fa;
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section h3::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(to bottom, #60a5fa, #8b5cf6);
+            border-radius: 2px;
+        }
+
+        .result-content {
+            color: #cbd5e1;
+            line-height: 1.8;
+            font-size: 1rem;
+        }
+
+        .result-content p {
+            margin-bottom: 15px;
+        }
+
+        .company-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(96, 165, 250, 0.2);
+        }
+
+        .company-header h2 {
+            font-size: 2rem;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .company-header .tier {
+            color: #a78bfa;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .error {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid rgba(255, 0, 0, 0.3);
+            display: none;
             padding: 20px;
-            border-radius: 8px;
-            color: #ff6b6b;
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 12px;
+            color: #fca5a5;
             margin-top: 20px;
+        }
+
+        .error.active {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .glass-panel {
+                padding: 25px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <header>
+        <div class="header">
             <h1>Strategic Partner Scout</h1>
-            <p class="subtitle">2026 Market Reality Engine • BD Framework Analysis</p>
-        </header>
-
-        <div class="api-section">
-            <label for="apiKey">Anthropic API Key</label>
-            <input 
-                type="password" 
-                id="apiKey" 
-                class="api-input" 
-                placeholder="sk-ant-api03-..."
-                autocomplete="off"
-            >
+            <p>Senior Partner Intelligence Dashboard</p>
         </div>
 
-        <div class="input-section">
-            <div class="input-group">
-                <label for="companyUrl">Company Website URL</label>
-                <input 
-                    type="url" 
-                    id="companyUrl" 
-                    placeholder="https://example.com"
-                >
-            </div>
+        <div class="glass-panel">
+            <form id="analysisForm">
+                <div class="form-group">
+                    <label for="companyUrl">Company URL</label>
+                    <input 
+                        type="url" 
+                        id="companyUrl" 
+                        name="companyUrl" 
+                        placeholder="https://company.com"
+                        required
+                    >
+                </div>
 
-            <div class="input-group">
-                <label for="context">Additional Context (Optional)</label>
-                <textarea 
-                    id="context" 
-                    placeholder="Any additional information about the company, their tech, or specific areas of interest..."
-                ></textarea>
-            </div>
+                <div class="form-group">
+                    <label for="realityTier">Reality Tier</label>
+                    <select id="realityTier" name="realityTier" required>
+                        <option value="">Select Reality Tier</option>
+                        <option value="Institutional RWA">Institutional RWA</option>
+                        <option value="Sovereign AI">Sovereign AI</option>
+                        <option value="Orbital Tech">Orbital Tech</option>
+                        <option value="Prestige">Prestige</option>
+                    </select>
+                </div>
 
-            <button class="analyze-btn" id="analyzeBtn">Scout Partnership</button>
+                <div class="form-group">
+                    <label for="strategicContext">Strategic Context</label>
+                    <textarea 
+                        id="strategicContext" 
+                        name="strategicContext" 
+                        placeholder="Describe the strategic landscape, market positioning, or specific intelligence requirements..."
+                        required
+                    ></textarea>
+                </div>
+
+                <button type="submit" class="btn-analyze" id="analyzeBtn">
+                    Initiate Intelligence Sweep
+                </button>
+
+                <div class="error" id="errorMessage"></div>
+            </form>
         </div>
 
-        <div id="results"></div>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Analyzing strategic positioning...</p>
+        </div>
+
+        <div class="glass-panel results" id="results">
+            <div class="company-header" id="companyHeader"></div>
+            
+            <div class="result-section">
+                <h3>Structural Gorge</h3>
+                <div class="result-content" id="structuralGorge"></div>
+            </div>
+
+            <div class="result-section">
+                <h3>Arbitrage Hunter</h3>
+                <div class="result-content" id="arbitrageHunter"></div>
+            </div>
+
+            <div class="result-section">
+                <h3>Strategic Assessment</h3>
+                <div class="result-content" id="strategicAssessment"></div>
+            </div>
+        </div>
     </div>
 
     <script>
-        const apiKeyInput = document.getElementById('apiKey');
-        const companyUrlInput = document.getElementById('companyUrl');
-        const contextInput = document.getElementById('context');
+        const form = document.getElementById('analysisForm');
+        const loading = document.getElementById('loading');
+        const results = document.getElementById('results');
+        const errorMessage = document.getElementById('errorMessage');
         const analyzeBtn = document.getElementById('analyzeBtn');
-        const resultsDiv = document.getElementById('results');
 
-        const savedApiKey = sessionStorage.getItem('anthropic_api_key');
-        if (savedApiKey) {
-            apiKeyInput.value = savedApiKey;
-        }
-
-        apiKeyInput.addEventListener('change', () => {
-            sessionStorage.setItem('anthropic_api_key', apiKeyInput.value);
-        });
-
-        analyzeBtn.addEventListener('click', async () => {
-            const apiKey = apiKeyInput.value.trim();
-            const companyUrl = companyUrlInput.value.trim();
-            const context = contextInput.value.trim();
-
-            if (!apiKey) {
-                alert('Please enter your Anthropic API key');
-                return;
-            }
-
-            if (!companyUrl) {
-                alert('Please enter a company website URL');
-                return;
-            }
-
-            analyzeBtn.disabled = true;
-            resultsDiv.innerHTML = '<div class="loading"><div class="spinner"></div><p>Analyzing partnership opportunity...</p></div>';
-
-            try {
-                let companyName = extractCompanyName(companyUrl);
-                
-                const prompt = `You are a Senior BD Partner Engineer analyzing potential strategic partnerships in January 2026.
-
-COMPANY: ${companyName}
-WEBSITE: ${companyUrl}
-${context ? `CONTEXT: ${context}` : ''}
-
-YOUR TASK:
-Analyze this company and categorize them into ONE Reality Tier, then provide the BD Framework analysis.
-
-REALITY TIERS (Choose ONE):
-1. [Institutional RWA/Yield] - Traditional finance meeting blockchain: tokenization, stablecoins, custody, institutional DeFi, yield products. Examples: JPMorgan Kinexys, BlackRock BUIDL, Securitize.
-2. [Sovereign AI/Compute] - AI infrastructure, data centers, GPU clusters, sovereign compute, AI sovereignty. Examples: CoreWeave, Applied Digital, Nvidia Rubin chip deployments.
-3. [Orbital/Deep Tech] - Space tech, quantum computing, biotech, advanced materials, frontier science. Examples: SpaceX Starlink, Varda Space, quantum networking.
-4. [High-Touch/Prestige] - Consumer brands, luxury, sports, entertainment, cultural IP. Examples: LVMH, NBA, Formula 1.
-
-STRICT ISOLATION RULES:
-- NO GPU/compute talk in Finance tier
-- NO yield/tokenization talk in AI Infrastructure tier
-- NO prestige/brand talk in Deep Tech tier
-- Keep each tier's vocabulary and concerns PURE
-
-OUTPUT FORMAT:
-
-**REALITY TIER**: [Tier Name]
-
-**MATCHMAKER - Physical Fundamental Handshake**
-[Identify the core physical/technical handshake. What tangible infrastructure, technology, or capability creates the partnership foundation? Be specific to the 2026 market reality.]
-
-**ARBITRAGE HUNTER - Revenue Category or Cost Saving**
-[What new revenue stream opens up? Or what major cost gets eliminated? Use real 2026 numbers/ranges where possible. Focus on the economic unlock.]
-
-**EXECUTIVE VETTING - 3 Gritty Questions**
-[Ask 3 tough, tier-specific questions that probe real execution risks, market timing, competitive moats, or operational complexity. These should make an executive pause and think.]
-
-Keep your analysis sharp, realistic, and grounded in current 2026 market dynamics.`;
-
-                const response = await fetch('https://api.anthropic.com/v1/messages', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': apiKey,
-                        'anthropic-version': '2023-06-01',
-                        'anthropic-dangerous-direct-browser-access': 'true'
-                    },
-                    body: JSON.stringify({
-                        model: 'claude-sonnet-4-20250514',
-                        max_tokens: 2000,
-                        messages: [{
-                            role: 'user',
-                            content: prompt
-                        }]
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error?.message || 'API request failed');
-                }
-
-                const data = await response.json();
-                const analysisText = data.content[0].text;
-
-                displayResults(analysisText, companyName);
-
-            } catch (error) {
-                resultsDiv.innerHTML = `<div class="error"><strong>Error:</strong> ${error.message}</div>`;
-            } finally {
-                analyzeBtn.disabled = false;
-            }
-        });
-
+        // Extract company name from URL
         function extractCompanyName(url) {
             try {
                 const urlObj = new URL(url);
-                let domain = urlObj.hostname.replace('www.', '');
-                let name = domain.split('.')[0];
+                let hostname = urlObj.hostname;
                 
-                if (name.toLowerCase() === 'www' || name.length < 2) {
-                    const parts = domain.split('.');
-                    name = parts[parts.length - 2] || domain;
+                // Remove www. prefix
+                hostname = hostname.replace(/^www\./i, '');
+                
+                // Extract domain name (remove TLD)
+                const parts = hostname.split('.');
+                if (parts.length > 0) {
+                    let companyName = parts[0];
+                    // Capitalize first letter
+                    return companyName.charAt(0).toUpperCase() + companyName.slice(1);
                 }
                 
-                return name.charAt(0).toUpperCase() + name.slice(1);
-            } catch {
+                return hostname;
+            } catch (e) {
                 return 'Company';
             }
         }
 
-        function displayResults(analysisText, companyName) {
-            const tierMatch = analysisText.match(/\*\*REALITY TIER\*\*:?\s*\[?([^\]\n]+)\]?/i);
-            const tier = tierMatch ? tierMatch[1].trim() : 'Unknown';
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Reset states
+            loading.classList.add('active');
+            results.classList.remove('active');
+            errorMessage.classList.remove('active');
+            analyzeBtn.disabled = true;
 
-            let tierClass = 'tier-institutional';
-            if (tier.toLowerCase().includes('sovereign') || tier.toLowerCase().includes('ai') || tier.toLowerCase().includes('compute')) {
-                tierClass = 'tier-sovereign';
-            } else if (tier.toLowerCase().includes('orbital') || tier.toLowerCase().includes('deep tech')) {
-                tierClass = 'tier-orbital';
-            } else if (tier.toLowerCase().includes('prestige') || tier.toLowerCase().includes('high-touch')) {
-                tierClass = 'tier-prestige';
+            const formData = {
+                companyUrl: document.getElementById('companyUrl').value,
+                realityTier: document.getElementById('realityTier').value,
+                strategicContext: document.getElementById('strategicContext').value
+            };
+
+            try {
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'Analysis failed');
+                }
+
+                const data = await response.json();
+
+                // Extract company name and display results
+                const companyName = extractCompanyName(formData.companyUrl);
+                
+                document.getElementById('companyHeader').innerHTML = `
+                    <h2>${companyName}</h2>
+                    <p class="tier">${formData.realityTier}</p>
+                `;
+
+                document.getElementById('structuralGorge').innerHTML = `<p>${data.structuralGorge}</p>`;
+                document.getElementById('arbitrageHunter').innerHTML = `<p>${data.arbitrageHunter}</p>`;
+                document.getElementById('strategicAssessment').innerHTML = `<p>${data.strategicAssessment}</p>`;
+
+                loading.classList.remove('active');
+                results.classList.add('active');
+                
+            } catch (error) {
+                loading.classList.remove('active');
+                errorMessage.textContent = error.message;
+                errorMessage.classList.add('active');
+            } finally {
+                analyzeBtn.disabled = false;
             }
-
-            const matchmakerMatch = analysisText.match(/\*\*MATCHMAKER[^\*]*\*\*\s*([\s\S]*?)(?=\*\*ARBITRAGE|$)/i);
-            const arbitrageMatch = analysisText.match(/\*\*ARBITRAGE[^\*]*\*\*\s*([\s\S]*?)(?=\*\*EXECUTIVE|$)/i);
-            const vettingMatch = analysisText.match(/\*\*EXECUTIVE[^\*]*\*\*\s*([\s\S]*?)$/i);
-
-            const matchmaker = matchmakerMatch ? matchmakerMatch[1].trim() : 'Not identified';
-            const arbitrage = arbitrageMatch ? arbitrageMatch[1].trim() : 'Not identified';
-            const vetting = vettingMatch ? vettingMatch[1].trim() : 'Not identified';
-
-            const questions = vetting.split(/\d+[\.)]\s+/).filter(q => q.trim().length > 0);
-
-            let html = `
-                <div class="results">
-                    <h2>${companyName} Partnership Analysis</h2>
-                    <div class="tier-badge ${tierClass}">${tier}</div>
-
-                    <div class="section-block">
-                        <div class="section-title">🤝 Matchmaker: Physical Fundamental Handshake</div>
-                        <div class="section-content">${matchmaker}</div>
-                    </div>
-
-                    <div class="section-block">
-                        <div class="section-title">💰 Arbitrage Hunter: Revenue/Cost Category</div>
-                        <div class="section-content">${arbitrage}</div>
-                    </div>
-
-                    <div class="section-block">
-                        <div class="section-title">🎯 Executive Vetting: Gritty Questions</div>
-                        ${questions.map((q, i) => `
-                            <div class="question">
-                                <div class="question-number">Question ${i + 1}</div>
-                                <div class="section-content">${q.trim()}</div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-
-            resultsDiv.innerHTML = html;
-        }
+        });
     </script>
 </body>
 </html>
