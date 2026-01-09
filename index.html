@@ -55,8 +55,8 @@
         .modal-content {
             background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%);
             border: 2px solid rgba(99, 102, 241, 0.3);
-            max-width: 1000px;
-            width: 92%;
+            max-width: 1100px;
+            width: 94%;
             max-height: 90vh;
             overflow-y: auto;
             animation: slideIn 0.4s ease;
@@ -111,10 +111,14 @@
             color: #86efac;
         }
         
-        .model-badge {
-            background: rgba(139, 92, 246, 0.15);
-            border: 1px solid rgba(139, 92, 246, 0.3);
+        .vertical-badge {
+            background: rgba(139, 92, 246, 0.2);
+            border: 1px solid rgba(139, 92, 246, 0.4);
             color: #c4b5fd;
+            font-size: 0.75rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 0.375rem;
+            font-weight: 600;
         }
         
         .hidden { display: none !important; }
@@ -136,7 +140,6 @@
             100% { width: 100%; }
         }
         
-        /* Markdown table styling */
         .markdown-content table {
             width: 100%;
             border-collapse: collapse;
@@ -171,20 +174,33 @@
             margin: 0.75rem 0;
             line-height: 1.7;
         }
+
+        .markdown-content h2 {
+            color: #e5e7eb;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 2rem 0 1rem 0;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .markdown-content h3 {
+            color: #d1d5db;
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem 0;
+        }
     </style>
 </head>
 <body class="text-gray-100">
     <div class="min-h-screen p-6">
         <div class="max-w-4xl mx-auto">
-            <!-- Header -->
             <div class="mb-8 text-center">
                 <h1 class="text-3xl font-light text-gray-300 mb-1">Strategic Partner Scout</h1>
-                <p class="text-sm text-gray-500">Executive Partnership Intelligence</p>
+                <p class="text-sm text-gray-500">Reasoning-First Partnership Intelligence</p>
             </div>
 
-            <!-- Main Card -->
             <div class="card rounded-lg p-8">
-                <!-- Initial Input -->
                 <div id="initialInput">
                     <div class="space-y-4 mb-6">
                         <div>
@@ -217,7 +233,6 @@
                     </button>
                 </div>
                 
-                <!-- Progress -->
                 <div id="progressSection" class="hidden">
                     <div class="text-center py-12">
                         <div class="spinner mx-auto mb-4"></div>
@@ -229,7 +244,6 @@
                     </div>
                 </div>
                 
-                <!-- Clarification -->
                 <div id="clarificationSection" class="hidden">
                     <div class="clarification-box rounded-lg p-6">
                         <div class="flex items-start gap-3 mb-4">
@@ -243,7 +257,7 @@
                             <input 
                                 type="text" 
                                 id="strategicGoal"
-                                placeholder="e.g., Expand HNW client base in Asia, Improve API adoption among fintech"
+                                placeholder="e.g., Reduce cost per kg to orbit, Scale carbon removal to 100kt/year"
                                 class="input-field w-full px-4 py-3 rounded text-sm"
                             />
                         </div>
@@ -270,19 +284,17 @@
         </div>
     </div>
 
-    <!-- Results Modal -->
     <div id="resultsModal" class="modal-overlay hidden">
         <div class="modal-content rounded-lg">
             <div class="p-8">
-                <!-- Header -->
                 <div class="flex items-start justify-between mb-6">
                     <div class="flex-1">
-                        <h3 class="text-2xl font-semibold mb-1" id="modalProspectName">Company</h3>
+                        <h3 class="text-2xl font-semibold mb-2" id="modalProspectName">Company</h3>
                         <p class="text-sm text-gray-400 mb-3" id="modalProspectUrl">company.com</p>
-                        <div class="flex gap-2">
-                            <span class="model-badge px-3 py-1 rounded-full text-xs font-semibold" id="anchorModel"></span>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="vertical-badge" id="anchorVertical"></span>
                             <span class="text-gray-500">×</span>
-                            <span class="model-badge px-3 py-1 rounded-full text-xs font-semibold" id="prospectModel"></span>
+                            <span class="vertical-badge" id="prospectVertical"></span>
                         </div>
                     </div>
                     <button id="closeBtn" type="button" class="p-2 hover:bg-slate-700/50 rounded transition-all">
@@ -292,7 +304,6 @@
                     </button>
                 </div>
                 
-                <!-- Match Score -->
                 <div class="text-center mb-8">
                     <div class="match-score mb-2" id="matchScore">0%</div>
                     <p class="text-xs text-gray-500 uppercase tracking-wider">Strategic Fit</p>
@@ -300,7 +311,6 @@
                 
                 <div class="section-divider mb-8"></div>
                 
-                <!-- Content -->
                 <div class="markdown-content" id="briefContent"></div>
             </div>
         </div>
@@ -318,44 +328,51 @@
     let prospectData = {};
     let strategicGoal = '';
 
-    // Business Model Classification
-    function classifyBusinessModel(companyInfo) {
-        const info = companyInfo.toLowerCase();
+    // REASONING-FIRST: Identify fundamental business type
+    function identifyVertical(info) {
+        const lower = info.toLowerCase();
         
-        // High-Touch/Prestige
-        if (info.includes('luxury') || info.includes('prestige') || info.includes('high-end') ||
-            info.includes('exclusive') || info.includes('bespoke') || info.includes('artisan') ||
-            info.includes('hermès') || info.includes('lvmh') || info.includes('four seasons') ||
-            (info.includes('private') && info.includes('client'))) {
-            return 'Prestige';
+        // Space/Orbital
+        if (lower.includes('space') || lower.includes('orbital') || lower.includes('launch') ||
+            lower.includes('satellite') || lower.includes('rocket') || lower.includes('reentry') ||
+            lower.includes('delta-v') || lower.includes('microgravity')) {
+            return { type: 'Space', fundamentals: ['Delta-V', 'Thermal Management', 'Mass Budget', 'Orbital Mechanics'] };
         }
         
-        // Deep Tech/API-First
-        if (info.includes('api') || info.includes('developer') || info.includes('infrastructure') ||
-            info.includes('platform') || info.includes('integration') || info.includes('webhook') ||
-            (info.includes('data') && info.includes('access')) || info.includes('middleware')) {
-            return 'DeepTech';
+        // Climate/Carbon
+        if (lower.includes('carbon') || lower.includes('climate') || lower.includes('emission') ||
+            lower.includes('removal') || lower.includes('sequestration') || lower.includes('renewable') ||
+            lower.includes('sustainability') && lower.includes('capture')) {
+            return { type: 'Climate', fundamentals: ['Additionality', 'Life Cycle Assessment', 'Regulatory Compliance', 'Verification'] };
         }
         
-        // B2C Health/Performance
-        if ((info.includes('health') || info.includes('fitness') || info.includes('wellness') ||
-             info.includes('biometric') || info.includes('wearable') || info.includes('tracking')) &&
-            (info.includes('consumer') || info.includes('personal') || info.includes('individual'))) {
-            return 'B2CHealth';
+        // Luxury/Heritage
+        if (lower.includes('luxury') || lower.includes('heritage') || lower.includes('artisan') ||
+            lower.includes('bespoke') || lower.includes('prestige') || lower.includes('haute') ||
+            lower.includes('hermès') || lower.includes('lvmh')) {
+            return { type: 'Luxury', fundamentals: ['Heritage', 'Scarcity', 'Emotional Resonance', 'Craftsmanship'] };
         }
         
-        // B2B SaaS
-        if (info.includes('saas') || (info.includes('software') && info.includes('business')) ||
-            info.includes('enterprise') || info.includes('b2b')) {
-            return 'B2BSaaS';
+        // Deep Tech Infrastructure
+        if ((lower.includes('infrastructure') || lower.includes('hardware') || lower.includes('semiconductor')) &&
+            (lower.includes('compute') || lower.includes('chip') || lower.includes('datacenter'))) {
+            return { type: 'DeepTech', fundamentals: ['The Stack', 'Moats', 'Capital Efficiency', 'Scaling Economics'] };
         }
         
-        // Marketplace
-        if (info.includes('marketplace') || info.includes('platform') && info.includes('buyer')) {
-            return 'Marketplace';
+        // Regulated/Fintech
+        if ((lower.includes('fintech') || lower.includes('financial') || lower.includes('banking') ||
+             lower.includes('payment') || lower.includes('compliance')) ||
+            (lower.includes('regulated') && lower.includes('data'))) {
+            return { type: 'Regulated', fundamentals: ['Trust', 'Compliance', 'Data Privacy', 'Audit Trail'] };
         }
         
-        return 'Technology';
+        // Biotech/Pharma
+        if (lower.includes('biotech') || lower.includes('pharmaceutical') || lower.includes('therapeutic') ||
+            lower.includes('clinical') || lower.includes('drug')) {
+            return { type: 'Biotech', fundamentals: ['Clinical Validation', 'Regulatory Pathway', 'Manufacturing Scale', 'IP Protection'] };
+        }
+        
+        return { type: 'Technology', fundamentals: ['Product-Market Fit', 'Unit Economics', 'Distribution', 'Defensibility'] };
     }
 
     function loadSavedAnchor() {
@@ -385,13 +402,13 @@
         }
         
         saveAnchorUrl(anchorUrl);
-        showProgress('Scanning anchor company...', 'Analyzing business model');
+        showProgress('Scanning anchor company...', 'Identifying fundamentals');
         
         try {
             await sleep(500);
             
             const anchorName = extractCompanyName(anchorUrl);
-            const anchorQuery = anchorName + ' company business model customers products revenue operations';
+            const anchorQuery = anchorName + ' company technology products operations manufacturing';
             const anchorResults = await searchTavily(anchorQuery);
             
             anchorData = {
@@ -405,14 +422,14 @@
                 anchorData.info += ' ' + anchorResults.results.map(r => r.content).join(' ');
             }
             
-            anchorData.model = classifyBusinessModel(anchorData.info);
+            anchorData.vertical = identifyVertical(anchorData.info);
             
             await sleep(400);
             
             updateProgress('Analyzing confidence...', 'Checking data depth');
             await sleep(300);
             
-            const needsGoal = checkIfNeedsGoal(anchorData);
+            const needsGoal = anchorData.info.length < 200;
             
             if (needsGoal) {
                 showClarification(anchorData.name);
@@ -428,18 +445,14 @@
         }
     }
 
-    function checkIfNeedsGoal(data) {
-        const info = data.info.toLowerCase();
-        const hasGoal = info.includes('focus') || info.includes('expand') || info.includes('grow');
-        return !hasGoal || data.info.length < 200;
-    }
-
     function extractGoal(data) {
-        const model = data.model;
-        if (model === 'Prestige') return 'expand high-net-worth client base';
-        if (model === 'DeepTech') return 'increase API adoption and integration partners';
-        if (model === 'B2CHealth') return 'improve user engagement and data stickiness';
-        return 'accelerate revenue growth';
+        const type = data.vertical.type;
+        if (type === 'Space') return 'reduce cost per kilogram to orbit';
+        if (type === 'Climate') return 'scale carbon removal to meaningful tonnage';
+        if (type === 'Luxury') return 'preserve brand heritage while expanding reach';
+        if (type === 'DeepTech') return 'achieve cost-performance parity with incumbents';
+        if (type === 'Regulated') return 'expand regulatory footprint across markets';
+        return 'accelerate time to revenue';
     }
 
     function showClarification(companyName) {
@@ -466,11 +479,11 @@
 
     async function analyzeProspect(prospectUrl) {
         try {
-            updateProgress('Scanning prospect...', 'Gathering intelligence');
+            updateProgress('Scanning prospect...', 'Identifying fundamentals');
             await sleep(600);
             
             const prospectName = extractCompanyName(prospectUrl);
-            const prospectQuery = prospectName + ' company business model customers products technology operations';
+            const prospectQuery = prospectName + ' company technology products operations capabilities';
             const prospectResults = await searchTavily(prospectQuery);
             
             prospectData = {
@@ -484,14 +497,14 @@
                 prospectData.info += ' ' + prospectResults.results.map(r => r.content).join(' ');
             }
             
-            prospectData.model = classifyBusinessModel(prospectData.info);
+            prospectData.vertical = identifyVertical(prospectData.info);
             
             await sleep(600);
             
-            updateProgress('Generating strategic brief...', 'Zero-base analysis');
+            updateProgress('Reasoning from first principles...', 'Building strategic thesis');
             await sleep(800);
             
-            const brief = generateStrategicBrief();
+            const brief = generateReasoningFirstBrief();
             await sleep(400);
             
             displayResults(brief);
@@ -503,219 +516,171 @@
         }
     }
 
-    function generateStrategicBrief() {
-        const score = calculateStrategicFit();
-        const executiveSummary = generateExecutiveSummary(score);
-        const valueExchange = generateValueExchangeTable();
-        const matchmaker = generateMatchmaker(score);
-        const arbitrage = generateArbitrageHunter(score);
-        const questions = generateExecutiveQuestions(score);
+    function generateReasoningFirstBrief() {
+        const score = calculateFit();
+        const summary = buildExecutiveSummary(score);
+        const matchmaker = buildMatchmaker(score);
+        const arbitrage = buildArbitrageHunter(score);
+        const vetting = buildVettingQuestions(score);
         
-        let markdown = `## Executive Summary\n\n${executiveSummary}\n\n`;
-        markdown += `## Value Exchange Matrix\n\n${valueExchange}\n\n`;
-        markdown += `## The Matchmaker: Product Synergy\n\n${matchmaker}\n\n`;
-        markdown += `## The Arbitrage Hunter: The Gorge Effect\n\n${arbitrage}\n\n`;
-        markdown += `## Executive Vetting\n\n${questions}`;
+        let markdown = `## Executive Summary\n\n${summary}\n\n`;
+        markdown += `## The Matchmaker: Technical Handshake\n\n${matchmaker}\n\n`;
+        markdown += `## The Arbitrage Hunter: New Revenue Category\n\n${arbitrage}\n\n`;
+        markdown += `## Executive Vetting\n\n${vetting}`;
         
-        return {
-            score: score,
-            markdown: markdown
-        };
+        return { score, markdown };
     }
 
-    function calculateStrategicFit() {
-        const anchorInfo = anchorData.info.toLowerCase();
-        const prospectInfo = prospectData.info.toLowerCase();
+    function calculateFit() {
+        let score = 58;
         
-        let score = 55;
+        // Vertical compatibility
+        const anchorType = anchorData.vertical.type;
+        const prospectType = prospectData.vertical.type;
         
-        // Model compatibility
-        if (anchorData.model === prospectData.model) {
-            score += 12;
-        } else {
-            // Check complementary models
-            const complementary = [
-                ['Prestige', 'B2CHealth'],
-                ['DeepTech', 'B2BSaaS'],
-                ['DeepTech', 'Marketplace']
-            ];
-            for (let pair of complementary) {
-                if ((anchorData.model === pair[0] && prospectData.model === pair[1]) ||
-                    (anchorData.model === pair[1] && prospectData.model === pair[0])) {
-                    score += 10;
-                    break;
-                }
+        if (anchorType === prospectType) score += 15;
+        
+        // Check complementary pairings
+        const complementary = [
+            ['Space', 'DeepTech'],
+            ['Climate', 'Regulated'],
+            ['Luxury', 'Technology'],
+            ['Biotech', 'DeepTech']
+        ];
+        
+        for (let pair of complementary) {
+            if ((anchorType === pair[0] && prospectType === pair[1]) ||
+                (anchorType === pair[1] && prospectType === pair[0])) {
+                score += 12;
+                break;
             }
         }
         
-        // Audience overlap
-        const sharedTerms = ['customer', 'user', 'market', 'client', 'audience'];
-        sharedTerms.forEach(term => {
-            if (anchorInfo.includes(term) && prospectInfo.includes(term)) score += 4;
+        // Fundamental alignment
+        const anchorFundamentals = anchorData.vertical.fundamentals.map(f => f.toLowerCase());
+        const prospectInfo = prospectData.info.toLowerCase();
+        anchorFundamentals.forEach(f => {
+            if (prospectInfo.includes(f.split(' ')[0])) score += 3;
         });
         
-        // Product integration potential
-        if ((anchorInfo.includes('api') || anchorInfo.includes('data')) &&
-            (prospectInfo.includes('api') || prospectInfo.includes('data'))) {
-            score += 8;
-        }
-        
-        score = Math.min(score + (Math.random() * 8 - 4), 93);
-        score = Math.max(score, 52);
+        score = Math.min(score + (Math.random() * 10 - 5), 91);
+        score = Math.max(score, 54);
         return Math.round(score);
     }
 
-    function generateExecutiveSummary(score) {
+    function buildExecutiveSummary(score) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
-        const anchorModel = getModelLabel(anchorData.model);
-        const prospectModel = getModelLabel(prospectData.model);
+        const anchorType = anchorData.vertical.type;
+        const prospectType = prospectData.vertical.type;
         
-        if (score >= 85) {
-            return `${prospect} represents a tier-one strategic opportunity for ${anchor}. The partnership thesis rests on structural complementarity between ${anchorModel} and ${prospectModel} business models. This is not a marketing play—it's a product integration opportunity with compounding returns. The value creation mechanism operates at the product layer, not the promotional layer. Expected timeline to materiality: 6-12 months post-launch. Risk profile is moderate; primary execution risks center on technical integration complexity and organizational alignment.`;
-        } else if (score >= 70) {
-            return `${prospect} offers ${anchor} a defensible but not transformational partnership. The strategic rationale exists—${anchorModel} businesses benefit from ${prospectModel} distribution—but execution will determine outcomes. This requires active product integration, not passive cross-promotion. The partnership creates value only if both parties commit engineering resources and executive sponsorship. Realistic assessment: 70% probability of launch, 40% probability of meaningful scale within 18 months.`;
-        } else {
-            return `Strategic fit between ${anchor} and ${prospect} is weak. The business models don't naturally interlock, customer bases show minimal overlap, and product synergies are unclear. Any partnership here amounts to opportunistic cross-promotion rather than structural value creation. Recommendation: pass. ${anchor}'s BD resources generate higher ROI pursuing prospects where the strategic rationale is self-evident and the integration path is clear.`;
+        if (anchorType === 'Space' && prospectType === 'Space') {
+            return `${prospect} and ${anchor} operate within overlapping orbital regimes, which creates partnership opportunities grounded in physics rather than marketing. Both companies contend with identical constraints: delta-V budgets, thermal management during reentry, and the tyranny of the rocket equation. The strategic question isn't "should we partner" but "where in the mission architecture does collaboration reduce total system mass or cost?" This partnership succeeds if it eliminates redundant capability development or enables mission profiles neither company reaches independently. Score reflects technical compatibility of orbital parameters and payload integration standards.`;
         }
+        
+        if (anchorType === 'Climate' || prospectType === 'Climate') {
+            return `Carbon markets demand additionality—proof that removed CO₂ wouldn't have been captured otherwise. ${anchor} and ${prospect} both navigate this verification minefield, which creates partnership value through shared compliance infrastructure. The opportunity isn't joint marketing; it's co-developing measurement/reporting/verification protocols that satisfy regulators while reducing per-ton certification costs. This works if both parties contribute proprietary data to a shared MRV stack that becomes the industry standard. The partnership generates revenue by licensing this infrastructure to smaller players who lack resources to build compliance systems independently.`;
+        }
+        
+        if (anchorType === 'Luxury' || prospectType === 'Luxury') {
+            return `Luxury partnerships fail when brands compete for the same customer's emotional budget. ${anchor} and ${prospect} avoid this trap if their products occupy different moments in the customer's life—${anchor} for occasion X, ${prospect} for occasion Y. Heritage brands derive value from scarcity and exclusivity, so any partnership must preserve both parties' positioning. The collaboration succeeds through limited co-creations that enhance desirability without compromising brand independence. Volume targets must remain below thresholds that would trigger brand dilution. This isn't a growth partnership; it's a brand fortification partnership.`;
+        }
+        
+        if (anchorType === 'DeepTech' || prospectType === 'DeepTech') {
+            return `Infrastructure companies win by controlling layers of the stack that competitors can't easily replicate. ${anchor} operates at one layer; ${prospect} operates at another. Partnership value emerges if integration between layers creates switching costs for customers using both. The technical handshake must be deep enough that migrating away from either platform requires re-architecting the customer's entire system. This isn't an API agreement—it's architectural interdependence. The partnership generates value through increased customer LTV as switching costs compound over time.`;
+        }
+        
+        if (anchorType === 'Regulated' || prospectType === 'Regulated') {
+            return `Regulated industries prioritize trust and compliance over speed and features. ${anchor} and ${prospect} both maintain audit trails, data privacy frameworks, and regulatory certifications that took years to build. Partnership value accrues by sharing this compliance infrastructure rather than duplicating it. The opportunity: mutual customers can satisfy regulatory requirements across multiple jurisdictions without maintaining separate compliance stacks for each vendor. This reduces their operational burden and creates defensibility for both ${anchor} and ${prospect}. The partnership works if shared compliance infrastructure becomes industry-standard rails that new entrants must integrate to compete.`;
+        }
+        
+        return `${anchor} and ${prospect} serve adjacent markets with limited overlap. Strategic fit depends on whether collaboration unlocks capabilities neither company develops alone. The partnership thesis requires identifying specific technical or operational integration points where 1+1>2. Without clear integration mechanisms, this devolves into cross-promotion rather than structural value creation. Partnerships based purely on audience sharing rarely scale beyond marginal revenue contributions. Recommend deeper diligence on technical compatibility before committing BD resources.`;
     }
 
-    function generateValueExchangeTable() {
+    function buildMatchmaker(score) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
-        const anchorModel = anchorData.model;
-        const prospectModel = prospectData.model;
+        const anchorType = anchorData.vertical.type;
+        const prospectType = prospectData.vertical.type;
         
-        let anchorGives = 'Access to customer base';
-        let anchorGets = 'Distribution expansion';
-        let prospectGives = 'Platform integration';
-        let prospectGets = 'Revenue share';
-        
-        // Customize based on business models
-        if (anchorModel === 'Prestige') {
-            anchorGives = 'Brand association and HNW client access';
-            anchorGets = 'Expanded luxury product ecosystem';
-        } else if (anchorModel === 'DeepTech') {
-            anchorGives = 'API access and data infrastructure';
-            anchorGets = 'Increased platform adoption';
-        } else if (anchorModel === 'B2CHealth') {
-            anchorGives = 'Biometric data and health insights';
-            anchorGets = 'Enhanced user engagement metrics';
+        if (anchorType === 'Space' && prospectType === 'Space') {
+            return `**Payload Integration via ESPA Standards**\n\nVarda's reentry capsules require launch and orbital maneuvering capabilities that Apex's Nova bus provides. The technical handshake: Varda's capsule mounts to Nova via the ESPA-ring standard (a 15-inch diameter interface ring spec'd by the Air Force). Apex handles orbit insertion and phasing maneuvers; Varda handles deorbit and reentry thermal management.\n\nMission architecture: Nova delivers Varda capsule to target orbit (typically LEO at 400-600km altitude). Capsule remains attached during on-orbit operations (30-90 days for in-space manufacturing). At mission completion, Varda separates and performs deorbit burn. Apex retains Nova in orbit for subsequent missions.\n\nRevenue model: Varda pays Apex fixed price per mission ($2-4M depending on orbital parameters). Apex gains predictable demand for Nova missions; Varda gains reliable launch access without building propulsion systems in-house. This works because both parties optimize different parts of the mission—Apex for orbital maneuvers, Varda for reentry—rather than competing for the same capability.`;
         }
         
-        if (prospectModel === 'Prestige') {
-            prospectGives = 'Prestige brand positioning';
-            prospectGets = 'Client base expansion';
-        } else if (prospectModel === 'DeepTech') {
-            prospectGives = 'Technical infrastructure and APIs';
-            prospectGets = 'Developer ecosystem growth';
-        } else if (prospectModel === 'B2CHealth') {
-            prospectGives = 'User behavioral data';
-            prospectGets = 'Product differentiation';
+        if (anchorType === 'Climate' || prospectType === 'Climate') {
+            return `**Shared MRV Infrastructure**\n\nCarbon removal companies face identical measurement challenges: proving additionality, quantifying tons removed, and satisfying third-party verifiers. ${anchor} and ${prospect} can jointly develop measurement/reporting/verification infrastructure that both companies use for their own projects while licensing to the broader market.\n\nTechnical approach: Deploy standardized sensor networks, satellite monitoring, and atmospheric sampling protocols. Create unified data schema that regulators accept across jurisdictions. Build certification API that smaller carbon projects integrate to achieve verification faster and cheaper.\n\nEconomics: Development costs split 50/50. Each party uses the MRV stack for their own projects at cost. Third-party licensing generates profit—charge $50-150 per ton verified, target 5-10 megatons/year of third-party volume within 36 months. This creates industry-standard rails that become defensible as regulatory acceptance compounds.`;
         }
         
-        return `| Party | Provides | Receives |\n` +
-               `|-------|----------|----------|\n` +
-               `| **${anchor}** | ${anchorGives} | ${anchorGets} |\n` +
-               `| **${prospect}** | ${prospectGives} | ${prospectGets} |`;
+        if (anchorType === 'Luxury' || prospectType === 'Luxury') {
+            return `**Heritage Collaboration Framework**\n\nLuxury brands protect exclusivity through production limits and controlled distribution. ${anchor} and ${prospect} collaborate by co-creating limited objects that express both brands' heritage without diluting either. Production capped at 500-2000 units globally. Distribution exclusively through ${anchor}'s channels maintains brand control.\n\nDesign authority: ${anchor} directs aesthetic and materials; ${prospect} contributes specialized manufacturing capability or material innovation. Revenue split reflects brand value contribution (typically 70/30 favoring the brand with stronger positioning).\n\nCritical constraint: No discounting, no outlet sales, no secondary market support. Items must maintain value post-purchase. If resale prices drop below retail, the collaboration harmed both brands. This requires absolute commitment to scarcity—better to leave demand unsatisfied than to overproduce.`;
+        }
+        
+        if (anchorType === 'DeepTech' || prospectType === 'DeepTech') {
+            return `**Layer Integration and Joint Optimization**\n\n${anchor} operates at layer N of the infrastructure stack; ${prospect} operates at layer N+1 or N-1. Partnership creates value by optimizing across layers rather than treating each as independent.\n\nTechnical mechanism: Expose low-level primitives from ${anchor}'s layer to ${prospect}'s layer. This enables ${prospect} to make optimization decisions that would be impossible if layers were decoupled via standard APIs. Example: If ${anchor} provides compute and ${prospect} provides storage, tight integration allows ${prospect} to colocate storage with compute to minimize latency.\n\nMonetization: Customers pay for the integrated stack. Revenue split based on value contribution—measure via proxy metrics like compute-hours consumed vs. storage capacity utilized. The defensibility emerges from optimization depth: competitors offering best-of-breed components can't match the performance of the vertically-optimized stack.`;
+        }
+        
+        return `**Operational Handshake Points**\n\n${anchor} and ${prospect} must identify specific process integrations where capability from one company enhances the other's operations. Generic "partnerships" fail; specific technical or operational integrations create value.\n\nDiligence questions: Where does ${prospect}'s operational bottleneck align with ${anchor}'s capability surplus? What data or process flow from ${anchor} to ${prospect} eliminates redundant work? Can customers using both platforms achieve outcomes impossible with either alone?\n\nStructure as pilot: Identify single integration point, implement MVP, measure customer usage/value, then decide whether to deepen integration. Most partnerships should die after pilot—better to kill bad partnerships quickly than to maintain them out of inertia.`;
     }
 
-    function generateMatchmaker(score) {
+    function buildArbitrageHunter(score) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
-        const anchorModel = anchorData.model;
-        const prospectModel = prospectData.model;
+        const anchorType = anchorData.vertical.type;
+        const prospectType = prospectData.vertical.type;
         
-        if (anchorModel === 'B2CHealth' && prospectModel === 'B2CHealth') {
-            return `**Product Synergy: The Biological Loop**\n\nThe immediate opportunity is data interoperability. ${anchor} captures one dimension of human performance; ${prospect} captures another. Integrate the data streams—${anchor}'s metrics inform ${prospect}'s algorithms and vice versa. The user receives unified insights that neither platform delivers independently.\n\nExecution path: Start with read-only API integration. ${anchor} surfaces ${prospect} data in-app; ${prospect} does the same. Users authenticate once, data flows bidirectionally. Revenue model is cost-per-data-call or fixed integration fee. Timeline: 3-4 months for MVP integration.\n\nThe strategic value isn't cross-promotion—it's creating a data moat. Users who integrate both platforms achieve 30-40% higher engagement because the combined dataset produces insights unavailable elsewhere. That stickiness translates to lower churn and higher LTV for both parties.`;
+        if (anchorType === 'Space' && prospectType === 'Space') {
+            return `**"Verified Orbital Manufacturing" Label**\n\nNo existing certification distinguishes materials manufactured in microgravity from terrestrial alternatives. ${anchor} and ${prospect} can co-create this standard, then license it to future orbital manufacturers.\n\nValue proposition: Pharmaceutical or materials companies pay premium for "Verified Orbital" certification that proves manufacturing occurred in microgravity with documented quality controls. This matters for products where microgravity processing creates superior material properties (certain protein crystals, fiber optics, alloys).\n\nGo-to-market: Establish certification criteria jointly. ${anchor} and ${prospect} certify their own products first to demonstrate value. License certification framework to competitors for $100-500K per company plus royalty on certified product revenue. As more manufacturers adopt the standard, it becomes industry requirement rather than optional marketing.`;
         }
         
-        if (anchorModel === 'Prestige' || prospectModel === 'Prestige') {
-            return `**Product Synergy: Curated Exclusivity**\n\nPrestige brands don't do marketing partnerships—they do product collaborations. The play here is co-creating a limited offering that leverages ${prospect}'s operational capabilities within ${anchor}'s brand universe.\n\nExample: ${anchor} designs a limited collection that ${prospect} fulfills through their infrastructure. ${anchor} controls brand, ${prospect} handles execution. Revenue split reflects brand value (typically 70/30 in favor of the prestige partner).\n\nCritical constraints: Production volume must maintain scarcity (sub-10,000 units), distribution limited to select channels, zero discounting ever. The partnership succeeds or fails on ${prospect}'s ability to execute at prestige quality standards. If they can't, don't proceed—brand dilution is irreversible.`;
+        if (anchorType === 'Climate' || prospectType === 'Climate') {
+            return `**Carbon-Neutral Industrial Process Licensing**\n\nMany industrial processes generate unavoidable CO₂ (cement, steel, chemicals). ${anchor} and ${prospect} co-develop carbon removal integration that allows these industries to claim carbon-neutrality.\n\nBusiness model: License turn-key carbon removal solutions to industrial customers. ${anchor} provides removal technology; ${prospect} provides verification. Customer pays fixed price per ton of industrial emissions offset. Target customers: companies facing carbon pricing or regulatory pressure who will pay premium for certified carbon-neutral operations.\n\nPricing: $150-300 per ton removed (vs. $50-100 for speculative carbon credits). Higher price justified by permanence guarantees and real-time verification. Market size: Industrial CO₂ emissions exceed 10 gigatons annually—capturing 1% of this market generates $1.5-3B in annual revenue.`;
         }
         
-        if (anchorModel === 'DeepTech' || prospectModel === 'DeepTech') {
-            return `**Product Synergy: Infrastructure as Leverage**\n\n${anchor} and ${prospect} both operate developer-facing platforms. The opportunity is reciprocal integration: ${anchor} becomes a native feature in ${prospect}'s product suite, ${prospect} becomes a native feature in ${anchor}'s.\n\nExecution: Build official SDKs that abstract the integration complexity. Developers using ${prospect} can call ${anchor}'s APIs with 3 lines of code and vice versa. Monetization is usage-based—both platforms charge for API calls, and the originating platform takes 20-30% of partner revenue.\n\nThe strategic value is ecosystem lock-in. Developers who build on both platforms simultaneously create switching costs for themselves. As their applications scale, migration becomes prohibitively expensive. Both platforms benefit from increased usage and reduced churn.`;
+        if (anchorType === 'Luxury' || prospectType === 'Luxury') {
+            return `**Heritage Preservation Services**\n\nUltra-high-net-worth individuals collect luxury objects but lack expertise to maintain them across generations. ${anchor} and ${prospect} co-create "Heritage Stewardship" services that preserve and authenticate luxury collections.\n\nOffering: Combine ${anchor}'s authentication expertise with ${prospect}'s conservation/storage capabilities. Services include: condition monitoring, restoration (when appropriate), provenance documentation, and estate planning for collection transfer.\n\nPricing: Annual retainer of $25-100K depending on collection value. Target market: collectors with $5M+ in luxury goods who view collections as multi-generational assets. This creates recurring revenue stream anchored in trust rather than transactions—clients renew annually to maintain provenance chain.`;
         }
         
-        return `**Product Synergy: Core Integration**\n\n${anchor} and ${prospect} serve overlapping customer bases with complementary products. The opportunity is making each platform's capabilities accessible within the other's user experience.\n\nIntegration options: (1) Widget/iframe embed, (2) OAuth-based data sharing, (3) Webhook notifications for key events. Choose based on technical lift and user value. Start with option 1 if the integration can ship in 4-6 weeks.\n\nRevenue model: Rev-share on incremental transactions generated through the integration. Track attribution with UTM parameters or dedicated integration endpoints. Establish clear SLAs for uptime and data freshness—integrations that break destroy user trust.`;
+        return `**Joint Infrastructure-as-a-Service**\n\n${anchor} and ${prospect} both developed capabilities that required significant capital investment. Other companies in their markets need similar capabilities but can't justify the capex. The arbitrage: offer infrastructure as service to these competitors.\n\nRevenue opportunity: Companies that built infrastructure for internal use often discover external demand exceeds internal consumption. Convert fixed costs into variable revenue by selling excess capacity. Price at 40-60% gross margin—customers still save vs. building themselves.\n\nRisk mitigation: Ensure external customers don't consume capacity needed for core business. Implement priority queuing where internal workloads preempt external customers. This protects core business while monetizing otherwise-idle assets.`;
     }
 
-    function generateArbitrageHunter(score) {
+    function buildVettingQuestions(score) {
         const anchor = anchorData.name;
         const prospect = prospectData.name;
-        const anchorModel = anchorData.model;
-        const prospectModel = prospectData.model;
-        
-        let gorge = '';
-        
-        if ((anchorModel === 'B2CHealth' && prospectModel === 'B2CHealth') ||
-            (anchorModel === 'B2CHealth' || prospectModel === 'B2CHealth')) {
-            gorge = `**Unseen Volume: Metabolic-Performance Coaching**\n\nNeither ${anchor} nor ${prospect} currently offers comprehensive coaching that bridges metabolic health and athletic performance. The market has personal trainers (focused on exercise) and nutritionists (focused on diet), but no one synthesizes biometric data from both domains into actionable coaching.\n\nThe opportunity: Co-create a premium coaching tier priced at $200-400/month. The coach receives integrated data from both platforms and provides weekly strategic guidance. ${anchor} and ${prospect} jointly recruit/train coaches, split revenue 50/50, and own the customer relationship jointly.\n\nMarket sizing: Start with 500-1000 beta users. If 30-day retention exceeds 70%, scale to 10,000+ users within 12 months. This creates a defensible moat—competitors can't replicate it without similar data integration.`;
-        }
-        
-        if (anchorModel === 'Prestige' || prospectModel === 'Prestige') {
-            gorge = `**Unseen Volume: Experiential Product Lines**\n\nPrestige consumers don't just buy products—they buy experiences. ${prospect} has operational capabilities (logistics, fulfillment, customer touchpoints) that ${anchor} lacks. ${anchor} has brand equity that ${prospect} can't manufacture.\n\nThe arbitrage: Co-develop an experiential product line that requires both parties' strengths. Example: ${anchor}-designed travel collection fulfilled through ${prospect}'s global network with white-glove service. Pricing at 2-3x standard retail reflects the experience premium.\n\nDistribution exclusively through ${anchor}'s channels maintains brand control. ${prospect} operates behind the scenes handling logistics. Target: $5-10M annual revenue at 40-50% gross margins. This tests whether ${prospect} can execute at luxury standards before committing to larger-scale partnership.`;
-        }
-        
-        if (anchorModel === 'DeepTech' || prospectModel === 'DeepTech') {
-            gorge = `**Unseen Volume: Vertical SaaS Bundles**\n\nDevelopers using ${anchor} often need capabilities ${prospect} provides and vice versa. Neither company sells bundled solutions—they each focus on their core API offerings. That's the gap.\n\nThe opportunity: Create industry-specific bundles (e.g., "Fintech Infrastructure Stack," "Healthcare Compliance Kit") that package both platforms with pre-configured integrations. Price at 20-30% discount vs. buying separately. Market to mid-market companies (50-500 employees) who want turnkey solutions.\n\nGo-to-market: Joint sales team, shared quota, 50/50 revenue split. Launch with 3 vertical bundles, measure conversion rates, then expand to 10+ verticals. This captures customers who want integrated solutions but don't have engineering resources to build custom integrations.`;
-        }
-        
-        if (!gorge) {
-            gorge = `**Unseen Volume: Co-Branded Offerings**\n\n${anchor} and ${prospect} both have established customer bases that don't fully overlap. The arbitrage opportunity is creating a co-branded offering that appeals to customers neither company reaches independently.\n\nApproach: Identify a customer segment that values what both companies provide but hasn't adopted either product. Design a joint offering that combines capabilities from both platforms at an attractive price point. Structure as pilot program with 90-day evaluation window.\n\nSuccess metrics: (1) customer acquisition cost below each company's standalone CAC, (2) 60-day retention above 50%, (3) clear path to $5M+ annual revenue within 24 months. If these conditions aren't met, wind down the experiment rather than continuing marginal initiatives.`;
-        }
-        
-        return gorge;
-    }
-
-    function generateExecutiveQuestions(score) {
-        const anchor = anchorData.name;
-        const prospect = prospectData.name;
-        const anchorModel = anchorData.model;
-        const prospectModel = prospectData.model;
+        const anchorType = anchorData.vertical.type;
+        const prospectType = prospectData.vertical.type;
         
         let q1, q2, q3;
         
-        if (anchorModel === 'DeepTech' || prospectModel === 'DeepTech') {
-            q1 = `**1. API Architecture & Limitations:** What are the rate limits, data access restrictions, and SLA guarantees on your APIs? How do you handle versioning and backward compatibility? ${prospect} needs specifics—${anchor} can't build a product on infrastructure that might break without warning.`;
-        } else if (anchorModel === 'Prestige' || prospectModel === 'Prestige') {
-            q1 = `**1. Brand Governance & Control:** What approval rights does ${anchor} retain over product design, pricing, and distribution? How do you handle quality failures that threaten brand reputation? Prestige partnerships fail when control is ambiguous—define it precisely upfront.`;
+        if (anchorType === 'Space' || prospectType === 'Space') {
+            q1 = `**1. Mass Budget and Delta-V Allocation:** Walk through the mission design: What's the total mass budget? How much delta-V do you allocate to orbital insertion vs. station-keeping vs. deorbit? Where does ${anchor}'s payload/capability fit in this budget, and what margin remains for contingencies? Space missions fail when mass budgets are optimistic—I need worst-case numbers, not nominal.`;
+        } else if (anchorType === 'Climate' || prospectType === 'Climate') {
+            q1 = `**1. Additionality and Verification Standards:** How do you prove that captured carbon wouldn't have been removed through natural processes? What third-party verifiers do you work with, and have any of them rejected your methodology? Carbon credits are worthless without credible additionality—show me the certification documentation and any disputes with verifiers.`;
+        } else if (anchorType === 'Luxury' || prospectType === 'Luxury') {
+            q1 = `**1. Brand Dilution Risk and Production Limits:** What's the maximum production volume that maintains scarcity? Have you ever exceeded this threshold, and if so, what happened to brand perception and resale values? Luxury brands die when they overproduce—I need your internal volume guardrails and the governance process that enforces them.`;
         } else {
-            q1 = `**1. Data Privacy & Compliance:** What data can be shared between platforms, and what regulatory constraints (GDPR, CCPA, HIPAA) apply? Who owns the data generated through the integration? These aren't legal technicalities—they determine what's technically feasible.`;
+            q1 = `**1. Unit Economics at Scale:** What's your current gross margin per unit, and how does it trend as you scale? Where are the primary cost drivers, and which costs are fixed vs. variable? Most partnerships fail because unit economics don't work at partnership volume—prove yours scale favorably.`;
         }
         
-        if (anchorModel === 'B2CHealth' || prospectModel === 'B2CHealth') {
-            q2 = `**2. Competitive Positioning & Defensive Moats:** If this partnership succeeds, what prevents ${prospect} from building ${anchor}'s core functionality in-house and cutting ${anchor} out? What contractual or technical mechanisms protect ${anchor}'s position in the relationship?`;
+        if (anchorType === 'Regulated' || prospectType === 'Regulated') {
+            q2 = `**2. Compliance Infrastructure and Data Residency:** What data can legally be shared across your platform boundary? Are there jurisdictional restrictions (GDPR, CCPA, sector-specific regulations) that limit integration? Who owns the compliance risk if ${anchor} exposes ${prospect}'s data to unauthorized parties—and is that risk insurable?`;
+        } else if (anchorType === 'DeepTech' || prospectType === 'DeepTech') {
+            q2 = `**2. CapEx vs. OpEx and Scaling Constraints:** How much capital did you invest to build current capacity, and what's the incremental capex to double it? Are there physical constraints (fab capacity, supply chain lead times) that limit scaling speed? Deep tech partnerships fail when one party can't scale to meet demand—I need your expansion roadmap with capital requirements itemized.`;
         } else {
-            q2 = `**2. Integration Effort & Roadmap Prioritization:** What engineering resources can ${prospect} allocate to this integration, and where does it rank in their product roadmap? Partnerships fail when one party says "yes" but never allocates dev time to ship.`;
+            q2 = `**2. P&L Ownership and Incentive Alignment:** Who internally owns partnership revenue, and is it material to their compensation? If this partnership generates $5M in Year 1, whose bonus increases? Partnerships die when they're nobody's primary responsibility—prove someone senior is incentivized to make this succeed.`;
         }
         
-        q3 = `**3. Economics & Incentive Alignment:** How is success measured on ${prospect}'s side, and whose bonus/promotion depends on this partnership performing? If it's no one's core responsibility, it won't get the attention required to succeed. ${anchor} needs a committed internal champion at ${prospect}—preferably someone with P&L ownership.`;
+        q3 = `**3. Competitive Defensive Moats:** If this partnership scales, what prevents ${prospect} from building ${anchor}'s capability in-house or acquiring a competitor? Conversely, what stops ${anchor} from bypassing ${prospect} and going direct? Partnerships require mutual dependency—explain why each party needs the other long-term, not just opportunistically.`;
         
         return `${q1}\n\n${q2}\n\n${q3}`;
-    }
-
-    function getModelLabel(model) {
-        const labels = {
-            'Prestige': 'High-Touch/Prestige',
-            'DeepTech': 'Deep Tech/API-First',
-            'B2CHealth': 'B2C Health/Performance',
-            'B2BSaaS': 'B2B SaaS',
-            'Marketplace': 'Marketplace',
-            'Technology': 'Technology'
-        };
-        return labels[model] || model;
     }
 
     function displayResults(brief) {
         document.getElementById('modalProspectName').textContent = prospectData.name;
         document.getElementById('modalProspectUrl').textContent = prospectData.url.replace('https://', '').replace('http://', '');
         document.getElementById('matchScore').textContent = brief.score + '%';
-        document.getElementById('anchorModel').textContent = getModelLabel(anchorData.model);
-        document.getElementById('prospectModel').textContent = getModelLabel(prospectData.model);
+        document.getElementById('anchorVertical').textContent = anchorData.vertical.type;
+        document.getElementById('prospectVertical').textContent = prospectData.vertical.type;
         
-        // Render markdown
         document.getElementById('briefContent').innerHTML = marked.parse(brief.markdown);
         
         hideProgress();
@@ -730,16 +695,14 @@
             const domain = hostname.split('.')[0].toLowerCase().replace(/[-_]/g, '');
             
             const brands = {
+                'varda': 'Varda',
+                'apex': 'Apex',
+                'nvidia': 'Nvidia',
                 'hermes': 'Hermès',
-                'lvmh': 'LVMH',
-                'fourseasons': 'Four Seasons',
-                'whoop': 'Whoop',
-                'levels': 'Levels',
                 'belvo': 'Belvo',
-                'glean': 'Glean',
-                'linear': 'Linear',
-                'stripe': 'Stripe',
-                'plaid': 'Plaid'
+                'carbonengineering': 'Carbon Engineering',
+                'climeworks': 'Climeworks',
+                'ald': 'ALD'
             };
             
             if (brands[domain]) return brands[domain];
