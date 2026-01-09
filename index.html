@@ -1,448 +1,444 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strategic Partner Scout</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.marked.min.js@12.0.0/marked.min.js"></script>
+    <title>Strategic Partner Scout | V5.1</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        * { font-family: 'Inter', sans-serif; }
-        body { background: #0a0f1e; min-height: 100vh; }
-        .card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(71, 85, 105, 0.3); }
-        .input-field { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(71, 85, 105, 0.5); transition: all 0.3s ease; }
-        .input-field:focus { outline: none; border-color: rgba(99, 102, 241, 0.6); background: rgba(0, 0, 0, 0.6); }
-        .clarification-box { background: rgba(99, 102, 241, 0.1); border: 1px solid rgba(99, 102, 241, 0.3); animation: slideDown 0.4s ease; }
-        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(8px); z-index: 1000; display: flex; align-items: center; justify-content: center; animation: fadeIn 0.3s ease; }
-        .modal-content { background: linear-gradient(180deg, #0f172a 0%, #1e293b 100%); border: 2px solid rgba(99, 102, 241, 0.3); max-width: 1100px; width: 94%; max-height: 90vh; overflow-y: auto; animation: slideIn 0.4s ease; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes slideIn { from { opacity: 0; transform: translateY(-30px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .spinner { width: 40px; height: 40px; border: 3px solid rgba(99, 102, 241, 0.2); border-top-color: #6366f1; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .match-score { font-size: 4rem; font-weight: 700; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
-        .section-divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(71, 85, 105, 0.5), transparent); }
-        .tier-badge { background: rgba(139, 92, 246, 0.25); border: 2px solid rgba(139, 92, 246, 0.6); color: #e9d5ff; font-size: 0.875rem; padding: 0.625rem 1.25rem; border-radius: 0.5rem; font-weight: 700; letter-spacing: 0.075em; text-transform: uppercase; }
-        .insight-badge { background: rgba(34, 197, 94, 0.15); border: 1px solid rgba(34, 197, 94, 0.3); color: #86efac; }
-        .hidden { display: none !important; }
-        .progress-bar { width: 100%; height: 2px; background: rgba(71, 85, 105, 0.3); position: relative; overflow: hidden; }
-        .progress-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #8b5cf6); animation: progress 2.5s ease-in-out; }
-        @keyframes progress { 0% { width: 0%; } 100% { width: 100%; } }
-        .markdown-content table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
-        .markdown-content th { background: rgba(99, 102, 241, 0.1); padding: 0.75rem; text-align: left; border: 1px solid rgba(71, 85, 105, 0.3); font-weight: 600; color: #c4b5fd; }
-        .markdown-content td { padding: 0.75rem; border: 1px solid rgba(71, 85, 105, 0.3); color: #d1d5db; }
-        .markdown-content tr:hover { background: rgba(99, 102, 241, 0.05); }
-        .markdown-content strong { color: #c4b5fd; font-weight: 600; }
-        .markdown-content p { margin: 0.75rem 0; line-height: 1.7; }
-        .markdown-content h2 { color: #e5e7eb; font-size: 1.5rem; font-weight: 600; margin: 2rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 1px solid rgba(71, 85, 105, 0.3); }
-        .markdown-content h3 { color: #d1d5db; font-size: 1.25rem; font-weight: 600; margin: 1.5rem 0 0.75rem 0; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 100%);
+            color: #e4e4e7;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 2px solid #2d2d44;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .version {
+            color: #a1a1aa;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+        }
+
+        .input-section {
+            background: rgba(45, 45, 68, 0.4);
+            border: 1px solid #3f3f5e;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #e4e4e7;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 14px 18px;
+            background: #1a1a2e;
+            border: 1px solid #3f3f5e;
+            border-radius: 8px;
+            color: #e4e4e7;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input[type="url"]:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #60a5fa;
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .tier-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .tier-option {
+            background: #1a1a2e;
+            border: 2px solid #3f3f5e;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tier-option:hover {
+            border-color: #60a5fa;
+            transform: translateY(-2px);
+        }
+
+        .tier-option.selected {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .tier-option input[type="radio"] {
+            display: none;
+        }
+
+        .tier-name {
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 5px;
+        }
+
+        .tier-desc {
+            font-size: 0.85rem;
+            color: #a1a1aa;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(96, 165, 250, 0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .output-section {
+            background: rgba(45, 45, 68, 0.4);
+            border: 1px solid #3f3f5e;
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            display: none;
+        }
+
+        .output-section.visible {
+            display: block;
+        }
+
+        .output-content {
+            background: #1a1a2e;
+            border-radius: 8px;
+            padding: 25px;
+            color: #e4e4e7;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 3px solid #3f3f5e;
+            border-top: 3px solid #60a5fa;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #fca5a5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+
+        .warning {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid #fbbf24;
+            color: #fcd34d;
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            margin-top: 10px;
+        }
     </style>
 </head>
-<body class="text-gray-100">
-    <div class="min-h-screen p-6">
-        <div class="max-w-4xl mx-auto">
-            <div class="mb-8 text-center">
-                <h1 class="text-3xl font-light text-gray-300 mb-1">Strategic Partner Scout</h1>
-                <p class="text-sm text-gray-500">Senior BD Partner Analysis</p>
+<body>
+    <div class="container">
+        <header>
+            <h1>STRATEGIC PARTNER SCOUT</h1>
+            <p class="version">V5.1 FINAL | LOGIC FIREBOX EDITION</p>
+        </header>
+
+        <div class="input-section">
+            <div class="input-group">
+                <label>Anchor Company URL</label>
+                <input type="url" id="anchorUrl" placeholder="https://www.circle.com/en/usdc">
             </div>
-            <div class="card rounded-lg p-8">
-                <div id="initialInput">
-                    <div class="space-y-4 mb-6">
-                        <div>
-                            <label class="text-sm text-gray-400 mb-2 block">Anchor Company URL</label>
-                            <input type="url" id="anchorUrl" placeholder="https://your-company.com" class="input-field w-full px-4 py-3 rounded text-sm"/>
-                        </div>
-                        <div>
-                            <label class="text-sm text-gray-400 mb-2 block">Prospect Company URL</label>
-                            <input type="url" id="prospectUrl" placeholder="https://prospect-company.com" class="input-field w-full px-4 py-3 rounded text-sm"/>
-                        </div>
+
+            <div class="input-group">
+                <label>Prospect Company URL</label>
+                <input type="url" id="prospectUrl" placeholder="https://www.jpmorgan.com/insights/payments/blockchain">
+            </div>
+
+            <div class="input-group">
+                <label>Strategic Context (Optional)</label>
+                <textarea id="context" placeholder="Recent milestone, deal announcement, or market event..."></textarea>
+            </div>
+
+            <div class="input-group">
+                <label>Reality Tier</label>
+                <div class="tier-grid">
+                    <div class="tier-option" onclick="selectTier('rwa')">
+                        <input type="radio" name="tier" value="rwa" id="tier-rwa">
+                        <div class="tier-name">[Institutional RWA/Yield]</div>
+                        <div class="tier-desc">Finance, Stablecoins, Custody, Settlement</div>
                     </div>
-                    <button id="analyzeBtn" type="button" class="w-full bg-indigo-600 hover:bg-indigo-700 px-6 py-3.5 rounded font-medium transition-all">Analyze Partnership</button>
-                </div>
-                <div id="progressSection" class="hidden">
-                    <div class="text-center py-12">
-                        <div class="spinner mx-auto mb-4"></div>
-                        <p class="text-sm text-gray-400 mb-2" id="progressText">Scanning...</p>
-                        <p class="text-xs text-gray-500" id="progressSubtext"></p>
-                        <div class="progress-bar mt-4"><div class="progress-fill"></div></div>
+                    <div class="tier-option" onclick="selectTier('compute')">
+                        <input type="radio" name="tier" value="compute" id="tier-compute">
+                        <div class="tier-name">[Sovereign AI/Compute]</div>
+                        <div class="tier-desc">Data Centers, Chips, Energy, Infrastructure</div>
                     </div>
-                </div>
-                <div id="clarificationSection" class="hidden">
-                    <div class="clarification-box rounded-lg p-6">
-                        <div class="flex items-start gap-3 mb-4"><div class="insight-badge px-3 py-1 rounded-full text-xs font-semibold">Intelligence</div></div>
-                        <h3 class="text-lg font-semibold mb-2">Strategic Context Required</h3>
-                        <p class="text-sm text-gray-400 mb-4">We've scanned <span id="foundCompany" class="text-gray-300"></span>. What is your primary strategic objective?</p>
-                        <div class="mb-4"><input type="text" id="strategicGoal" placeholder="e.g., Unlock $500M institutional AUM, Deploy 300MW capacity" class="input-field w-full px-4 py-3 rounded text-sm"/></div>
-                        <div class="flex gap-3">
-                            <button id="continueBtn" type="button" class="flex-1 bg-indigo-600 hover:bg-indigo-700 px-6 py-3 rounded font-medium transition-all">Continue</button>
-                            <button id="cancelBtn" type="button" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 rounded font-medium transition-all">Cancel</button>
-                        </div>
+                    <div class="tier-option" onclick="selectTier('deeptech')">
+                        <input type="radio" name="tier" value="deeptech" id="tier-deeptech">
+                        <div class="tier-name">[Orbital/Deep Tech]</div>
+                        <div class="tier-desc">Space, Biotech, Fusion, Advanced R&D</div>
+                    </div>
+                    <div class="tier-option" onclick="selectTier('prestige')">
+                        <input type="radio" name="tier" value="prestige" id="tier-prestige">
+                        <div class="tier-name">[High-Touch/Prestige]</div>
+                        <div class="tier-desc">Luxury, Heritage, Craftsmanship</div>
                     </div>
                 </div>
             </div>
+
+            <button onclick="analyzePartnership()" id="analyzeBtn">
+                Launch Strategic Analysis
+            </button>
+        </div>
+
+        <div class="output-section" id="outputSection">
+            <h2 style="margin-bottom: 20px; color: #60a5fa;">PARTNERSHIP ASSESSMENT</h2>
+            <div class="output-content" id="outputContent"></div>
         </div>
     </div>
-    <div id="resultsModal" class="modal-overlay hidden">
-        <div class="modal-content rounded-lg">
-            <div class="p-8">
-                <div class="flex items-start justify-between mb-6">
-                    <div class="flex-1">
-                        <h3 class="text-2xl font-semibold mb-2" id="modalProspectName">Company</h3>
-                        <p class="text-sm text-gray-400 mb-4" id="modalProspectUrl">company.com</p>
-                        <div class="flex gap-3 items-center flex-wrap"><span class="tier-badge" id="tierBadge"></span></div>
-                    </div>
-                    <button id="closeBtn" type="button" class="p-2 hover:bg-slate-700/50 rounded transition-all">
-                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
-                <div class="text-center mb-8">
-                    <div class="match-score mb-2" id="matchScore">0%</div>
-                    <p class="text-xs text-gray-500 uppercase tracking-wider">Strategic Fit</p>
-                </div>
-                <div class="section-divider mb-8"></div>
-                <div class="markdown-content" id="briefContent"></div>
-            </div>
-        </div>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/marked@12.0.0/marked.min.js"></script>
+
     <script>
-(function() {
-    'use strict';
-    const TAVILY_API_KEY = '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';
-    const STORAGE_KEY = 'sps_anchor_url';
-    let anchorData = {};
-    let prospectData = {};
-    let strategicGoal = '';
+        let selectedTier = null;
 
-    // FIREBOX CLASSIFICATION - ONE tier per company, drives 100% of logic
-    function classifyTier(info, name) {
-        const i = info.toLowerCase();
-        const n = name.toLowerCase();
-        
-        // TIER 1: Institutional RWA/Yield - ONLY finance keywords
-        if (i.includes('stablecoin') || i.includes('yield') || i.includes('treasury') || 
-            i.includes('custody') || i.includes('settlement') || i.includes('collateral') ||
-            i.includes('apy') || i.includes('institutional') && i.includes('asset') ||
-            n.includes('copper') || n.includes('ethena') || n.includes('circle') || n.includes('paxos')) {
-            return 'RWA';
-        }
-        
-        // TIER 2: Sovereign AI/Compute - ONLY infrastructure keywords
-        if (i.includes('datacenter') || i.includes('gpu') || i.includes('compute') ||
-            i.includes('megawatt') || i.includes('cooling') || i.includes('pue') ||
-            i.includes('nvidia') || i.includes('semiconductor') ||
-            n.includes('nvidia') || n.includes('applied')) {
-            return 'COMPUTE';
-        }
-        
-        // TIER 3: Orbital/Deep Tech - ONLY space/biotech keywords
-        if (i.includes('space') || i.includes('orbital') || i.includes('launch') ||
-            i.includes('satellite') || i.includes('rocket') || i.includes('biotech') ||
-            i.includes('pharmaceutical') || i.includes('clinical') ||
-            n.includes('varda') || n.includes('apex')) {
-            return 'ORBITAL';
-        }
-        
-        // TIER 4: High-Touch/Prestige - ONLY luxury keywords
-        if (i.includes('luxury') || i.includes('heritage') || i.includes('artisan') ||
-            i.includes('prestige') || i.includes('craftsmanship') ||
-            n.includes('hermès') || n.includes('hermes')) {
-            return 'PRESTIGE';
-        }
-        
-        return 'TECH';
-    }
-
-    function loadSavedAnchor() {
-        const saved = localStorage.getItem(STORAGE_KEY);
-        if (saved) document.getElementById('anchorUrl').value = saved;
-    }
-
-    async function analyze() {
-        const anchorUrl = document.getElementById('anchorUrl').value.trim();
-        const prospectUrl = document.getElementById('prospectUrl').value.trim();
-        if (!anchorUrl || !prospectUrl) { alert('Please enter both URLs'); return; }
-        try { new URL(anchorUrl); new URL(prospectUrl); } catch { alert('Please enter valid URLs'); return; }
-        
-        // CLEAN ROOM - total state reset
-        anchorData = {}; prospectData = {}; strategicGoal = '';
-        localStorage.setItem(STORAGE_KEY, anchorUrl);
-        
-        showProgress('Scanning anchor...', 'Identifying tier');
-        try {
-            await sleep(500);
-            const aName = extractName(anchorUrl);
-            const aResults = await searchTavily(aName + ' company business operations');
-            anchorData = { name: aName, url: anchorUrl, info: aResults.answer || '' };
-            if (aResults.results && aResults.results.length > 0) {
-                anchorData.info += ' ' + aResults.results.map(r => r.content).join(' ');
-            }
-            anchorData.tier = classifyTier(anchorData.info, anchorData.name);
-            await sleep(400);
-            
-            if (anchorData.info.length < 180) {
-                showClarification(anchorData.name);
-            } else {
-                strategicGoal = extractGoal(anchorData.tier);
-                await analyzeProspect(prospectUrl);
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Analysis failed');
-            reset();
-        }
-    }
-
-    function extractGoal(tier) {
-        if (tier === 'RWA') return 'unlock institutional treasury flow';
-        if (tier === 'COMPUTE') return 'deploy 500MW AI compute capacity';
-        if (tier === 'ORBITAL') return 'reduce cost per kilogram to orbit';
-        if (tier === 'PRESTIGE') return 'preserve heritage while scaling';
-        return 'accelerate revenue';
-    }
-
-    function showClarification(name) {
-        hideProgress();
-        document.getElementById('foundCompany').textContent = name;
-        document.getElementById('initialInput').classList.add('hidden');
-        document.getElementById('clarificationSection').classList.remove('hidden');
-    }
-
-    async function continueWithGoal() {
-        const goal = document.getElementById('strategicGoal').value.trim();
-        if (!goal) { alert('Please enter objective'); return; }
-        strategicGoal = goal;
-        document.getElementById('clarificationSection').classList.add('hidden');
-        showProgress('Continuing...', '');
-        await analyzeProspect(document.getElementById('prospectUrl').value.trim());
-    }
-
-    async function analyzeProspect(prospectUrl) {
-        try {
-            updateProgress('Scanning prospect...', 'Identifying tier');
-            await sleep(600);
-            const pName = extractName(prospectUrl);
-            const pResults = await searchTavily(pName + ' company business operations');
-            prospectData = { name: pName, url: prospectUrl, info: pResults.answer || '' };
-            if (pResults.results && pResults.results.length > 0) {
-                prospectData.info += ' ' + pResults.results.map(r => r.content).join(' ');
-            }
-            prospectData.tier = classifyTier(prospectData.info, prospectData.name);
-            await sleep(600);
-            
-            updateProgress('Building thesis...', 'Firebox isolation active');
-            await sleep(800);
-            const brief = generateFireboxBrief();
-            await sleep(400);
-            displayResults(brief);
-        } catch (error) {
-            console.error('Error:', error);
-            alert('Analysis failed');
-            reset();
-        }
-    }
-
-    function generateFireboxBrief() {
-        const A = anchorData.name;
-        const P = prospectData.name;
-        const AT = anchorData.tier;
-        const PT = prospectData.tier;
-        
-        const score = calcFit(AT, PT);
-        const summary = buildSummary(A, P, AT, PT);
-        const thesis = buildThesis(A, P, AT, PT);
-        const gorge = buildGorge(A, P, AT, PT);
-        const vetting = buildVetting(A, P, AT, PT);
-        
-        let md = `## Executive Summary\n\n${summary}\n\n## Partnership Thesis\n\n${thesis}\n\n## The Strategic Gorge\n\n${gorge}\n\n## Executive Vetting\n\n${vetting}`;
-        const tierLabel = getTierLabel(AT, PT);
-        return { score, markdown: md, tierLabel };
-    }
-
-    function calcFit(at, pt) {
-        let s = 62;
-        if (at === pt) s += 20;
-        s += Math.random() * 10 - 5;
-        return Math.max(Math.min(Math.round(s), 91), 58);
-    }
-
-    function getTierLabel(at, pt) {
-        const labels = { RWA: 'Institutional RWA/Yield', COMPUTE: 'Sovereign AI/Compute', ORBITAL: 'Orbital/Deep Tech', PRESTIGE: 'High-Touch/Prestige', TECH: 'Technology' };
-        return at === pt ? labels[at] : labels[at] + ' × ' + labels[pt];
-    }
-
-    function buildSummary(A, P, AT, PT) {
-        if (AT === 'RWA' && PT === 'RWA') {
-            return `${P} and ${A} both structure institutional treasury products, competing for the same CFO dollar allocating idle cash to yield instruments. Partnership logic: ${P} controls distribution infrastructure (custody rails, banking relationships, KYC processes) while ${A} controls product (yield generation mechanics, collateral management, risk frameworks). Institutional treasurers prioritize in this order: regulatory compliance, counterparty credit quality, redemption liquidity. Any partnership must preserve both parties' positioning on all three. If ${P}'s custody integration introduces compliance friction or extends redemption windows beyond institutional tolerance (T+1 for most), buyers reject the product regardless of APY improvement. Revenue potential exists only if ${A}'s yield generation demonstrably improves on ${P}'s current offerings by 50+ basis points after fees—smaller improvements don't justify operational integration costs.`;
-        }
-        
-        if (AT === 'COMPUTE' && PT === 'COMPUTE') {
-            return `${P} and ${A} both deploy AI compute infrastructure optimized for identical constraints: megawatt power delivery, liquid cooling efficiency, GPU density per rack. Partnership thesis depends on whether combining assets reduces marginal cost per GPU-hour or accelerates capacity deployment timelines. The critical bottleneck: utility interconnection agreements for 100+ MW loads require 18-36 month lead times. If ${P} has executed interconnection capacity exceeding current deployment plans and ${A} has capital plus customer demand, partnership monetizes stranded infrastructure. Conversely, if both parties queue for the same utility capacity, partnership creates zero value—they're competing for constrained resources rather than solving complementary problems. Revenue model requires ${P} providing capacity at 10-15% below market rates while ${A} commits to 24+ month contracts guaranteeing minimum utilization thresholds.`;
-        }
-        
-        if (AT === 'ORBITAL' && PT === 'ORBITAL') {
-            return `${P} and ${A} operate within overlapping orbital regimes, creating partnership opportunities grounded in physics rather than commercial strategy. Both contend with delta-V budgets, thermal management during reentry, and payload mass constraints dictated by the rocket equation. Partnership succeeds if integration eliminates redundant capability development or enables mission profiles neither achieves independently. Critical analysis: does ${P}'s orbital maneuvering capability complement ${A}'s payload specialization? If ${P} handles orbit insertion and phasing while ${A} focuses on reentry thermal protection, partnership creates technical value. If both parties duplicate the same capabilities, partnership is acquisition or consolidation play rather than operational collaboration. Mission economics require combined cost-per-kilogram delivered improving by 20%+ vs. standalone operations to justify integration complexity.`;
-        }
-        
-        if (AT === 'PRESTIGE' && PT === 'PRESTIGE') {
-            return `${P} and ${A} both operate prestige brands where value derives from scarcity and heritage rather than volume or efficiency. Partnership creates risk before creating value—luxury brands competing for the same customer's emotional budget dilute rather than enhance positioning. Partnership makes sense only if brands serve different life moments: ${A} for occasion X, ${P} for occasion Y, with zero overlap in purchase timing. The only defensible structure: limited co-creation with production capped at 500-2000 units globally, sold exclusively through ${A}'s distribution to preserve brand control. Revenue split reflects brand equity contribution (typically 70/30 favoring the stronger positioning). Critical constraints: no discounting ever, no outlet distribution, no secondary market support. If post-purchase resale values drop below retail, the collaboration damaged both brands. Volume targets above 2000 units trigger brand dilution risk—better to leave demand unsatisfied than overproduce.`;
-        }
-        
-        if (AT === 'RWA' && PT === 'COMPUTE') {
-            return `${A} structures financial products for institutional treasuries. ${P} operates compute infrastructure requiring continuous megawatt power delivery. No natural partnership exists—institutional yield products and GPU compute serve completely separate markets with zero customer overlap. Unless ${P} generates material excess revenue that ${A} can structure into yield-bearing instruments (e.g., ${P} sells compute capacity generating stable cash flows that ${A} securitizes), this partnership lacks commercial rationale. Even then, institutional buyers won't accept compute infrastructure as collateral unless cash flows demonstrate 5+ years of stability with investment-grade credit support. Recommend passing—BD resources generate better returns pursuing prospects with obvious strategic fit rather than manufacturing partnerships between unrelated business models.`;
-        }
-        
-        return `${A} operates in ${getTierLabel(AT, PT).split(' × ')[0]} while ${P} operates in ${getTierLabel(AT, PT).split(' × ')[1] || 'different sector'}. Cross-tier partnerships rarely succeed without precise integration mechanics. The analysis must identify how ${P}'s specific capabilities address ${A}'s operational bottlenecks and vice versa. Generic "collaboration" fails. Successful partnerships require technical or financial handshakes where one party's infrastructure or distribution solves the other's constraint. Without clear integration points, this remains exploratory rather than strategic.`;
-    }
-
-    function buildThesis(A, P, AT, PT) {
-        if (AT === 'RWA' && PT === 'RWA') {
-            return `**Custody Integration and Settlement Rails**\n\n${P} maintains institutional custody infrastructure—KYC processes, audit trails, regulatory reporting systems built over years. ${A} structures yield products but lacks direct banking relationships. Integration handshake: ${P} white-labels ${A}'s yield engine within their custody platform, allowing institutional clients to allocate without opening separate accounts.\n\nSettlement mechanics: ${P} handles T+0 or T+1 redemptions using their banking rails. ${A} provides daily NAV calculation and yield distribution. Revenue split: ${P} takes 20-40 basis points for custody and distribution; ${A} retains management fees. Critical requirement: ${A}'s products must settle through ${P}'s existing infrastructure without custom development. If integration requires 6+ months of engineering work, partnership momentum dies before launch. Institutional buyers demand seamless experience—visible integration seams kill adoption regardless of yield advantage.`;
-        }
-        
-        if (AT === 'COMPUTE' && PT === 'COMPUTE') {
-            return `**Stranded Capacity Monetization**\n\n${P} operates datacenters with GPUs deployed but underutilized—customer acquisition lagging infrastructure buildout. ${A} has compute demand exceeding owned capacity, facing 12-18 month lead times for new facility construction. Physical handshake: ${A} leases ${P}'s excess capacity on flexible terms while ${A}'s infrastructure comes online.\n\nPricing: ${A} pays 10-15% below spot market rates in exchange for 12-24 month minimum commitments. ${P} monetizes idle assets; ${A} accesses immediate capacity. Technical requirements: compatible GPU architectures (both must use H100 or A100) and networking fabric (InfiniBand vs Ethernet). Incompatible hardware eliminates partnership value. Power delivery must support required density—if ${P}'s cooling infrastructure can't sustain ${A}'s workload intensity, capacity sits unused despite contractual availability.`;
-        }
-        
-        if (AT === 'ORBITAL' && PT === 'ORBITAL') {
-            return `**Payload Integration via Standard Interfaces**\n\n${P}'s orbital vehicle provides insertion and maneuvering capabilities. ${A}'s payload requires specific orbital parameters and thermal environments. Technical handshake occurs through standardized mechanical interfaces (ESPA ring, CubeSat deployers) and electrical protocols.\n\nMission architecture: ${P} delivers ${A}'s payload to target orbit (LEO 400-600km typical). Payload remains attached during on-orbit operations (30-90 days). At mission completion, ${A} separates and performs independent operations (reentry, station-keeping, disposal). Revenue model: ${A} pays fixed price per mission ($2-5M depending on orbital parameters and payload mass). ${P} gains predictable demand enabling multi-launch contracts with manufacturers. ${A} avoids building propulsion systems in-house. Partnership succeeds if both parties optimize different mission phases—${P} for orbital delivery, ${A} for payload operations—rather than duplicating capabilities.`;
-        }
-        
-        if (AT === 'PRESTIGE' && PT === 'PRESTIGE') {
-            return `**Heritage Co-Creation with Scarcity Discipline**\n\nPrestige brands protect value through production limits and distribution control. ${P} contributes specialized manufacturing capability or material innovation. ${A} directs creative vision and controls customer relationships. Structure: ${P} produces limited objects (500-2000 units maximum) designed by ${A}'s team, sold exclusively through ${A}'s channels.\n\nRevenue split: 70/30 favoring ${A} due to brand equity contribution. Production quality must match ${A}'s existing standards—no cost optimization that compromises craftsmanship. Distribution exclusivity is non-negotiable: if ${P} attempts parallel sales, partnership terminates. The collaboration reinforces both brands only if the object is genuinely exceptional—incremental SKUs dilute heritage narratives. Post-launch monitoring: if resale prices drop below retail within 12 months, production was excessive and future collaborations require tighter volume discipline.`;
-        }
-        
-        return `**Integration Mechanics Identification**\n\n${A} and ${P} must map specific operational handshakes where one party's capability eliminates the other's bottleneck. Generic partnerships fail without precise integration points. The diligence must answer: where does ${P}'s infrastructure, data, or relationships directly solve ${A}'s constraint? Structure as 90-day pilot targeting single integration point. Measure value created via proxy metrics (cost reduction, time savings, revenue lift). Most pilots should terminate rather than continuing based on sunk costs—successful partnerships demonstrate clear value within first quarter or never scale profitably.`;
-    }
-
-    function buildGorge(A, P, AT, PT) {
-        if (AT === 'RWA' && PT === 'RWA') {
-            return `**Bankruptcy-Remote Yield Infrastructure**\n\nInstitutional treasurers face a paradox: they want yield exceeding money market funds (currently 5.0-5.3%) but can't accept counterparty credit risk beyond investment-grade thresholds. ${P} and ${A} co-create the first bankruptcy-remote yield vehicle that isolates institutional capital from both parties' balance sheet risk.\n\nStructure: Special purpose entity holds yield-generating collateral (Treasuries, high-grade corporates, stablecoins with reserve attestation). ${A} provides yield optimization strategy; ${P} provides custody and settlement rails. Entity structured so neither party's bankruptcy affects institutional capital—legal isolation tested via third-party opinion letters. Target APY: 5.8-6.5% after all fees, representing 50-120 basis point improvement over direct Treasury holdings. Market opportunity: corporate treasuries hold $2+ trillion in short-term instruments—capturing 1% of this market generates $20B AUM. Revenue: combined 50-70 basis points annually split between ${P} and ${A}. This creates new category: institutional yield without counterparty credit exposure.`;
-        }
-        
-        if (AT === 'COMPUTE' && PT === 'COMPUTE') {
-            return `**AI Compute Futures Market**\n\nML researchers and AI companies face capacity uncertainty—training runs require 1000+ GPU-hours but spot pricing and availability fluctuate unpredictably. ${P} and ${A} both operate datacenters with utilization gaps during off-peak periods. Neither currently offers forward contracts for compute capacity.\n\nThe opportunity: Create standardized GPU-hour futures market where buyers lock in capacity and pricing 30-90 days in advance. ${P} and ${A} jointly provide liquidity by committing minimum capacity to the futures market. Pricing structure: futures trade at 5-10% premium to current spot rates, compensating ${P} and ${A} for guaranteed availability. Settlement: physical delivery of compute time or cash settlement if buyer cancels. Market infrastructure: clearinghouse handles matching, margining, and settlement. Revenue: transaction fees (1-2% per contract) plus spread capture when futures price exceeds marginal cost. This creates new category: compute capacity as tradable financial instrument rather than purely operational resource.`;
-        }
-        
-        if (AT === 'ORBITAL' && PT === 'ORBITAL') {
-            return `**Certified Orbital Manufacturing Standard**\n\nNo existing certification distinguishes materials manufactured in microgravity from terrestrial production. Pharmaceutical and materials companies would pay premium for verified orbital manufacturing if credible certification existed. ${P} and ${A} co-create "Verified Orbital Manufacturing" standard, then license to future space manufacturers.\n\nCertification criteria: Documented time in microgravity environment (minimum 30 days), thermal stability records, contamination controls, chain of custody from orbit to ground delivery. ${P} and ${A} certify their own products first to establish precedent. Licensing model: $200-500K per company plus 2-3% royalty on certified product revenue. Target market: biotech developing protein crystals, materials companies producing specialized alloys or fiber optics where microgravity processing creates superior properties. As adoption grows, certification becomes industry requirement rather than optional differentiator. Revenue opportunity: if orbital manufacturing reaches $500M annually within 5 years, licensing generates $10-15M recurring revenue for ${P} and ${A} jointly.`;
-        }
-        
-        if (AT === 'PRESTIGE' && PT === 'PRESTIGE') {
-            return `**Heritage Provenance Registry**\n\nUltra-high-net-worth collectors face authentication challenges with prestige objects—counterfeit goods, provenance gaps, condition deterioration over decades. ${P} and ${A} co-create "Heritage Registry"—blockchain-based provenance system for luxury collections.\n\nServices: Digital authentication at time of original sale, condition monitoring via periodic inspection, provenance documentation maintained indefinitely, estate planning integration for multi-generational transfers. Revenue model: Annual membership $10-25K depending on collection value, plus transaction fees (1-2%) when registry objects trade in secondary markets. Target market: collectors with $5M+ in prestige goods viewing collections as dynastic assets. Technology: Private blockchain maintained jointly by ${P} and ${A}, with access limited to verified luxury brands. This creates new category: authenticated luxury with permanent provenance chain, commanding 15-30% premium over non-registered comparable objects. Market opportunity: estimated 10,000-20,000 qualified collectors globally, representing $50-100B in total collection value.`;
-        }
-        
-        return `**New Category Requires Customer Validation**\n\n${A} and ${P} must identify unmet customer need that neither addresses independently but both can solve jointly. The gorge opportunity emerges from gaps in current market offerings—problems customers articulate but no existing solution satisfies.\n\nValidation approach: Interview 20-30 potential buyers before building product. Ask: what do you need that doesn't exist today? What would you pay for it? What alternatives have you tried and why did they fail? Structure as minimum viable offering with 90-day pilot and predefined success metrics. Allocate maximum $250K to pilot—if demand doesn't materialize, terminate rather than continuing based on sunken investment. Most new categories fail because creators assume demand without validating willingness-to-pay. Prove demand with stripped-down MVP before committing to scale.`;
-    }
-
-    function buildVetting(A, P, AT, PT) {
-        // VETTING FIREWALL - questions MUST match tier
-        let q1, q2, q3;
-        
-        if (AT === 'RWA' || PT === 'RWA') {
-            q1 = `**1. Redemption Latency and Liquidity Buffers:** What percentage of AUM could redeem within 24 hours without forcing asset sales below NAV? Walk me through your redemption queue during March 2023 banking crisis—what was peak daily redemption rate and how did you handle it? Institutional treasurers require T+0 or T+1 liquidity. If ${P}'s settlement infrastructure introduces delays beyond T+1, institutional buyers reject the product regardless of yield. Show me redemption stress test results with worst-case assumptions, not best-case scenarios.`;
-            q2 = `**2. Counterparty Risk and Bankruptcy Remote Structure:** If ${P} enters bankruptcy tomorrow, what happens to institutional capital allocated through this partnership? Is the structure legally isolated from both parties' balance sheets, and have you received third-party legal opinions confirming bankruptcy remoteness? Institutional risk committees require explicit confirmation that neither party's insolvency affects principal safety. If structure isn't bankruptcy remote, it's not institutionally viable.`;
-            q3 = `**3. Regulatory Reciprocity and Cross-Border Licensing:** In which jurisdictions is ${P} licensed to custody institutional assets, and where does ${A} have regulatory authority to manage funds? What happens when ${A}'s institutional client operates in jurisdiction where ${P} lacks licensing—can you service them or must you decline? Map regulatory footprints against target institutional markets to identify coverage gaps. Partnerships fail when 30% of target market sits in unlicensed jurisdictions.`;
-        } else if (AT === 'COMPUTE' || PT === 'COMPUTE') {
-            q1 = `**1. Executed Interconnection Capacity vs Queue Position:** What megawatt capacity does ${P} have under signed utility agreements with commercial operation dates, versus what remains in interconnection queue with estimated timeline? For queue positions, what transmission upgrades are required and who pays for them? AI compute partnerships fail when projected power doesn't materialize. Show me executed agreements with utilities, not letters of intent. Queue positions have 40% probability of multi-year delays.`;
-            q2 = `**2. Liquid Cooling Infrastructure and Power Density:** What is ${P}'s maximum sustained power delivery per rack, and what cooling infrastructure supports it—direct liquid cooling, immersion, or air-based? Can your facility sustain 40+ kW per rack continuously, and what's your measured PUE at that density? Undersized cooling infrastructure means GPUs throttle performance or shut down during peak loads. Show me thermal imaging during maximum utilization stress tests, not theoretical capacity calculations.`;
-            q3 = `**3. CapEx Per GPU and Expansion Economics:** What was ${P}'s all-in capital cost per GPU including datacenter construction, power infrastructure, and cooling systems? To double GPU count, what's incremental capex and timeline? Compute partnerships require understanding scaling economics—if marginal cost per GPU increases with scale due to constrained infrastructure, partnership doesn't create value. Show me expansion roadmap with capital requirements itemized and utility lead times documented.`;
-        } else if (AT === 'ORBITAL' || PT === 'ORBITAL') {
-            q1 = `**1. Delta-V Budget Allocation and Margin:** Walk through mission design: total delta-V budget, allocation between orbit insertion vs station-keeping vs deorbit, and what margin remains for contingencies? Orbital partnerships fail when delta-V calculations use nominal values without margin. Show me worst-case propellant consumption scenarios assuming 10% underperformance on specific impulse. If mission margin is under 15%, it's not robust to real-world variability.`;
-            q2 = `**2. Thermal Management During Reentry:** What thermal protection system does ${P} use, and what peak heat flux has it demonstrated during actual reentry testing? Computer models are useful but reentry thermal environments kill missions when real-world performance falls short of predictions. Show me flight data from previous reentries with recorded temperatures and ablation rates. If you're relying on simulation without flight heritage, thermal risk is unquantified.`;
-            q3 = `**3. Payload Integration Standards and Testing:** What mechanical and electrical interfaces does ${P} support—ESPA ring diameter, power voltage/frequency, data protocols? What environmental testing has ${P} performed on integrated payloads—vibration profiles, thermal vacuum, EMI/EMC? Partnerships fail when integration requirements surface late. Show me interface control documents and testing reports from previous missions. If documentation is incomplete, integration timeline extends 6-12 months.`;
-        } else if (AT === 'PRESTIGE' || PT === 'PRESTIGE') {
-            q1 = `**1. Heritage Control and Design Authority:** What approval rights does ${A} retain over product design, material selection, pricing, and distribution channels? How do you handle quality failures that threaten brand reputation—full product recall, case-by-case remediation, or public acknowledgment? Prestige partnerships fail when control is ambiguous. Show me written governance specifying final authority at every decision point. If ${P} can unilaterally launch products without ${A}'s approval, partnership structure is flawed.`;
-            q2 = `**2. Production Volume Discipline and Scarcity Management:** What is maximum production volume that maintains scarcity for ${P}'s brand positioning? Have you ever exceeded internal volume thresholds, and what happened to resale values in secondary markets? Luxury brands die from overproduction—better to leave demand unsatisfied than dilute scarcity. Show me historical production volumes and corresponding resale price data. If any product line shows resale values below retail, volume discipline failed.`;
-            q3 = `**3. Distribution Exclusivity and Channel Conflict:** Will ${P} sell partnership products through their own channels or exclusively through ${A}'s distribution? What contractual mechanisms prevent ${P} from launching competing products that undermine the collaboration? Prestige partnerships require absolute distribution exclusivity—parallel channels destroy brand positioning. Show me non-compete clauses and exclusivity terms. If ${P} retains rights to similar products, partnership creates channel conflict rather than synergy.`;
-        } else {
-            q1 = `**1. Unit Economics and Scaling Margins:** What is current gross margin per unit, and how does it trend as volume doubles? Where are primary cost drivers (COGS, labor, infrastructure) and which are fixed vs variable? Partnerships fail when unit economics deteriorate at scale. Show me detailed P&L at current volume and projected P&L at 2x volume with conservative assumptions on cost inflation.`;
-            q2 = `**2. P&L Ownership and Incentive Alignment:** Who internally owns partnership revenue and is it material to their compensation? If this generates $5M in Year 1, whose bonus increases? Partnerships fail when nobody has skin in the game. Identify executive sponsor whose performance review includes partnership metrics. If partnership is "strategic initiative" without P&L accountability, it won't get operational priority.`;
-            q3 = `**3. Competitive Positioning and Build-vs-Buy Decision:** If partnership scales to material revenue, what prevents ${P} from building ${A}'s capability in-house or acquiring competitor to bypass partnership? Show me why neither party can replace the other once relationship has value. Successful partnerships require mutual dependency—if either party can exit easily, relationship has no defensibility.`;
-        }
-        
-        return `${q1}\n\n${q2}\n\n${q3}`;
-    }
-
-    function extractName(url) {
-        try {
-            const u = new URL(url);
-            const d = u.hostname.replace('www.', '').split('.')[0].toLowerCase().replace(/[-_]/g, '');
-            const brands = {
-                'copper': 'Copper', 'ethena': 'Ethena', 'circle': 'Circle', 'paxos': 'Paxos',
-                'nvidia': 'Nvidia', 'applieddigital': 'Applied Digital',
-                'varda': 'Varda', 'apex': 'Apex',
-                'hermes': 'Hermès', 'lvmh': 'LVMH'
-            };
-            if (brands[d]) return brands[d];
-            let n = u.hostname.split('.')[0];
-            n = n.replace(/([a-z])([A-Z])/g, '$1 $2');
-            return n.split(/[-_\s]+/).map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
-        } catch { return 'Company'; }
-    }
-
-    async function searchTavily(query) {
-        try {
-            const res = await fetch('https://api.tavily.com/search', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ api_key: TAVILY_API_KEY, query: query, search_depth: 'advanced', max_results: 5, include_answer: true })
+        function selectTier(tier) {
+            document.querySelectorAll('.tier-option').forEach(opt => {
+                opt.classList.remove('selected');
             });
-            if (!res.ok) throw new Error('Search failed');
-            return await res.json();
-        } catch (e) {
-            console.error('Search error:', e);
-            return { answer: 'Company information.', results: [] };
+            event.currentTarget.classList.add('selected');
+            document.getElementById(`tier-${tier}`).checked = true;
+            selectedTier = tier;
         }
-    }
 
-    function displayResults(brief) {
-        document.getElementById('modalProspectName').textContent = prospectData.name;
-        document.getElementById('modalProspectUrl').textContent = prospectData.url.replace('https://', '').replace('http://', '');
-        document.getElementById('matchScore').textContent = brief.score + '%';
-        document.getElementById('tierBadge').textContent = brief.tierLabel;
-        document.getElementById('briefContent').innerHTML = marked.parse(brief.markdown);
-        hideProgress();
-        document.getElementById('resultsModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
+        function extractCompanyName(url) {
+            try {
+                const urlObj = new URL(url);
+                let domain = urlObj.hostname.replace('www.', '');
+                let companyName = domain.split('.')[0];
+                // Capitalize first letter
+                return companyName.charAt(0).toUpperCase() + companyName.slice(1);
+            } catch {
+                return 'Company';
+            }
+        }
 
-    function showProgress(t, s) {
-        document.getElementById('initialInput').classList.add('hidden');
-        document.getElementById('clarificationSection').classList.add('hidden');
-        document.getElementById('progressSection').classList.remove('hidden');
-        document.getElementById('progressText').textContent = t;
-        document.getElementById('progressSubtext').textContent = s;
-    }
+        function getTierDescription(tier) {
+            const descriptions = {
+                'rwa': 'Institutional RWA/Yield (Finance/Stablecoins/Custody)',
+                'compute': 'Sovereign AI/Compute (Data Centers/Chips/Energy)',
+                'deeptech': 'Orbital/Deep Tech (Space/Biotech/Fusion)',
+                'prestige': 'High-Touch/Prestige (Luxury/Heritage)'
+            };
+            return descriptions[tier] || 'Unknown';
+        }
 
-    function updateProgress(t, s) {
-        document.getElementById('progressText').textContent = t;
-        document.getElementById('progressSubtext').textContent = s;
-    }
+        async function analyzePartnership() {
+            const anchorUrl = document.getElementById('anchorUrl').value.trim();
+            const prospectUrl = document.getElementById('prospectUrl').value.trim();
+            const context = document.getElementById('context').value.trim();
 
-    function hideProgress() { document.getElementById('progressSection').classList.add('hidden'); }
-    function reset() {
-        hideProgress();
-        document.getElementById('clarificationSection').classList.add('hidden');
-        document.getElementById('initialInput').classList.remove('hidden');
-    }
-    function closeModal() {
-        document.getElementById('resultsModal').classList.add('hidden');
-        document.body.style.overflow = 'auto';
-        reset();
-    }
-    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+            if (!anchorUrl || !prospectUrl) {
+                alert('Please provide both company URLs');
+                return;
+            }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        loadSavedAnchor();
-        document.getElementById('analyzeBtn').addEventListener('click', e => { e.preventDefault(); analyze(); });
-        document.getElementById('continueBtn').addEventListener('click', e => { e.preventDefault(); continueWithGoal(); });
-        document.getElementById('cancelBtn').addEventListener('click', e => { e.preventDefault(); reset(); });
-        document.getElementById('closeBtn').addEventListener('click', e => { e.preventDefault(); closeModal(); });
-        document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
-    });
-})();
+            if (!selectedTier) {
+                alert('Please select a Reality Tier');
+                return;
+            }
+
+            const anchorName = extractCompanyName(anchorUrl);
+            const prospectName = extractCompanyName(prospectUrl);
+
+            const btn = document.getElementById('analyzeBtn');
+            const outputSection = document.getElementById('outputSection');
+            const outputContent = document.getElementById('outputContent');
+
+            btn.disabled = true;
+            btn.textContent = 'Analyzing Partnership...';
+            outputSection.classList.add('visible');
+            outputContent.innerHTML = '<div class="loading"><div class="spinner"></div><p>Running Strategic Analysis...</p></div>';
+
+            const systemPrompt = `## SYSTEM INSTRUCTIONS: STRATEGIC PARTNER SCOUT (V5.1 FINAL)
+
+1. HARD-ISOLATION & MEMORY PURGE
+You are a Senior Strategy Partner. Every search is a "Clean Room." You are strictly prohibited from carrying over metrics, names, or industry logic from previous cases. Reset your logic gates for every new pair.
+
+2. THE REALITY CHECK (MANDATORY)
+Before writing, identify the primary Reality Tier based on the Anchor. Use this to lock the reasoning engine:
+
+[Institutional RWA/Yield] (Finance/Stablecoins/Custody): Logic focuses on APY, KYC, Settlement Rails (T+0/T+1), and Counterparty Risk. (Prohibited: GPU/Power/Space talk).
+
+[Sovereign AI/Compute] (Data Centers/Chips/Energy): Logic focuses on MW Capacity, PUE, Liquid Cooling, and Interconnection Queues. (Prohibited: APY/Yield/Heritage talk).
+
+[Orbital/Deep Tech] (Space/Biotech/Fusion): Logic focuses on Delta-V, Mass Budgets, Reentry, and Payloads. (Prohibited: Bank/AOV talk).
+
+[High-Touch/Prestige] (Luxury/Heritage): Logic focuses on Scarcity, Craftsmanship, AOV, and Supply Chain Integrity. (Prohibited: API/GPU/Yield talk).
+
+3. THE VARIABLE EXTRACTION PATCH
+NAME RULE: Never use the placeholder "Www". If the company name is missing from the title, extract the primary domain (e.g., applieddigital.com becomes Applied Digital).
+IDENTITY FENCE: Ensure the report headers explicitly match the specific entities in the current URLs.
+
+4. THE STRATEGIC 'GORGE' EFFECT
+Identify the one structural arbitrage only these two own (e.g., 'Microsoft's 20-year commitment de-risks the $1.6B restart cost for Constellation'). Avoid "marketing" or "pilots." Focus on P&L ownership.
+
+5. VETTING FIREWALL
+Ask "Gritty" questions specific to the tier. If [Finance], ask about Redemption Stress Tests. If [Compute], ask about Utility Lead Times.
+
+You must follow these rules exactly and produce a comprehensive strategic analysis.`;
+
+            const userPrompt = `Analyze this partnership under the [${getTierDescription(selectedTier)}] Reality Tier:
+
+Anchor: ${anchorName} — ${anchorUrl}
+Prospect: ${prospectName} — ${prospectUrl}
+
+${context ? `Strategic Context: ${context}` : ''}
+
+Instructions:
+1. Identify the Structural Handshake (the core operational unlock between these two companies).
+2. Map the Arbitrage Hunter opportunity (the specific economic advantage).
+3. Ask Executive Vetting questions focused on the tier-specific risks.
+4. Identify the Structural Gorge (the asymmetric advantage only THESE TWO can create together).
+5. Follow all prohibition rules for this Reality Tier.
+
+Provide a comprehensive strategic assessment formatted as a professional report.`;
+
+            try {
+                const response = await fetch('https://api.anthropic.com/v1/messages', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model: 'claude-sonnet-4-20250514',
+                        max_tokens: 8000,
+                        system: systemPrompt,
+                        messages: [
+                            { role: 'user', content: userPrompt }
+                        ]
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status} ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                const analysisText = data.content
+                    .filter(item => item.type === 'text')
+                    .map(item => item.text)
+                    .join('\n\n');
+
+                outputContent.innerHTML = `<pre style="margin: 0; font-family: inherit; white-space: pre-wrap;">${escapeHtml(analysisText)}</pre>`;
+
+            } catch (error) {
+                outputContent.innerHTML = `<div class="error"><strong>Analysis Failed</strong><br>${escapeHtml(error.message)}</div>`;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Launch Strategic Analysis';
+            }
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Auto-select RWA tier on load
+        window.addEventListener('DOMContentLoaded', () => {
+            selectTier('rwa');
+            document.querySelector('.tier-option').click();
+        });
     </script>
 </body>
 </html>
