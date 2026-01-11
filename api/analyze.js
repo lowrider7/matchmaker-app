@@ -1,35 +1,35 @@
 export default async function handler(req, res) {
-    // 1. SET HEADERS & CORS
+    // 1. CORS & HEADERS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    if (req.method === 'OPTIONS') {
-        return res.status(200).end();
-    }
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: "Method not allowed" });
-    }
+    if (req.method === 'OPTIONS') return res.status(200).end();
+    if (req.method !== 'POST') return res.status(405).json({ error: "Method not allowed" });
 
     const { targetUrl, scoutUrl, additionalInfo } = req.body;
 
-    // 2. CONSTRUCT THE PROMPT
-    const userMessage = `Perform a Strategic Partnership Sweep.
-    PROSPECT (Target URL): ${targetUrl}
-    OUR FIRM (Scout URL): ${scoutUrl}
-    CONTEXT: ${additionalInfo || "General partnership growth"}
+    // 2. 2026 MODEL UPDATE
+    // The 2024 version is retired. Using the current Jan 2026 stable Sonnet build.
+    const CURRENT_MODEL = 'claude-sonnet-4-5-20250929'; 
 
-    TASK:
-    Analyze the 'Moat' (the prospect's strengths/assets) and the 'Gorge' (the gap or unrealized potential that our firm uniquely fills). 
-    Provide a strategic assessment of the partnership value and a 'Hook' for outreach.
+    const systemPrompt = "You are a Senior Business Development Strategist. You output strictly valid JSON.";
+    
+    const userMessage = `Partner Ranking Sweep:
+    - Target (Prospect): ${targetUrl}
+    - Scout (Our Firm): ${scoutUrl}
+    - Context: ${additionalInfo || "Strategic Growth/Co-marketing"}
 
-    OUTPUT FORMAT:
-    You must respond ONLY with a valid JSON object. No preamble.
+    ANALYSIS REQUIREMENTS:
+    1. Identify the 'Moat' (Prospect leverage).
+    2. Identify the 'Gorge' (The synergy gap our firm bridges).
+    3. Identify the 'Hook' (Urgent trigger for outreach).
+
+    OUTPUT ONLY THIS JSON OBJECT:
     {
         "status": "complete",
-        "structuralGorge": "[2 paragraphs on the moat vs the gap]",
-        "strategicAssessment": "[2 paragraphs on the prospect value rank and hook]"
+        "structuralGorge": "[2 paragraphs of Moat/Gorge logic]",
+        "strategicAssessment": "[2 paragraphs of Value/Hook logic]"
     }`;
 
     try {
@@ -41,52 +41,45 @@ export default async function handler(req, res) {
                 'anthropic-version': '2023-06-01'
             },
             body: JSON.stringify({
-                model: 'claude-3-5-sonnet-20241022',
+                model: CURRENT_MODEL,
                 max_tokens: 1500,
-                system: "You are a senior business development strategist. You communicate strictly in JSON format.",
+                system: systemPrompt,
                 messages: [{ role: 'user', content: userMessage }]
             })
         });
 
         const data = await response.json();
 
-        // Check for Anthropic-level errors (billing, key, etc.)
+        // 3. DETAILED ERROR LOGGING
         if (data.error) {
-            console.error("ANTHROPIC API ERROR:", data.error);
-            throw new Error(`Anthropic Error: ${data.error.message}`);
+            console.error("ANTHROPIC API REJECTION:", data.error.message);
+            throw new Error(`Anthropic: ${data.error.message}`);
         }
 
         if (!data.content || data.content.length === 0) {
-            console.error("EMPTY CONTENT FROM CLAUDE:", JSON.stringify(data));
-            throw new Error("Anthropic returned an empty content array. Check your API credits or safety filters.");
+            throw new Error("No data returned from AI. Verify API Key/Credits.");
         }
 
         const text = data.content[0].text;
         
-        // 3. ROBUST JSON EXTRACTION
+        // 4. AGGRESSIVE JSON EXTRACTION
         const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) {
-            console.error("RAW TEXT RECEIVED (NO JSON FOUND):", text);
-            throw new Error("Claude failed to return a valid JSON object.");
-        }
+        if (!jsonMatch) throw new Error("AI returned text instead of JSON format.");
         
-        const parsedData = JSON.parse(jsonMatch[0]);
+        const finalData = JSON.parse(jsonMatch[0]);
 
-        // 4. SANITIZE OUTPUT FOR THE FRONTEND
-        const sanitizedOutput = {
-            status: parsedData.status || "complete",
-            structuralGorge: parsedData.structuralGorge || "Structural analysis could not be generated.",
-            strategicAssessment: parsedData.strategicAssessment || "Strategic assessment could not be generated."
-        };
-
-        return res.status(200).json(sanitizedOutput);
+        return res.status(200).json({
+            status: "complete",
+            structuralGorge: finalData.structuralGorge || "Gorge analysis failed.",
+            strategicAssessment: finalData.strategicAssessment || "Assessment failed."
+        });
 
     } catch (error) {
-        console.error("SERVER SIDE ERROR:", error.message);
+        console.error("INTERNAL SERVER ERROR:", error.message);
         return res.status(500).json({ 
             error: "Intelligence failure.",
             structuralGorge: "Backend Error: " + error.message,
-            strategicAssessment: "Consult server logs for the raw response trace."
+            strategicAssessment: "Consult your server logs for the raw response."
         });
     }
 }
