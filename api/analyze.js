@@ -1,11 +1,23 @@
 export default async function handler(req, res) {
-    // ... headers and method checks stay the same ...
+    // 1. HEADERS & CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    // Handle preflight request
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
+    }
+
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: "Method not allowed" });
+    }
 
     const { targetUrl, scoutUrl, additionalInfo } = req.body;
 
-    // REFINED PROMPT: Forcing Claude to behave as a pure API
+    // 2. THE PROMPT
     const systemPrompt = `Analyze the partnership potential for Target: ${targetUrl} against Scout: ${scoutUrl}. 
-    Additional context: ${additionalInfo}
+    Additional context: ${additionalInfo || "None provided"}
 
     OUTPUT INSTRUCTIONS:
     Return ONLY a valid JSON object. No preamble, no conversational text.
@@ -13,8 +25,8 @@ export default async function handler(req, res) {
     REQUIRED KEYS:
     {
         "status": "complete",
-        "structuralGorge": "[Detailed analysis of the Moat and the Gorge gap]",
-        "strategicAssessment": "[Analysis of the Hook and the Prospect Rank]"
+        "structuralGorge": "[2 paragraphs on the moat vs the gap]",
+        "strategicAssessment": "[2 paragraphs on the prospect value rank]"
     }`;
 
     try {
@@ -28,7 +40,6 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: 'claude-3-5-sonnet-20241022',
                 max_tokens: 1500,
-                // TIP: Using system role + user role is more stable for formatting
                 system: "You are a strategic business analyst. You only output valid JSON.",
                 messages: [{ role: 'user', content: systemPrompt }]
             })
@@ -36,34 +47,39 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // Check if content exists to avoid "cannot read property of undefined"
+        // Debug Log - check your terminal to see if Claude is actually talking
+        console.log("CLAUDE RAW RESPONSE:", JSON.stringify(data));
+
         if (!data.content || data.content.length === 0) {
-            throw new Error("Empty response from Anthropic");
+            throw new Error("Anthropic returned an empty content array.");
         }
 
         let text = data.content[0].text;
         
-        // BETTER JSON STRIPPING
+        // 3. ROBUST JSON PARSING
         const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (!jsonMatch) throw new Error("No JSON found in response");
+        if (!jsonMatch) {
+            console.error("NO JSON DETECTED IN TEXT:", text);
+            throw new Error("No JSON found in response");
+        }
         
-        const finalData = JSON.parse(jsonMatch[0]);
+        const parsedData = JSON.parse(jsonMatch[0]);
 
-        // FINAL FAILSAFE: Ensure keys exist so index.html doesn't break
-        const sanitizedResponse = {
-            status: finalData.status || "complete",
-            structuralGorge: finalData.structuralGorge || "Data unavailable for this sweep.",
-            strategicAssessment: finalData.strategicAssessment || "Assessment could not be generated."
+        // 4. SANITIZATION (Prevents 'undefined' in index.html)
+        const output = {
+            status: parsedData.status || "complete",
+            structuralGorge: parsedData.structuralGorge || "Gorge analysis unavailable.",
+            strategicAssessment: parsedData.strategicAssessment || "Strategic assessment unavailable."
         };
 
-        return res.status(200).json(sanitizedResponse);
+        return res.status(200).json(output);
 
-    } catch (e) {
-        console.error("API ERROR:", e);
+    } catch (error) {
+        console.error("BACKEND ERROR:", error);
         return res.status(500).json({ 
             error: "Intelligence failure.",
-            structuralGorge: "Sweep failed at the API layer.",
-            strategicAssessment: "Please check your Anthropic API Key or network."
+            structuralGorge: "Backend Error: " + error.message,
+            strategicAssessment: "Check server logs for details."
         });
     }
 }
