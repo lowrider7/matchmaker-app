@@ -1,10 +1,21 @@
 const axios = require('axios');
 
-async function analyze(req, res) {
+export default async function handler(req, res) {
+    // Only allow POST requests
+    if (req.method !== 'POST') {
+        return res.status(405).json({ error: 'Method not allowed' });
+    }
+
     const { targetUrl, scoutUrl, additionalInfo } = req.body;
-    
     const apiKey = process.env.ANTHROPIC_API_KEY;
-    const model = "claude-3-5-sonnet-latest"; // FIXED: Points to the live 2026 engine
+
+    // 1. Check if the API Key exists in Vercel Settings
+    if (!apiKey) {
+        return res.status(500).json({ 
+            error: "Configuration Error", 
+            message: "ANTHROPIC_API_KEY is missing in Vercel Environment Variables." 
+        });
+    }
 
     const systemPrompt = `You are the STRATEGIC SCOUT V3.0 INTERNAL FIREBOX.
     Analyze the Target Prospect against the Scout Firm using these 20 specific metrics:
@@ -21,12 +32,12 @@ async function analyze(req, res) {
 
     try {
         const response = await axios.post('https://api.anthropic.com/v1/messages', {
-            model: model,
+            model: "claude-3-5-sonnet-latest",
             max_tokens: 4000,
             system: systemPrompt,
             messages: [{
                 role: "user", 
-                content: `Prospect: ${targetUrl}\nFirm: ${scoutUrl}\nContext: ${additionalInfo}`
+                content: `Prospect: ${targetUrl}\nFirm: ${scoutUrl}\nContext: ${additionalInfo || "None"}`
             }]
         }, {
             headers: {
@@ -36,8 +47,9 @@ async function analyze(req, res) {
             }
         });
 
-        const result = JSON.parse(response.data.content[0].text);
-        res.json(result);
+        // Send the AI's response back to the index.html
+        const content = response.data.content[0].text;
+        res.status(200).json(JSON.parse(content));
 
     } catch (error) {
         console.error("FIREBOX ERROR:", error.response?.data || error.message);
@@ -47,5 +59,3 @@ async function analyze(req, res) {
         });
     }
 }
-
-module.exports = analyze;
