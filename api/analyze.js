@@ -16,11 +16,10 @@ export default async function handler(req, res) {
                 model: "claude-3-5-sonnet-latest",
                 max_tokens: 4000,
                 system: `You are the STRATEGIC SCOUT V3.0 INTERNAL FIREBOX. 
-                Perform a 20-point analysis. 
-                Return ONLY a JSON object. No intro text. No markdown.
+                Perform a 20-point analysis. Return ONLY a JSON object.
                 {
-                    "structuralGorge": "analysis here",
-                    "strategicAssessment": "assessment here"
+                    "structuralGorge": "analysis",
+                    "strategicAssessment": "assessment"
                 }`,
                 messages: [{
                     role: "user", 
@@ -30,24 +29,26 @@ export default async function handler(req, res) {
         });
 
         const data = await response.json();
-        
-        // --- THE CLEANER ---
-        // This finds the { and } even if the AI adds "Here is your JSON:" text.
         const rawText = data.content[0].text;
-        const jsonStart = rawText.indexOf('{');
-        const jsonEnd = rawText.lastIndexOf('}') + 1;
-        const jsonString = rawText.substring(jsonStart, jsonEnd);
-        
-        const parsed = JSON.parse(jsonString);
 
-        // This sends exactly what your HTML 'undefined' boxes are looking for
+        // V3.1 BULLETPROOF PARSER: Finds the JSON block even if text surrounds it
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error("Intelligence Stream Corrupted: No JSON block found.");
+        
+        const parsed = JSON.parse(jsonMatch[0]);
+
+        // MAPPING: Normalizes potential key variations from the AI
         res.status(200).json({
-            structuralGorge: parsed.structuralGorge || "Data missing from analysis.",
-            strategicAssessment: parsed.strategicAssessment || "Data missing from assessment."
+            structuralGorge: parsed.structuralGorge || parsed.structural_gorge || "Moat data inaccessible.",
+            strategicAssessment: parsed.strategicAssessment || parsed.strategic_assessment || "Assessment data inaccessible."
         });
 
     } catch (error) {
         console.error("FIREBOX FAILURE:", error);
-        res.status(500).json({ error: "Server Error", message: error.message });
+        res.status(500).json({ 
+            error: "Server Error", 
+            structuralGorge: "Critical Failure: " + error.message,
+            strategicAssessment: "Check API Key and URL structure."
+        });
     }
 }
