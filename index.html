@@ -3,130 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Strategic Partner Scout | Senior Partner Dashboard</title>
+    <title>Senior Partner | Strategic Scout v3.0</title>
     <style>
-        /* KEEPING YOUR ELITE STYLING */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1629 100%);
-            min-height: 100vh;
-            color: #e0e7ff;
-            padding: 20px;
-        }
-        .container { max-width: 800px; margin: 0 auto; }
-        .header { text-align: center; margin-bottom: 50px; padding-top: 40px; }
-        .header h1 {
-            font-size: 2.5rem; font-weight: 700;
-            background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            margin-bottom: 10px; letter-spacing: -1px;
-        }
-        .glass-panel {
-            background: rgba(30, 41, 59, 0.4);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 1px solid rgba(148, 163, 184, 0.1);
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            margin-bottom: 30px;
-        }
-        .form-group { margin-bottom: 25px; }
-        .form-group label { display: block; margin-bottom: 10px; color: #60a5fa; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
-        input, textarea {
-            width: 100%; padding: 15px; background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px;
-            color: #fff; font-size: 1rem;
-        }
-        .btn-analyze {
-            width: 100%; padding: 18px;
-            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            border: none; border-radius: 12px; color: white;
-            font-weight: 700; cursor: pointer; text-transform: uppercase;
-        }
-        /* NEW RFI BOX STYLING */
-        #rfi-box {
-            display: none; background: rgba(59, 130, 246, 0.1);
-            border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-top: 20px;
-        }
-        .result-section { margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); pt: 20px; }
-        .result-section h3 { color: #60a5fa; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        body { font-family: 'Inter', sans-serif; background: #05070a; color: #e0e7ff; padding: 40px; line-height: 1.5; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .nav { display: flex; justify-content: space-between; border-bottom: 1px solid #1a1f2e; padding-bottom: 20px; margin-bottom: 40px; }
+        .nav h1 { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.5px; }
+        .premium-tag { font-size: 0.6rem; background: #3b82f6; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .panel { background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 12px; }
+        .locked { opacity: 0.3; pointer-events: none; border: 1px dashed #334155; }
+        
+        label { display: block; font-size: 0.65rem; font-weight: 900; color: #60a5fa; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
+        input, textarea { width: 100%; background: #0a0f18; border: 1px solid #1a1f2e; border-radius: 6px; padding: 12px; color: #fff; margin-bottom: 20px; outline: none; }
+        input:focus { border-color: #3b82f6; }
+        
+        .btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
+        .btn:hover { background: #3b82f6; color: #fff; }
+
+        #results { margin-top: 30px; display: none; }
+        .res-title { color: #a78bfa; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; margin-top: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
+        .res-text { margin-top: 10px; font-size: 0.95rem; color: #94a3b8; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Strategic Partner Scout</h1>
-            <p>Institutional Intelligence Engine v2.0</p>
+        <div class="nav">
+            <h1>STRATEGIC SCOUT <span class="premium-tag">V3.0 INTERNAL</span></h1>
+            <div style="font-size: 0.6rem; color: #4b5563;">FIREBOX LOGIC // 2026 EDITION</div>
         </div>
 
-        <div class="glass-panel">
-            <div class="form-group">
-                <label>Target Company URL</label>
-                <input type="text" id="companyUrl" placeholder="https://spacex.com">
+        <div class="grid">
+            <div class="panel">
+                <label>Target URL (The Prospect)</label>
+                <input type="text" id="targetUrl" placeholder="https://prospect-company.com">
+                
+                <label>Scout URL (Your Firm)</label>
+                <input type="text" id="scoutUrl" placeholder="https://your-firm.com">
+
+                <div id="rfi-container" class="hidden" style="margin-bottom: 20px; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px;">
+                    <label style="color: #fbbf24;">Clarification Needed</label>
+                    <p id="rfi-q" style="font-size: 0.8rem; font-style: italic; color: #fff; margin-bottom: 10px;"></p>
+                    <textarea id="extraInfo" placeholder="Provide context..."></textarea>
+                </div>
+
+                <button class="btn" id="runBtn" onclick="runAnalysis()">Execute Sweep</button>
             </div>
 
-            <div id="rfi-box">
-                <label id="rfi-label" style="color:#a78bfa; font-size: 0.8rem; font-weight: 800;">CLARIFICATION REQUIRED</label>
-                <p id="rfi-question" style="margin: 10px 0; font-style: italic; color: #fff;"></p>
-                <textarea id="additionalInfo" placeholder="Provide the missing context here..."></textarea>
+            <div class="panel locked">
+                <label>Proactive Hunter Mode</label>
+                <p style="font-size: 0.75rem; color: #4b5563; margin-bottom: 20px;">Automated scouting based on Scout URL. Scans market shifts and regulatory filings 24/7.</p>
+                <button class="btn" style="background: #1a1f2e; color: #4b5563;">Upgrade to Premium</button>
             </div>
-
-            <button class="btn-analyze" id="analyzeBtn" onclick="executeIntelligence()">Initiate Intelligence Sweep</button>
         </div>
 
-        <div id="results" class="glass-panel hidden">
-            <div class="result-section">
-                <h3>Structural Gorge</h3>
-                <p id="out-gorge" style="line-height: 1.6; color: #cbd5e1;"></p>
-            </div>
-            <div class="result-section">
-                <h3>Arbitrage Hunter</h3>
-                <p id="out-arbitrage" style="line-height: 1.6; color: #cbd5e1;"></p>
-            </div>
-            <div class="result-section">
-                <h3>Strategic Assessment</h3>
-                <p id="out-assessment" style="line-height: 1.6; color: #cbd5e1;"></p>
-            </div>
+        <div id="results" class="panel">
+            <div class="res-title">Structural Gorge & Moat</div>
+            <p id="out-gorge" class="res-text"></p>
+            
+            <div class="res-title">Strategic Assessment & Prospect Value</div>
+            <p id="out-assess" class="res-text"></p>
         </div>
     </div>
 
     <script>
-        async function executeIntelligence() {
-            const btn = document.getElementById('analyzeBtn');
-            const url = document.getElementById('companyUrl').value;
-            const extra = document.getElementById('additionalInfo').value;
+        async function runAnalysis() {
+            const btn = document.getElementById('runBtn');
+            btn.innerText = "SCOUTING MARKET...";
             
-            btn.innerText = "Analyzing Market Positioning...";
-            btn.disabled = true;
+            const payload = {
+                targetUrl: document.getElementById('targetUrl').value,
+                scoutUrl: document.getElementById('scoutUrl').value,
+                additionalInfo: document.getElementById('extraInfo').value
+            };
 
             try {
-                const response = await fetch('/api/analyze', {
+                const res = await fetch('/api/analyze', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ companyUrl: url, additionalInfo: extra })
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify(payload)
                 });
-
-                const data = await response.json();
+                const data = await res.json();
 
                 if (data.status === "needs_info") {
-                    document.getElementById('rfi-question').innerText = data.clarifyingQuestion;
-                    document.getElementById('rfi-box').style.display = 'block';
-                    btn.innerText = "Submit Clarification";
-                    btn.disabled = false;
+                    document.getElementById('rfi-q').innerText = data.clarifyingQuestion;
+                    document.getElementById('rfi-container').classList.remove('hidden');
+                    btn.innerText = "SUBMIT CONTEXT";
                 } else {
-                    document.getElementById('rfi-box').style.display = 'none';
-                    document.getElementById('results').classList.remove('hidden');
+                    document.getElementById('rfi-container').classList.add('hidden');
+                    document.getElementById('results').style.display = 'block';
                     document.getElementById('out-gorge').innerText = data.structuralGorge;
-                    document.getElementById('out-arbitrage').innerText = data.arbitrageHunter;
-                    document.getElementById('out-assessment').innerText = data.strategicAssessment;
-                    btn.innerText = "Analysis Complete";
+                    document.getElementById('out-assess').innerText = data.strategicAssessment;
+                    btn.innerText = "SWEEP COMPLETE";
                 }
-            } catch (err) {
-                alert("Intelligence failure. Check connection.");
-                btn.disabled = false;
-                btn.innerText = "Re-Initiate Sweep";
+            } catch (e) {
+                alert("Intelligence error. Check API configuration.");
+                btn.innerText = "RETRY SWEEP";
             }
         }
     </script>
