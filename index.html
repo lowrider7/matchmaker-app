@@ -5,12 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strategic Partner Scout | Senior Partner Dashboard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* KEEPING YOUR ELITE STYLING */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 50%, #0f1629 100%);
@@ -18,35 +14,14 @@
             color: #e0e7ff;
             padding: 20px;
         }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 50px;
-            padding-top: 40px;
-        }
-
+        .container { max-width: 800px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 50px; padding-top: 40px; }
         .header h1 {
-            font-size: 2.5rem;
-            font-weight: 700;
+            font-size: 2.5rem; font-weight: 700;
             background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 10px;
-            letter-spacing: -1px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 10px; letter-spacing: -1px;
         }
-
-        .header p {
-            color: #94a3b8;
-            font-size: 1rem;
-            font-weight: 300;
-        }
-
         .glass-panel {
             background: rgba(30, 41, 59, 0.4);
             backdrop-filter: blur(20px);
@@ -56,351 +31,104 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
             margin-bottom: 30px;
         }
-
-        .form-group {
-            margin-bottom: 30px;
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; margin-bottom: 10px; color: #60a5fa; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; }
+        input, textarea {
+            width: 100%; padding: 15px; background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(148, 163, 184, 0.2); border-radius: 12px;
+            color: #fff; font-size: 1rem;
         }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            color: #cbd5e1;
-            font-weight: 500;
-            font-size: 0.95rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 15px 20px;
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(148, 163, 184, 0.2);
-            border-radius: 12px;
-            color: #e0e7ff;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            font-family: inherit;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #60a5fa;
-            background: rgba(15, 23, 42, 0.8);
-            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
-        }
-
-        .form-group textarea {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        .form-group select {
-            cursor: pointer;
-        }
-
         .btn-analyze {
-            width: 100%;
-            padding: 18px;
+            width: 100%; padding: 18px;
             background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
-            border: none;
-            border-radius: 12px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            border: none; border-radius: 12px; color: white;
+            font-weight: 700; cursor: pointer; text-transform: uppercase;
         }
-
-        .btn-analyze:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(59, 130, 246, 0.3);
+        /* NEW RFI BOX STYLING */
+        #rfi-box {
+            display: none; background: rgba(59, 130, 246, 0.1);
+            border: 1px solid #3b82f6; border-radius: 12px; padding: 20px; margin-top: 20px;
         }
-
-        .btn-analyze:active {
-            transform: translateY(0);
-        }
-
-        .btn-analyze:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(96, 165, 250, 0.2);
-            border-top-color: #60a5fa;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .results {
-            display: none;
-        }
-
-        .results.active {
-            display: block;
-        }
-
-        .result-section {
-            margin-bottom: 30px;
-        }
-
-        .result-section h3 {
-            color: #60a5fa;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .result-section h3::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: linear-gradient(to bottom, #60a5fa, #8b5cf6);
-            border-radius: 2px;
-        }
-
-        .result-content {
-            color: #cbd5e1;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-
-        .result-content p {
-            margin-bottom: 15px;
-        }
-
-        .company-header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-            background: rgba(59, 130, 246, 0.1);
-            border-radius: 12px;
-            border: 1px solid rgba(96, 165, 250, 0.2);
-        }
-
-        .company-header h2 {
-            font-size: 2rem;
-            color: #60a5fa;
-            margin-bottom: 5px;
-        }
-
-        .company-header .tier {
-            color: #a78bfa;
-            font-size: 0.9rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .error {
-            display: none;
-            padding: 20px;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 12px;
-            color: #fca5a5;
-            margin-top: 20px;
-        }
-
-        .error.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 1.8rem;
-            }
-            
-            .glass-panel {
-                padding: 25px;
-            }
-        }
+        .result-section { margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.1); pt: 20px; }
+        .result-section h3 { color: #60a5fa; margin-bottom: 10px; font-size: 0.9rem; text-transform: uppercase; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
             <h1>Strategic Partner Scout</h1>
-            <p>Senior Partner Intelligence Dashboard</p>
+            <p>Institutional Intelligence Engine v2.0</p>
         </div>
 
         <div class="glass-panel">
-            <form id="analysisForm">
-                <div class="form-group">
-                    <label for="companyUrl">Company URL</label>
-                    <input 
-                        type="url" 
-                        id="companyUrl" 
-                        name="companyUrl" 
-                        placeholder="https://company.com"
-                        required
-                    >
-                </div>
+            <div class="form-group">
+                <label>Target Company URL</label>
+                <input type="text" id="companyUrl" placeholder="https://spacex.com">
+            </div>
 
-                <div class="form-group">
-                    <label for="realityTier">Reality Tier</label>
-                    <select id="realityTier" name="realityTier" required>
-                        <option value="">Select Reality Tier</option>
-                        <option value="Institutional RWA">Institutional RWA</option>
-                        <option value="Sovereign AI">Sovereign AI</option>
-                        <option value="Orbital Tech">Orbital Tech</option>
-                        <option value="Prestige">Prestige</option>
-                    </select>
-                </div>
+            <div id="rfi-box">
+                <label id="rfi-label" style="color:#a78bfa; font-size: 0.8rem; font-weight: 800;">CLARIFICATION REQUIRED</label>
+                <p id="rfi-question" style="margin: 10px 0; font-style: italic; color: #fff;"></p>
+                <textarea id="additionalInfo" placeholder="Provide the missing context here..."></textarea>
+            </div>
 
-                <div class="form-group">
-                    <label for="strategicContext">Strategic Context</label>
-                    <textarea 
-                        id="strategicContext" 
-                        name="strategicContext" 
-                        placeholder="Describe the strategic landscape, market positioning, or specific intelligence requirements..."
-                        required
-                    ></textarea>
-                </div>
-
-                <button type="submit" class="btn-analyze" id="analyzeBtn">
-                    Initiate Intelligence Sweep
-                </button>
-
-                <div class="error" id="errorMessage"></div>
-            </form>
+            <button class="btn-analyze" id="analyzeBtn" onclick="executeIntelligence()">Initiate Intelligence Sweep</button>
         </div>
 
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Analyzing strategic positioning...</p>
-        </div>
-
-        <div class="glass-panel results" id="results">
-            <div class="company-header" id="companyHeader"></div>
-            
+        <div id="results" class="glass-panel hidden">
             <div class="result-section">
                 <h3>Structural Gorge</h3>
-                <div class="result-content" id="structuralGorge"></div>
+                <p id="out-gorge" style="line-height: 1.6; color: #cbd5e1;"></p>
             </div>
-
             <div class="result-section">
                 <h3>Arbitrage Hunter</h3>
-                <div class="result-content" id="arbitrageHunter"></div>
+                <p id="out-arbitrage" style="line-height: 1.6; color: #cbd5e1;"></p>
             </div>
-
             <div class="result-section">
                 <h3>Strategic Assessment</h3>
-                <div class="result-content" id="strategicAssessment"></div>
+                <p id="out-assessment" style="line-height: 1.6; color: #cbd5e1;"></p>
             </div>
         </div>
     </div>
 
     <script>
-        const form = document.getElementById('analysisForm');
-        const loading = document.getElementById('loading');
-        const results = document.getElementById('results');
-        const errorMessage = document.getElementById('errorMessage');
-        const analyzeBtn = document.getElementById('analyzeBtn');
-
-        // Extract company name from URL
-        function extractCompanyName(url) {
-            try {
-                const urlObj = new URL(url);
-                let hostname = urlObj.hostname;
-                
-                // Remove www. prefix
-                hostname = hostname.replace(/^www\./i, '');
-                
-                // Extract domain name (remove TLD)
-                const parts = hostname.split('.');
-                if (parts.length > 0) {
-                    let companyName = parts[0];
-                    // Capitalize first letter
-                    return companyName.charAt(0).toUpperCase() + companyName.slice(1);
-                }
-                
-                return hostname;
-            } catch (e) {
-                return 'Company';
-            }
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
+        async function executeIntelligence() {
+            const btn = document.getElementById('analyzeBtn');
+            const url = document.getElementById('companyUrl').value;
+            const extra = document.getElementById('additionalInfo').value;
             
-            // Reset states
-            loading.classList.add('active');
-            results.classList.remove('active');
-            errorMessage.classList.remove('active');
-            analyzeBtn.disabled = true;
-
-            const formData = {
-                companyUrl: document.getElementById('companyUrl').value,
-                realityTier: document.getElementById('realityTier').value,
-                strategicContext: document.getElementById('strategicContext').value
-            };
+            btn.innerText = "Analyzing Market Positioning...";
+            btn.disabled = true;
 
             try {
                 const response = await fetch('/api/analyze', {
                     method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ companyUrl: url, additionalInfo: extra })
                 });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || 'Analysis failed');
-                }
 
                 const data = await response.json();
 
-                // Extract company name and display results
-                const companyName = extractCompanyName(formData.companyUrl);
-                
-                document.getElementById('companyHeader').innerHTML = `
-                    <h2>${companyName}</h2>
-                    <p class="tier">${formData.realityTier}</p>
-                `;
-
-                document.getElementById('structuralGorge').innerHTML = `<p>${data.structuralGorge}</p>`;
-                document.getElementById('arbitrageHunter').innerHTML = `<p>${data.arbitrageHunter}</p>`;
-                document.getElementById('strategicAssessment').innerHTML = `<p>${data.strategicAssessment}</p>`;
-
-                loading.classList.remove('active');
-                results.classList.add('active');
-                
-            } catch (error) {
-                loading.classList.remove('active');
-                errorMessage.textContent = error.message;
-                errorMessage.classList.add('active');
-            } finally {
-                analyzeBtn.disabled = false;
+                if (data.status === "needs_info") {
+                    document.getElementById('rfi-question').innerText = data.clarifyingQuestion;
+                    document.getElementById('rfi-box').style.display = 'block';
+                    btn.innerText = "Submit Clarification";
+                    btn.disabled = false;
+                } else {
+                    document.getElementById('rfi-box').style.display = 'none';
+                    document.getElementById('results').classList.remove('hidden');
+                    document.getElementById('out-gorge').innerText = data.structuralGorge;
+                    document.getElementById('out-arbitrage').innerText = data.arbitrageHunter;
+                    document.getElementById('out-assessment').innerText = data.strategicAssessment;
+                    btn.innerText = "Analysis Complete";
+                }
+            } catch (err) {
+                alert("Intelligence failure. Check connection.");
+                btn.disabled = false;
+                btn.innerText = "Re-Initiate Sweep";
             }
-        });
+        }
     </script>
 </body>
 </html>
