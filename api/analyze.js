@@ -1,10 +1,9 @@
 export default async function handler(req, res) {
-    // 1. HEADERS & CORS
+    // 1. SET HEADERS & CORS
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-    // Handle preflight request
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -15,18 +14,22 @@ export default async function handler(req, res) {
 
     const { targetUrl, scoutUrl, additionalInfo } = req.body;
 
-    // 2. THE PROMPT
-    const systemPrompt = `Analyze the partnership potential for Target: ${targetUrl} against Scout: ${scoutUrl}. 
-    Additional context: ${additionalInfo || "None provided"}
+    // 2. CONSTRUCT THE PROMPT
+    const userMessage = `Perform a Strategic Partnership Sweep.
+    PROSPECT (Target URL): ${targetUrl}
+    OUR FIRM (Scout URL): ${scoutUrl}
+    CONTEXT: ${additionalInfo || "General partnership growth"}
 
-    OUTPUT INSTRUCTIONS:
-    Return ONLY a valid JSON object. No preamble, no conversational text.
-    
-    REQUIRED KEYS:
+    TASK:
+    Analyze the 'Moat' (the prospect's strengths/assets) and the 'Gorge' (the gap or unrealized potential that our firm uniquely fills). 
+    Provide a strategic assessment of the partnership value and a 'Hook' for outreach.
+
+    OUTPUT FORMAT:
+    You must respond ONLY with a valid JSON object. No preamble.
     {
         "status": "complete",
         "structuralGorge": "[2 paragraphs on the moat vs the gap]",
-        "strategicAssessment": "[2 paragraphs on the prospect value rank]"
+        "strategicAssessment": "[2 paragraphs on the prospect value rank and hook]"
     }`;
 
     try {
@@ -40,46 +43,50 @@ export default async function handler(req, res) {
             body: JSON.stringify({
                 model: 'claude-3-5-sonnet-20241022',
                 max_tokens: 1500,
-                system: "You are a strategic business analyst. You only output valid JSON.",
-                messages: [{ role: 'user', content: systemPrompt }]
+                system: "You are a senior business development strategist. You communicate strictly in JSON format.",
+                messages: [{ role: 'user', content: userMessage }]
             })
         });
 
         const data = await response.json();
 
-        // Debug Log - check your terminal to see if Claude is actually talking
-        console.log("CLAUDE RAW RESPONSE:", JSON.stringify(data));
-
-        if (!data.content || data.content.length === 0) {
-            throw new Error("Anthropic returned an empty content array.");
+        // Check for Anthropic-level errors (billing, key, etc.)
+        if (data.error) {
+            console.error("ANTHROPIC API ERROR:", data.error);
+            throw new Error(`Anthropic Error: ${data.error.message}`);
         }
 
-        let text = data.content[0].text;
+        if (!data.content || data.content.length === 0) {
+            console.error("EMPTY CONTENT FROM CLAUDE:", JSON.stringify(data));
+            throw new Error("Anthropic returned an empty content array. Check your API credits or safety filters.");
+        }
+
+        const text = data.content[0].text;
         
-        // 3. ROBUST JSON PARSING
+        // 3. ROBUST JSON EXTRACTION
         const jsonMatch = text.match(/\{[\s\S]*\}/);
         if (!jsonMatch) {
-            console.error("NO JSON DETECTED IN TEXT:", text);
-            throw new Error("No JSON found in response");
+            console.error("RAW TEXT RECEIVED (NO JSON FOUND):", text);
+            throw new Error("Claude failed to return a valid JSON object.");
         }
         
         const parsedData = JSON.parse(jsonMatch[0]);
 
-        // 4. SANITIZATION (Prevents 'undefined' in index.html)
-        const output = {
+        // 4. SANITIZE OUTPUT FOR THE FRONTEND
+        const sanitizedOutput = {
             status: parsedData.status || "complete",
-            structuralGorge: parsedData.structuralGorge || "Gorge analysis unavailable.",
-            strategicAssessment: parsedData.strategicAssessment || "Strategic assessment unavailable."
+            structuralGorge: parsedData.structuralGorge || "Structural analysis could not be generated.",
+            strategicAssessment: parsedData.strategicAssessment || "Strategic assessment could not be generated."
         };
 
-        return res.status(200).json(output);
+        return res.status(200).json(sanitizedOutput);
 
     } catch (error) {
-        console.error("BACKEND ERROR:", error);
+        console.error("SERVER SIDE ERROR:", error.message);
         return res.status(500).json({ 
             error: "Intelligence failure.",
             structuralGorge: "Backend Error: " + error.message,
-            strategicAssessment: "Check server logs for details."
+            strategicAssessment: "Consult server logs for the raw response trace."
         });
     }
 }
