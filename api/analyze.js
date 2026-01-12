@@ -1,20 +1,52 @@
-// ... (keep your existing headers and fetch setup)
+export default async function handler(req, res) {
+    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+    const { prospectUrl, nexusUrl } = req.body;
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+
+    try {
+        const response = await fetch('https://api.anthropic.com/v1/messages', {
+            method: 'POST',
+            headers: {
+                'x-api-key': apiKey,
+                'anthropic-version': '2023-06-01',
+                'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 model: "claude-sonnet-4-5-20250929", 
                 max_tokens: 2500,
-                system: `You are a CYNICAL STRATEGIC AUDITOR for a top-tier Private Equity firm. Your job is to KILL weak partnership ideas.
+                system: `You are a CYNICAL STRATEGIC AUDITOR for a Private Equity firm. Your job is to KILL weak partnership ideas.
 
-                STRICT AUDIT PROTOCOL:
-                1. ZERO-BASED SCORING: Every pillar starts at 0. Award 15-20 points ONLY for existential necessities (e.g., OpenAI needing NVIDIA chips).
-                2. THE DISTRACTION PENALTY: If a partnership is purely for "marketing," "community," or "brand awareness," it is a DISTRACTION. Score it below 5 for Value Creation.
-                3. NO INNOVATION FAN-FICTION: Do not invent new products (like "Tesla Nitro") or use-cases that do not exist in the company's core 2026 roadmap.
-                4. SECTOR MISMATCH: If Nexus and Prospect are in different industries, the Problem-Solution Fit must be 0 unless there is a massive, proven joint-venture already in place.
+                RULES:
+                1. START AT ZERO: Only award points for concrete technical/operational necessity. 
+                2. NO GIMMICKS: If it's just "marketing" or "community," score it below 5.
+                3. SECTOR LOCK: If they are in different industries, Problem-Solution Fit must be near 0.
+                4. BE BRUTAL: Your reputation depends on stopping bad deals.
 
-                SCORING TIERS:
-                0-25: Strategic Noise / Gimmick.
-                26-50: Tactical / Niche interest only.
-                51-75: Valid Operational Synergy.
-                76-100: Foundational / High-Priority Necessity.`,
-                messages: [{ role: "user", content: `Nexus: ${nexusUrl} | Prospect: ${prospectUrl}. Be brutal. Why should this deal be cancelled?` }]
+                Return ONLY a JSON object:
+                { "totalScore": 0-100, "pillars": [ { "name": "Pillar Name", "score": 0-20, "insight": "One blunt sentence." } ] }`,
+                messages: [{ role: "user", content: `Nexus: ${nexusUrl} | Prospect: ${prospectUrl}` }]
             })
-// ...
+        });
+
+        const data = await response.json();
+        
+        // Error handling for Anthropic API
+        if (!data.content || !data.content[0]) {
+            return res.status(500).json({ error: "AI failed to respond", detail: data });
+        }
+
+        const rawText = data.content[0].text;
+        
+        // This Regex finds the JSON even if the AI adds "Brutal" commentary before or after
+        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            return res.status(500).json({ error: "Invalid JSON format from AI", raw: rawText });
+        }
+
+        const parsed = JSON.parse(jsonMatch[0]);
+        res.status(200).json(parsed);
+
+    } catch (error) {
+        res.status(500).json({ error: "Server Error", details: error.message });
+    }
+}
