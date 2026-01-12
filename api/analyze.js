@@ -1,55 +1,20 @@
-export default async function handler(req, res) {
-    if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-    const { prospectUrl, nexusUrl } = req.body;
-    
-    // Pulling hidden keys from Vercel Environment Variables
-    const apiKey = process.env.ANTHROPIC_API_KEY;
-
-    try {
-        const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-                'x-api-key': apiKey,
-                'anthropic-version': '2023-06-01',
-                'Content-Type': 'application/json'
-            },
+// ... (keep your existing headers and fetch setup)
             body: JSON.stringify({
                 model: "claude-sonnet-4-5-20250929", 
                 max_tokens: 2500,
-                system: `You are the ALLIANCE LOGIC ENGINE. 
-                Perform a deterministic analysis of the partnership between the Nexus (${nexusUrl}) and Prospect (${prospectUrl}). 
-                
-                Evaluate these 5 Pillars (0-20 points each):
-                1. Problem-Solution Fit: Does Prospect bridge a Nexus bottleneck?
-                2. Strategic Defensibility: Does this build a competitive moat?
-                3. Distribution Synergy: Audience overlap & co-marketing velocity.
-                4. Institutional Alignment: Brand trust & safety.
-                5. Value Creation: Ecosystem liquidity & new revenue.
+                system: `You are a CYNICAL STRATEGIC AUDITOR for a top-tier Private Equity firm. Your job is to KILL weak partnership ideas.
 
-                Return ONLY a JSON object:
-                {
-                  "totalScore": 0-100,
-                  "pillars": [
-                    { "name": "Pillar Name", "score": 0-20, "insight": "1-sentence reasoning" }
-                  ]
-                }`,
-                messages: [{ role: "user", content: `Nexus: ${nexusUrl} | Prospect: ${prospectUrl}` }]
+                STRICT AUDIT PROTOCOL:
+                1. ZERO-BASED SCORING: Every pillar starts at 0. Award 15-20 points ONLY for existential necessities (e.g., OpenAI needing NVIDIA chips).
+                2. THE DISTRACTION PENALTY: If a partnership is purely for "marketing," "community," or "brand awareness," it is a DISTRACTION. Score it below 5 for Value Creation.
+                3. NO INNOVATION FAN-FICTION: Do not invent new products (like "Tesla Nitro") or use-cases that do not exist in the company's core 2026 roadmap.
+                4. SECTOR MISMATCH: If Nexus and Prospect are in different industries, the Problem-Solution Fit must be 0 unless there is a massive, proven joint-venture already in place.
+
+                SCORING TIERS:
+                0-25: Strategic Noise / Gimmick.
+                26-50: Tactical / Niche interest only.
+                51-75: Valid Operational Synergy.
+                76-100: Foundational / High-Priority Necessity.`,
+                messages: [{ role: "user", content: `Nexus: ${nexusUrl} | Prospect: ${prospectUrl}. Be brutal. Why should this deal be cancelled?` }]
             })
-        });
-
-        const data = await response.json();
-        
-        if (data.error) {
-            return res.status(200).json({ error: data.error.message });
-        }
-
-        const rawText = data.content[0].text;
-        const jsonMatch = rawText.match(/\{[\s\S]*\}/);
-        const parsed = JSON.parse(jsonMatch[0]);
-
-        res.status(200).json(parsed);
-    } catch (error) {
-        res.status(500).json({ error: "Server Error", message: error.message });
-    }
-}
+// ...
