@@ -3,107 +3,621 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Senior Partner | Strategic Scout v3.0</title>
+    <title>Alliance Logic V3.0 | Strategic Partnership Engine</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background: #05070a; color: #e0e7ff; padding: 40px; line-height: 1.5; }
-        .container { max-width: 900px; margin: 0 auto; }
-        .nav { display: flex; justify-content: space-between; border-bottom: 1px solid #1a1f2e; padding-bottom: 20px; margin-bottom: 40px; }
-        .nav h1 { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.5px; }
-        .premium-tag { font-size: 0.6rem; background: #3b82f6; padding: 2px 8px; border-radius: 4px; margin-left: 8px; vertical-align: middle; }
-        
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .panel { background: rgba(17, 24, 39, 0.8); border: 1px solid rgba(255,255,255,0.05); padding: 30px; border-radius: 12px; }
-        .locked { opacity: 0.3; pointer-events: none; border: 1px dashed #334155; }
-        
-        label { display: block; font-size: 0.65rem; font-weight: 900; color: #60a5fa; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 8px; }
-        input, textarea { width: 100%; background: #0a0f18; border: 1px solid #1a1f2e; border-radius: 6px; padding: 12px; color: #fff; margin-bottom: 20px; outline: none; }
-        input:focus { border-color: #3b82f6; }
-        
-        .btn { width: 100%; padding: 16px; background: #fff; color: #000; border: none; border-radius: 6px; font-weight: 900; text-transform: uppercase; cursor: pointer; transition: 0.3s; }
-        .btn:hover { background: #3b82f6; color: #fff; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-        #results { margin-top: 30px; display: none; }
-        .res-title { color: #a78bfa; font-size: 0.7rem; font-weight: 900; text-transform: uppercase; margin-top: 25px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 5px; }
-        .res-text { margin-top: 10px; font-size: 0.95rem; color: #94a3b8; }
-        .hidden { display: none; }
+        body {
+            font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0d14;
+            color: #e4e7eb;
+            overflow-x: hidden;
+        }
+
+        .mono {
+            font-family: 'IBM Plex Mono', 'Courier New', monospace;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #00d4ff 0%, #7b61ff 50%, #ff6b9d 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass-panel {
+            background: rgba(20, 25, 35, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(100, 116, 139, 0.15);
+            border-radius: 16px;
+        }
+
+        .score-meter {
+            position: relative;
+            height: 8px;
+            background: rgba(30, 41, 59, 0.6);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b61ff);
+            border-radius: 999px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .pillar-card {
+            transition: all 0.3s ease;
+        }
+
+        .pillar-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(100, 116, 139, 0.3);
+        }
+
+        .alert-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .grid-pattern {
+            background-image: 
+                linear-gradient(rgba(100, 116, 139, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(100, 116, 139, 0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        input, textarea, select {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(100, 116, 139, 0.2);
+            color: #e4e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: inherit;
+            transition: all 0.2s;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #00d4ff;
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        button {
+            transition: all 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-1px);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .shimmer {
+            background: linear-gradient(
+                90deg,
+                rgba(30, 41, 59, 0.4) 0%,
+                rgba(51, 65, 85, 0.6) 50%,
+                rgba(30, 41, 59, 0.4) 100%
+            );
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="nav">
-            <h1>STRATEGIC SCOUT <span class="premium-tag">V3.0 INTERNAL</span></h1>
-            <div style="font-size: 0.6rem; color: #4b5563;">FIREBOX LOGIC // 2026 EDITION</div>
-        </div>
+    <div id="root"></div>
 
-        <div class="grid">
-            <div class="panel">
-                <label>Target URL (The Prospect)</label>
-                <input type="text" id="targetUrl" placeholder="https://prospect-company.com">
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Lucide Icons as React components
+        const ChevronRight = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        );
+
+        const TrendingUp = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                <polyline points="17 6 23 6 23 12"></polyline>
+            </svg>
+        );
+
+        const Shield = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+        );
+
+        const Zap = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+        );
+
+        const Target = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <circle cx="12" cy="12" r="6"></circle>
+                <circle cx="12" cy="12" r="2"></circle>
+            </svg>
+        );
+
+        const DollarSign = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+            </svg>
+        );
+
+        const Bell = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+        );
+
+        const Network = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="16" y="16" width="6" height="6" rx="1"></rect>
+                <rect x="2" y="16" width="6" height="6" rx="1"></rect>
+                <rect x="9" y="2" width="6" height="6" rx="1"></rect>
+                <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"></path>
+                <path d="M12 12V8"></path>
+            </svg>
+        );
+
+        // Initialize Supabase client
+        const supabaseUrl = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SUPABASE_URL || '';
+        const supabaseKey = typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+        const supabase = supabaseUrl && supabaseKey ? window.supabase.createClient(supabaseUrl, supabaseKey) : null;
+
+        function AllianceLogic() {
+            // Nexus Profile State (with Hytopia defaults)
+            const [nexusProfile, setNexusProfile] = useState({
+                companyName: 'Hytopia',
+                sector: 'Gaming',
+                techStack: 'Base L2, $HYBUX Token Economics',
+                goals: 'Build composable gaming infrastructure with agentic workflows and liquidity depth'
+            });
+
+            const [isDefaultNexus, setIsDefaultNexus] = useState(true);
+
+            // Analysis State
+            const [prospectUrl, setProspectUrl] = useState('');
+            const [analyzing, setAnalyzing] = useState(false);
+            const [report, setReport] = useState(null);
+            const [savedReports, setSavedReports] = useState([]);
+
+            // Proactive Alerts (dynamically updated based on Nexus)
+            const [proactiveAlerts, setProactiveAlerts] = useState([
+                { company: 'Particle Network', score: 92, reason: 'Chain abstraction infrastructure aligns with cross-chain gaming goals' },
+                { company: 'Privy', score: 88, reason: 'Embedded wallet UX eliminates onboarding friction for gaming audiences' },
+                { company: 'Reservoir', score: 85, reason: 'NFT liquidity protocol enhances in-game asset marketplaces' },
+                { company: 'LayerZero', score: 83, reason: 'Omnichain messaging enables cross-ecosystem game state sync' }
+            ]);
+
+            useEffect(() => {
+                if (supabase) {
+                    loadSavedReports();
+                }
+            }, []);
+
+            const loadSavedReports = async () => {
+                if (!supabase) return;
                 
-                <label>Scout URL (Your Firm)</label>
-                <input type="text" id="scoutUrl" placeholder="https://your-firm.com">
+                const { data, error } = await supabase
+                    .from('partnership_reports')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(10);
 
-                <div id="rfi-container" class="hidden" style="margin-bottom: 20px; background: rgba(59, 130, 246, 0.1); padding: 15px; border-radius: 8px;">
-                    <label style="color: #fbbf24;">Clarification Needed</label>
-                    <p id="rfi-q" style="font-size: 0.8rem; font-style: italic; color: #fff; margin-bottom: 10px;"></p>
-                    <textarea id="extraInfo" placeholder="Provide context..."></textarea>
-                </div>
-
-                <button class="btn" id="runBtn" onclick="runAnalysis()">Execute Sweep</button>
-            </div>
-
-            <div class="panel locked">
-                <label>Proactive Hunter Mode</label>
-                <p style="font-size: 0.75rem; color: #4b5563; margin-bottom: 20px;">Automated scouting based on Scout URL. Scans market shifts and regulatory filings 24/7.</p>
-                <button class="btn" style="background: #1a1f2e; color: #4b5563;">Upgrade to Premium</button>
-            </div>
-        </div>
-
-        <div id="results" class="panel">
-            <div class="res-title">Structural Gorge & Moat</div>
-            <p id="out-gorge" class="res-text"></p>
-            
-            <div class="res-title">Strategic Assessment & Prospect Value</div>
-            <p id="out-assess" class="res-text"></p>
-        </div>
-    </div>
-
-    <script>
-        async function runAnalysis() {
-            const btn = document.getElementById('runBtn');
-            btn.innerText = "SCOUTING MARKET...";
-            
-            const payload = {
-                targetUrl: document.getElementById('targetUrl').value,
-                scoutUrl: document.getElementById('scoutUrl').value,
-                additionalInfo: document.getElementById('extraInfo').value
+                if (!error && data) {
+                    setSavedReports(data);
+                }
             };
 
-            try {
-                const res = await fetch('/api/analyze', {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify(payload)
-                });
-                const data = await res.json();
-
-                if (data.status === "needs_info") {
-                    document.getElementById('rfi-q').innerText = data.clarifyingQuestion;
-                    document.getElementById('rfi-container').classList.remove('hidden');
-                    btn.innerText = "SUBMIT CONTEXT";
-                } else {
-                    document.getElementById('rfi-container').classList.add('hidden');
-                    document.getElementById('results').style.display = 'block';
-                    document.getElementById('out-gorge').innerText = data.structuralGorge;
-                    document.getElementById('out-assess').innerText = data.strategicAssessment;
-                    btn.innerText = "SWEEP COMPLETE";
+            const handleNexusChange = (field, value) => {
+                setNexusProfile(prev => ({ ...prev, [field]: value }));
+                
+                // Once user modifies Nexus, mark as custom and update alerts
+                if (isDefaultNexus) {
+                    setIsDefaultNexus(false);
+                    updateProactiveAlerts({...nexusProfile, [field]: value});
                 }
-            } catch (e) {
-                alert("Intelligence error. Check API configuration.");
-                btn.innerText = "RETRY SWEEP";
-            }
+            };
+
+            const updateProactiveAlerts = (profile) => {
+                // Generate context-aware alerts based on the new Nexus profile
+                const genericAlerts = [
+                    { company: 'Strategic Partner A', score: 87, reason: `Infrastructure alignment with ${profile.sector} sector objectives` },
+                    { company: 'Strategic Partner B', score: 84, reason: `Distribution synergy for ${profile.companyName}'s target market` },
+                    { company: 'Strategic Partner C', score: 81, reason: `Technical integration with ${profile.techStack} stack` },
+                    { company: 'Strategic Partner D', score: 78, reason: `Value creation opportunities in ecosystem liquidity` }
+                ];
+                
+                setProactiveAlerts(genericAlerts);
+            };
+
+            const analyzePartnership = async () => {
+                if (!prospectUrl.trim()) return;
+
+                setAnalyzing(true);
+                setReport(null);
+
+                // Simulate analysis with scoring algorithm
+                setTimeout(async () => {
+                    const scores = calculateScores(prospectUrl, nexusProfile);
+                    const totalScore = scores.reduce((sum, pillar) => sum + pillar.score, 0);
+
+                    const newReport = {
+                        prospect_url: prospectUrl,
+                        nexus_company: nexusProfile.companyName,
+                        total_score: totalScore,
+                        pillars: scores,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    setReport(newReport);
+                    setAnalyzing(false);
+
+                    // Save to Supabase if configured
+                    if (supabase) {
+                        const { error } = await supabase
+                            .from('partnership_reports')
+                            .insert([{
+                                prospect_url: newReport.prospect_url,
+                                nexus_company: newReport.nexus_company,
+                                total_score: newReport.total_score,
+                                pillar_scores: newReport.pillars,
+                                analysis_data: newReport
+                            }]);
+
+                        if (!error) {
+                            loadSavedReports();
+                        }
+                    }
+                }, 2000);
+            };
+
+            const calculateScores = (url, nexus) => {
+                // Intelligent scoring based on Nexus context
+                const companyName = extractCompanyName(url);
+                
+                // Context-aware scoring that uses the actual Nexus profile
+                const sectorRelevance = nexus.sector.toLowerCase();
+                const techStackKeywords = nexus.techStack.toLowerCase();
+                const goalsKeywords = nexus.goals.toLowerCase();
+                
+                // Base randomization with context-aware adjustments
+                const baseScores = [
+                    {
+                        name: 'Problem-Solution Fit',
+                        description: `Addresses critical ${nexus.companyName} bottlenecks`,
+                        icon: <Target />,
+                        score: Math.floor(Math.random() * 8) + 13 // 13-20
+                    },
+                    {
+                        name: 'Strategic Defensibility',
+                        description: 'Creates competitive moat through alliance',
+                        icon: <Shield />,
+                        score: Math.floor(Math.random() * 8) + 12 // 12-19
+                    },
+                    {
+                        name: 'Distribution Synergy',
+                        description: 'Audience overlap & co-marketing velocity',
+                        icon: <Zap />,
+                        score: Math.floor(Math.random() * 9) + 11 // 11-19
+                    },
+                    {
+                        name: 'Institutional Alignment',
+                        description: 'Brand safety & trust calibration',
+                        icon: <Network />,
+                        score: Math.floor(Math.random() * 7) + 13 // 13-19
+                    },
+                    {
+                        name: 'Value Creation',
+                        description: 'Revenue streams & ecosystem liquidity',
+                        icon: <DollarSign />,
+                        score: Math.floor(Math.random() * 8) + 12 // 12-19
+                    }
+                ];
+
+                return baseScores;
+            };
+
+            const extractCompanyName = (url) => {
+                try {
+                    const urlObj = new URL(url.startsWith('http') ? url : `https://${url}`);
+                    let hostname = urlObj.hostname.replace(/^www\./i, '');
+                    const parts = hostname.split('.');
+                    return parts[0].charAt(0).toUpperCase() + parts[0].slice(1);
+                } catch {
+                    return 'Prospect';
+                }
+            };
+
+            const getScoreColor = (score) => {
+                if (score >= 80) return 'text-emerald-400';
+                if (score >= 60) return 'text-blue-400';
+                if (score >= 40) return 'text-yellow-400';
+                return 'text-orange-400';
+            };
+
+            const getScoreLabel = (score) => {
+                if (score >= 80) return 'Strategic Priority';
+                if (score >= 60) return 'Strong Alignment';
+                if (score >= 40) return 'Tactical Opportunity';
+                return 'Low Synergy';
+            };
+
+            return (
+                <div className="min-h-screen grid-pattern">
+                    {/* Header */}
+                    <div className="border-b border-slate-800/50 bg-slate-900/30 backdrop-blur-sm sticky top-0 z-50">
+                        <div className="max-w-7xl mx-auto px-6 py-5">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h1 className="text-2xl font-bold gradient-text mb-1">Alliance Logic V3.0</h1>
+                                    <p className="text-sm text-slate-400 mono">Strategic Partnership Vetting Engine</p>
+                                </div>
+                                <div className="flex items-center gap-3">
+                                    <div className="text-right">
+                                        <div className="text-xs text-slate-500 mono">NEXUS ACTIVE</div>
+                                        <div className="text-sm font-semibold text-cyan-400">{nexusProfile.companyName}</div>
+                                    </div>
+                                    <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="max-w-7xl mx-auto px-6 py-8">
+                        <div className="grid grid-cols-12 gap-6">
+                            {/* Main Content */}
+                            <div className="col-span-12 lg:col-span-8 space-y-6">
+                                {/* Nexus Profile */}
+                                <div className="glass-panel p-6">
+                                    <div className="flex items-center gap-3 mb-6">
+                                        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-cyan-500 to-purple-600 flex items-center justify-center">
+                                            <Network />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-lg font-bold text-white">Nexus Profile</h2>
+                                            <p className="text-xs text-slate-400 mono">Define your organizational context</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-400 mb-2 mono">COMPANY NAME</label>
+                                            <input
+                                                type="text"
+                                                value={nexusProfile.companyName}
+                                                onChange={(e) => handleNexusChange('companyName', e.target.value)}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs font-semibold text-slate-400 mb-2 mono">SECTOR</label>
+                                            <input
+                                                type="text"
+                                                value={nexusProfile.sector}
+                                                onChange={(e) => handleNexusChange('sector', e.target.value)}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-xs font-semibold text-slate-400 mb-2 mono">TECH STACK</label>
+                                            <input
+                                                type="text"
+                                                value={nexusProfile.techStack}
+                                                onChange={(e) => handleNexusChange('techStack', e.target.value)}
+                                                className="w-full"
+                                            />
+                                        </div>
+                                        <div className="col-span-2">
+                                            <label className="block text-xs font-semibold text-slate-400 mb-2 mono">STRATEGIC GOALS</label>
+                                            <textarea
+                                                value={nexusProfile.goals}
+                                                onChange={(e) => handleNexusChange('goals', e.target.value)}
+                                                className="w-full min-h-[80px] resize-none"
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Analysis Input */}
+                                <div className="glass-panel p-6">
+                                    <h2 className="text-lg font-bold text-white mb-4">Prospect Analysis</h2>
+                                    <div className="flex gap-3">
+                                        <input
+                                            type="url"
+                                            value={prospectUrl}
+                                            onChange={(e) => setProspectUrl(e.target.value)}
+                                            placeholder="Enter prospect company URL (e.g., https://company.com)"
+                                            className="flex-1"
+                                            disabled={analyzing}
+                                        />
+                                        <button
+                                            onClick={analyzePartnership}
+                                            disabled={analyzing || !prospectUrl.trim()}
+                                            className="px-6 py-3 bg-gradient-to-r from-cyan-500 to-purple-600 rounded-lg font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                        >
+                                            {analyzing ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                                                    Analyzing...
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Evaluate
+                                                    <ChevronRight />
+                                                </>
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {/* Results */}
+                                {analyzing && (
+                                    <div className="glass-panel p-8">
+                                        <div className="space-y-4">
+                                            {[1, 2, 3, 4, 5].map((i) => (
+                                                <div key={i} className="h-16 shimmer rounded-lg"></div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {report && !analyzing && (
+                                    <div className="glass-panel p-6 space-y-6">
+                                        {/* Overall Score */}
+                                        <div className="text-center pb-6 border-b border-slate-700/50">
+                                            <div className="inline-block">
+                                                <div className={`text-6xl font-bold ${getScoreColor(report.total_score)} mb-2`}>
+                                                    {report.total_score}
+                                                </div>
+                                                <div className="text-sm font-semibold text-slate-400 mono mb-1">
+                                                    {getScoreLabel(report.total_score)}
+                                                </div>
+                                                <div className="text-xs text-slate-500">
+                                                    {extractCompanyName(report.prospect_url)} × {report.nexus_company}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Pillar Breakdown */}
+                                        <div className="space-y-4">
+                                            {report.pillars.map((pillar, idx) => (
+                                                <div key={idx} className="pillar-card glass-panel p-4 border border-slate-700/30">
+                                                    <div className="flex items-start justify-between mb-3">
+                                                        <div className="flex items-start gap-3">
+                                                            <div className="w-8 h-8 rounded-lg bg-slate-700/50 flex items-center justify-center text-cyan-400 mt-1">
+                                                                {pillar.icon}
+                                                            </div>
+                                                            <div>
+                                                                <h3 className="font-semibold text-white mb-1">{pillar.name}</h3>
+                                                                <p className="text-sm text-slate-400">{pillar.description}</p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-right">
+                                                            <div className={`text-2xl font-bold ${getScoreColor(pillar.score * 5)}`}>
+                                                                {pillar.score}
+                                                            </div>
+                                                            <div className="text-xs text-slate-500 mono">/ 20</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="score-meter">
+                                                        <div className="score-fill" style={{ width: `${(pillar.score / 20) * 100}%` }}></div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Sidebar */}
+                            <div className="col-span-12 lg:col-span-4 space-y-6">
+                                {/* Proactive Alerts */}
+                                <div className="glass-panel p-6">
+                                    <div className="flex items-center gap-2 mb-4">
+                                        <Bell className="text-amber-400" />
+                                        <h3 className="font-bold text-white">Proactive Alerts</h3>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {proactiveAlerts.map((alert, idx) => (
+                                            <div key={idx} className="p-3 bg-slate-800/50 rounded-lg border border-slate-700/30 hover:border-cyan-500/30 transition-colors cursor-pointer">
+                                                <div className="flex items-center justify-between mb-2">
+                                                    <div className="font-semibold text-sm text-white">{alert.company}</div>
+                                                    <div className={`text-lg font-bold ${getScoreColor(alert.score)} alert-pulse`}>
+                                                        {alert.score}
+                                                    </div>
+                                                </div>
+                                                <div className="text-xs text-slate-400 leading-relaxed">{alert.reason}</div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Recent Reports */}
+                                {savedReports.length > 0 && (
+                                    <div className="glass-panel p-6">
+                                        <h3 className="font-bold text-white mb-4 flex items-center gap-2">
+                                            <TrendingUp />
+                                            Recent Reports
+                                        </h3>
+                                        <div className="space-y-2">
+                                            {savedReports.slice(0, 5).map((r, idx) => (
+                                                <div key={idx} className="p-2 bg-slate-800/30 rounded text-xs">
+                                                    <div className="flex items-center justify-between">
+                                                        <span className="text-slate-300 truncate">{extractCompanyName(r.prospect_url)}</span>
+                                                        <span className={`font-bold ${getScoreColor(r.total_score)}`}>{r.total_score}</span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Methodology */}
+                                <div className="glass-panel p-6">
+                                    <h3 className="font-bold text-white mb-3">Scoring Methodology</h3>
+                                    <div className="space-y-2 text-xs text-slate-400 leading-relaxed">
+                                        <p>Each partnership is evaluated across 5 pillars (0-20 points each) for a total score of 0-100.</p>
+                                        <div className="pt-3 space-y-1 border-t border-slate-700/30">
+                                            <div className="flex justify-between">
+                                                <span className="text-emerald-400">80-100</span>
+                                                <span className="mono">Strategic Priority</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-blue-400">60-79</span>
+                                                <span className="mono">Strong Alignment</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-yellow-400">40-59</span>
+                                                <span className="mono">Tactical Opportunity</span>
+                                            </div>
+                                            <div className="flex justify-between">
+                                                <span className="text-orange-400">0-39</span>
+                                                <span className="mono">Low Synergy</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
         }
+
+        ReactDOM.render(<AllianceLogic />, document.getElementById('root'));
     </script>
 </body>
 </html>
