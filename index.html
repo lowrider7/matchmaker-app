@@ -2,7 +2,103 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Alliance Logic V3.0</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Outfit', sans-serif; background: #05070a; }</style>
+</head>
+<body class="text-slate-200 antialiased">
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        function App() {
+            const [nexusUrl, setNexusUrl] = useState('https://hytopia.com');
+            const [prospectUrl, setProspectUrl] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [report, setReport] = useState(null);
+
+            const analyze = async () => {
+                if(!prospectUrl) return;
+                setLoading(true);
+                setReport(null);
+                try {
+                    const res = await fetch('/api/analyze', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ nexusUrl, prospectUrl })
+                    });
+                    const data = await res.json();
+                    setReport(data);
+                } catch (err) { alert("Connection Error. Check Vercel Logs."); }
+                setLoading(false);
+            };
+
+            return (
+                <div className="max-w-5xl mx-auto px-6 py-12 md:py-24">
+                    <div className="mb-16 border-l-4 border-cyan-500 pl-6">
+                        <h1 className="text-4xl font-black tracking-tighter text-white uppercase">Alliance Logic <span className="text-cyan-500">V3.0</span></h1>
+                        <p className="text-slate-500 font-mono text-xs mt-1 uppercase tracking-widest">Nexus Strategic Scoring Engine</p>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-8 items-start">
+                        <div className="bg-slate-900/50 p-8 rounded-3xl border border-slate-800 backdrop-blur-md">
+                            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-6">Partnership Inputs</h2>
+                            <div className="space-y-6">
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-600 uppercase">Nexus (Your URL)</label>
+                                    <input className="w-full bg-black/40 p-4 rounded-xl border border-slate-800 mt-2 focus:border-cyan-500 transition-all outline-none" value={nexusUrl} onChange={e => setNexusUrl(e.target.value)} />
+                                </div>
+                                <div>
+                                    <label className="text-[10px] font-bold text-slate-600 uppercase">Prospect (Target URL)</label>
+                                    <input className="w-full bg-black/40 p-4 rounded-xl border border-slate-800 mt-2 focus:border-cyan-500 transition-all outline-none" value={prospectUrl} onChange={e => setProspectUrl(e.target.value)} placeholder="https://..." />
+                                </div>
+                                <button onClick={analyze} disabled={loading} className="w-full py-4 bg-white text-black rounded-xl font-bold hover:bg-cyan-400 transition-all disabled:opacity-30">
+                                    {loading ? "Agentic Analysis in Progress..." : "Calculate Strategic Value"}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="min-h-[400px]">
+                            {report ? (
+                                <div className="space-y-8 animate-in fade-in slide-in-from-right-4 duration-1000">
+                                    <div className="bg-gradient-to-br from-slate-900 to-black p-8 rounded-3xl border border-cyan-900/30 text-center">
+                                        <div className="text-8xl font-black text-white leading-none">{report.totalScore}</div>
+                                        <div className="text-cyan-500 font-mono text-[10px] mt-4 uppercase tracking-[0.4em]">Synergy Quotient</div>
+                                    </div>
+                                    <div className="space-y-3">
+                                        {report.pillars.map((p, i) => (
+                                            <div key={i} className="p-5 bg-slate-900/30 rounded-2xl border border-slate-800/50 flex justify-between items-center">
+                                                <div className="pr-4">
+                                                    <div className="text-slate-300 font-bold text-sm">{p.name}</div>
+                                                    <div className="text-slate-500 text-xs mt-1 leading-relaxed">{p.insight}</div>
+                                                </div>
+                                                <div className="text-xl font-black text-white">{p.score}<span className="text-slate-700 text-xs">/20</span></div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="h-full border-2 border-dashed border-slate-800 rounded-3xl flex items-center justify-center p-12 text-center">
+                                    <p className="text-slate-600 text-sm italic">Enter URLs to initiate deterministic scoring engine...</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>>
     <title>Alliance Logic V3.0 | Strategic Partnership Engine</title>
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
