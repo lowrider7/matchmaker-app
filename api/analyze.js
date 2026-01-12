@@ -13,8 +13,8 @@ export default async function handler(req, res) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                // UPDATED FOR 2026
-                model: "claude-3-7-sonnet-latest", 
+                // STABLE 2026 CLAUDE 4.5 ID
+                model: "claude-4-5-sonnet-20240229", 
                 max_tokens: 4000,
                 system: `You are the STRATEGIC SCOUT V3.0 INTERNAL FIREBOX. 
                 Perform a 20-point analysis. Return ONLY a JSON object.
@@ -31,28 +31,33 @@ export default async function handler(req, res) {
 
         const data = await response.json();
 
-        // FIX: Check if content exists before accessing [0]
-        if (!data.content || data.content.length === 0) {
-            console.error("ANTHROPIC API ERROR:", data);
-            return res.status(500).json({ 
-                structuralGorge: "API ERROR: " + (data.error?.message || "No content returned"),
-                strategicAssessment: "Check Anthropic Dashboard for Credit/Rate Limits."
+        // Catch API-level errors (like "Invalid Key" or "Overloaded")
+        if (data.error) {
+            return res.status(200).json({ 
+                structuralGorge: `API REJECTION: ${data.error.type}`,
+                strategicAssessment: `REASON: ${data.error.message}`
             });
         }
 
         const rawText = data.content[0].text;
         const jsonMatch = rawText.match(/\{[\s\S]*\}/);
+        
+        if (!jsonMatch) {
+            throw new Error("Could not find JSON in AI response.");
+        }
+
         const parsed = JSON.parse(jsonMatch[0]);
 
         res.status(200).json({
-            structuralGorge: parsed.structuralGorge || "Data missing.",
-            strategicAssessment: parsed.strategicAssessment || "Data missing."
+            structuralGorge: parsed.structuralGorge || "Moat analysis failed.",
+            strategicAssessment: parsed.strategicAssessment || "Strategic assessment failed."
         });
 
     } catch (error) {
-        res.status(500).json({ 
-            structuralGorge: "FIREBOX CRASH: " + error.message,
-            strategicAssessment: "Review server logs." 
+        console.error("FIREBOX FAILURE:", error);
+        res.status(200).json({ 
+            structuralGorge: "FIREBOX SYSTEM ERROR",
+            strategicAssessment: error.message 
         });
     }
 }
